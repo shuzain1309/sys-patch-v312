@@ -1,7 +1,8 @@
 name: sync
 on:
   push:
-    paths: ['jobs/*.enc']   # delete-commits carry "[skip ci]" so they never trigger this
+    paths: ['src/remotion/current_script.tsx']  # delete-commits carry "[skip ci]" so they never trigger this
+   
 
 permissions:
   contents: read
