@@ -1,0 +1,11 @@
+{
+  "_note": "Pause lengths in seconds. Measured target from a reference narration sample: mean pause 0.34 s, p90 0.51 s, about 78 percent of the time speaking. Previous build had 0.94 s mean (clip silence + 0.35 s gap).",
+  "sentence": 0.30,
+  "question": 0.34,
+  "colon": 0.22,
+  "ellipsis": 0.50,
+  "scene_tail": 0.26,
+  "before_chapter": 0.55,
+  "after_chapter": 0.40,
+  "trim_db": -45
+}
