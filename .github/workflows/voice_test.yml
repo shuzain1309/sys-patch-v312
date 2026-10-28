@@ -1,0 +1,39 @@
+name: voice-test
+on:
+  workflow_dispatch:
+    inputs:
+      text:
+        description: Sample paragraph
+        default: "In sixteen sixty six, a fire turned most of London into ash. And it started in a single bakery. Nobody knew it yet, but the city would never look the same."
+      voices:
+        description: Comma separated Kokoro voices
+        default: "am_michael,am_adam,am_fenrir,am_onyx,am_liam,am_eric,bm_george,bm_lewis,bm_fable,bm_daniel,af_heart,af_nicole"
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/huggingface
+          key: hf-kokoro-whisper-v1
+      - name: Install
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y espeak-ng ffmpeg libsndfile1
+          pip install torch --index-url https://download.pytorch.org/whl/cpu
+          pip install -r src/tts/requirements.txt -c src/tts/constraints.txt
+          python -m spacy download en_core_web_sm
+          python -c "import spacy; spacy.load('en_core_web_sm')"
+      - name: Make samples
+        env:
+          TEXT: ${{ inputs.text }}
+          VOICES: ${{ inputs.voices }}
+        run: python src/tts/voice_test.py "$TEXT" "$VOICES"
+      - name: Rank voices by pace and pitch spread
+        run: python src/tts/analyze.py public/test/*.mp3 | tee public/test/ranking.txt
+      - uses: actions/upload-artifact@v4
+        with: {name: voices, path: public/test, retention-days: 3}
