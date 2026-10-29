@@ -1,0 +1,18 @@
+name: fetch-sfx
+on: workflow_dispatch          # run from the Actions tab; downloads only keys that have no file yet
+permissions:
+  contents: write
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 src/tts/sfx_real.py fetch
+        env:
+          FREESOUND_KEY: ${{ secrets.FREESOUND_KEY }}
+      - run: |
+          git config user.name github-actions
+          git config user.email actions@users.noreply.github.com
+          git add sfx-real sfx-real-credits.json
+          git commit -m "sfx library" || echo "nothing new"
+          git push
