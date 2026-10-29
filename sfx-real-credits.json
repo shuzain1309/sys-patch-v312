@@ -1,0 +1,134 @@
+{
+ "sword": {
+  "id": 815763,
+  "name": "Sword hit (low metal)",
+  "username": "xkeril",
+  "license": "http://creativecommons.org/publicdomain/zero/1.0/"
+ },
+ "slash": {
+  "id": 471097,
+  "name": "Knife/sword swing",
+  "username": "spycrah",
+  "license": "http://creativecommons.org/publicdomain/zero/1.0/"
+ },
+ "stab": {
+  "id": 380270,
+  "name": "Freezer Ice Stab Knife 01.wav",
+  "username": "Glitchedtones",
+  "license": "http://creativecommons.org/publicdomain/zero/1.0/"
+ },
+ "hit": {
+  "id": 264062,
+  "name": "Melee Weapon hit with male moan & body fall ",
+  "username": "Paul368",
+  "license": "http://creativecommons.org/publicdomain/zero/1.0/"
+ },
+ "slap": {
+  "id": 800562,
+  "name": "acoustic guitar slap 5.wav",
+  "username": "CVLTIV8R",
+  "license": "http://creativecommons.org/publicdomain/zero/1.0/"
+ },
+ "body_fall": {
+  "id": 504626,
+  "name": "BODY FALL - V HVY - DIRT",
+  "username": "leonelmail",
+  "license": "http://creativecommons.org/publicdomain/zero/1.0/"
+ },
+ "march_hit": {
+  "id": 813053,
+  "name": "Big robot footstep 002",
+  "username": "AudioPapkin",
+  "license": "http://creativecommons.org/publicdomain/zero/1.0/"
+ },
+ "shield_hit": {
+  "id": 696507,
+  "name": "Metal_Ruler_Slide.wav",
+  "username": "BeroundSound",
+  "license": "http://creativecommons.org/publicdomain/zero/1.0/"
+ },
+ "bonk": {
+  "id": 319709,
+  "name": "knocked on my wood.wav",
+  "username": "Jacobocho",
+  "license": "http://creativecommons.org/publicdomain/zero/1.0/"
+ },
+ "crack": {
+  "id": 637746,
+  "name": "pencil snap break wood crack fruit stem branch twig.flac",
+  "username": "kyles",
+  "license": "http://creativecommons.org/publicdomain/zero/1.0/"
+ },
+ "boom": {
+  "id": 825783,
+  "name": "DEEP DEEP IMPACT",
+  "username": "ROHHSADOTCOM",
+  "license": "http://creativecommons.org/publicdomain/zero/1.0/"
+ },
+ "bell": {
+  "id": 78968,
+  "name": "BikeBell3.wav",
+  "username": "RoofDog",
+  "license": "http://creativecommons.org/publicdomain/zero/1.0/"
+ },
+ "page": {
+  "id": 382651,
+  "name": "Paper Page Turn.wav",
+  "username": "bbrocer",
+  "license": "http://creativecommons.org/publicdomain/zero/1.0/"
+ },
+ "creak": {
+  "id": 590151,
+  "name": "Creaking Wood 4.wav",
+  "username": "Greg_Surr",
+  "license": "http://creativecommons.org/publicdomain/zero/1.0/"
+ },
+ "coin": {
+  "id": 497943,
+  "name": "3.2) Coins clinking.WAV",
+  "username": "16FPanskaLipovska_Katerina",
+  "license": "http://creativecommons.org/publicdomain/zero/1.0/"
+ },
+ "thud": {
+  "id": 342534,
+  "name": "Medium Thud 2",
+  "username": "sgrowe",
+  "license": "http://creativecommons.org/publicdomain/zero/1.0/"
+ },
+ "impact": {
+  "id": 719830,
+  "name": "impact_00",
+  "username": "vekoN",
+  "license": "http://creativecommons.org/publicdomain/zero/1.0/"
+ },
+ "thunder": {
+  "id": 696549,
+  "name": "thunder10",
+  "username": "saha213131",
+  "license": "http://creativecommons.org/publicdomain/zero/1.0/"
+ },
+ "cheer": {
+  "id": 651642,
+  "name": "Crowd Cheer 2",
+  "username": "Krizin",
+  "license": "http://creativecommons.org/publicdomain/zero/1.0/"
+ },
+ "horn": {
+  "id": 539956,
+  "name": "war horn.wav",
+  "username": "adharca",
+  "license": "http://creativecommons.org/publicdomain/zero/1.0/"
+ },
+ "howl": {
+  "id": 427694,
+  "name": "13-Aullido Lobo.wav",
+  "username": "efsdcnveoi",
+  "license": "http://creativecommons.org/publicdomain/zero/1.0/"
+ },
+ "trumpet": {
+  "id": 854137,
+  "name": "Mastodon trumpet",
+  "username": "vintprox",
+  "license": "http://creativecommons.org/publicdomain/zero/1.0/"
+ }
+}
