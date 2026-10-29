@@ -110,6 +110,8 @@ jobs:
         run: python src/tts/generate_voice.py merge
       - name: 6b Synthesise sound effects
         run: python src/tts/sfx.py
+      - name: 6c Rome-pack sound effects
+        run: python src/tts/sfx_extra.py public/sfx
       - name: 7 Plan render chunks
         id: plan
         run: node src/ci/plan.js
