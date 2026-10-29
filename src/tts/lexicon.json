@@ -38,5 +38,21 @@
   "Allia":"Al-ee-a",
   "Capitoline":"Cap-it-oh-line",
   "Etruscans":"Ee-trus-kans",
-  "Carthage":"Kar-thij"
+  "Carthage":"Kar-thij",  "Carthaginian": "Kar-thuh-jin-ee-an", "corvus": "kor-vus", "Hannibal": "Han-ih-bul", "Trasimene": "Tras-ih-meen",
+  "Cannae": "Kan-eye", "Zama": "Zay-ma", "Scipio": "Skip-ee-oh", "Fabius": "Fay-bee-us", "Cato": "Kay-toe",
+  "Gracchi": "Grak-eye", "Corinth": "Kor-inth", "Sulla": "Sull-a", "Marius": "Mar-ee-us", "Pompey": "Pom-pee",
+  "Crassus": "Krass-us", "Vercingetorix": "Ver-sin-jet-or-ix", "Alesia": "Ah-lee-zha", "Rubicon": "Roo-bih-kon",
+  "Pharsalus": "Far-say-lus", "Cleopatra": "Klee-oh-pat-ra", "Cassius": "Kash-us", "Brutus": "Broo-tus",
+  "Decimus": "Dess-ih-mus", "Cicero": "Siss-er-oh", "Lepidus": "Lep-ih-dus", "Octavian": "Ok-tay-vee-an",
+  "Philippi": "Fih-lip-eye", "Actium": "Ak-tee-um", "Agrippa": "Ah-grip-ah", "Augustus": "Aw-gus-tus",
+  "Arminius": "Ar-min-ee-us", "Varus": "Vair-us", "Teutoburg": "Toy-toe-burg", "Germania": "Jer-may-nee-a",
+  "Praetorian": "Pree-tor-ee-an", "Praetorians": "Pree-tor-ee-ans", "Tiberius": "Tie-beer-ee-us", "Capri": "Kap-ree",
+  "Caligula": "Kuh-lig-yoo-la", "Claudius": "Klaw-dee-us", "Vespasian": "Vess-pay-zhun", "Galba": "Gal-ba",
+  "Otho": "Oh-thoh", "Vitellius": "Vih-tell-ee-us", "Didius Julianus": "Did-ee-us Joo-lee-ah-nus", "Hadrian": "Hay-dree-an",
+  "Trajan": "Tray-jan", "Aurelius": "Aw-ree-lee-us", "Palmyra": "Pal-my-ra", "Diocletian": "Die-oh-klee-shun",
+  "tetrarchy": "tet-rar-kee", "Constantine": "Kon-stan-teen", "Constantinople": "Kon-stan-tih-no-pul",
+  "Adrianople": "Ay-dree-an-oh-pul", "Valens": "Vay-lenz", "Theodosius": "Thee-oh-doh-shus", "Alaric": "Al-ar-ick",
+  "Visigoths": "Viz-ih-goths", "Vandals": "Van-dulls", "Odoacer": "Oh-doh-ay-ser", "Augustulus": "Aw-gus-chew-lus",
+  "Ottomans": "Ot-oh-mans", "Judea": "Joo-dee-a", "Nazareth": "Naz-uh-reth", "sesterces": "sess-ter-seez",
+  "Pax Romana": "Pax Roh-mah-na", "Ides": "Eyedz", "Praetorian Guard": "Pree-tor-ee-an Guard"
 }
