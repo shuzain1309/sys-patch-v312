@@ -1,12 +1,12 @@
 {
   "_note": "Kokoro voice ids. Names starting 'a' = American, 'b' = British. Audition with the voice-test workflow, then edit here. Tags in LINES like [v:king] pick a row; no tag = narrator.",
-  "narrator": {"voice": "am_michael", "speed": 0.97},
+  "narrator": {"voice": "am_liam",    "speed": 1.0},
   "king":     {"voice": "bm_lewis",   "speed": 0.95},
   "banker":   {"voice": "am_adam",    "speed": 0.98},
   "merchant": {"voice": "bm_george",  "speed": 1.0},
   "woman":    {"voice": "af_sarah",   "speed": 1.0},
   "soldier":  {"voice": "am_eric",    "speed": 1.0},
-  "worker":   {"voice": "am_liam",    "speed": 1.0},
+  "worker":   {"voice": "am_michael", "speed": 0.97},
   "farmer":   {"voice": "am_onyx",    "speed": 0.98},
   "sailor":   {"voice": "bm_fable",   "speed": 1.0}
 }
