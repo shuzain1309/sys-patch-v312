@@ -8,5 +8,10 @@
   "soldier":  {"voice": "am_eric",    "speed": 1.0},
   "worker":   {"voice": "am_michael", "speed": 0.97},
   "farmer":   {"voice": "am_onyx",    "speed": 0.98},
-  "sailor":   {"voice": "bm_fable",   "speed": 1.0}
+  "sailor":   {"voice": "bm_fable",   "speed": 1.0},
+  "frank": "analytical, slightly nasal male, speed 1.05", 
+  "romulus": "confident young male",
+  "remus": "sarcastic young male",
+  "consul": "pompous older male",
+  "consul2": "dry older male, slower"}
 }
