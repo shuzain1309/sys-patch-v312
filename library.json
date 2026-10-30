@@ -1,1 +1,25 @@
-
+{
+ "chars": {
+  "checker": {
+   "tags": [
+    "core",
+    "factcheck"
+   ],
+   "poses": {
+    "neutral": "holding a clipboard, neutral face",
+    "inspect": "peering through a big magnifying glass",
+    "wrong": "holding up a red X sign, stern face"
+   }
+  }
+ },
+ "bgs": {
+  "meadow_dusk": {
+   "tags": [
+    "generic"
+   ],
+   "poses": {
+    "main": "golden meadow at sunset with distant mountains and one lone tree"
+   }
+  }
+ }
+}
