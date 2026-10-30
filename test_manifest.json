@@ -1,0 +1,42 @@
+[
+ {
+  "kind": "sheet",
+  "id": "guide",
+  "tags": [
+   "core",
+   "narrator"
+  ],
+  "prompt": "elderly traveller guide, grey hair under a beige bucket hat, bushy grey moustache, khaki safari shirt with chest pockets, red scarf",
+  "poses": {
+   "neutral": "standing relaxed, one hand raised explaining",
+   "point": "pointing to the left, mouth open mid-sentence",
+   "shock": "wide eyes, jaw dropped, hands up",
+   "laugh": "laughing hard, eyes closed, head thrown back",
+   "smug": "arms crossed, one eyebrow raised, smirking",
+   "sit": "sitting in a wooden chair, leaning forward"
+  }
+ },
+ {
+  "kind": "sheet",
+  "id": "checker",
+  "tags": [
+   "core",
+   "factcheck"
+  ],
+  "cols": 3,
+  "prompt": "young fact-checker, messy brown hair, round glasses, white lab coat, teal tie",
+  "poses": {
+   "neutral": "holding a clipboard, neutral face",
+   "inspect": "peering through a big magnifying glass",
+   "wrong": "holding up a red X sign, stern face"
+  }
+ },
+ {
+  "kind": "bg",
+  "id": "meadow_dusk",
+  "tags": [
+   "generic"
+  ],
+  "prompt": "golden meadow at sunset with distant mountains and one lone tree"
+ }
+]
