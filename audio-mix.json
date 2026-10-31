@@ -1,0 +1,13 @@
+{
+  "_doc": "The only volume knobs. Edit, push with the dashboard, no code change. Files in sfx-real/ and music-real/ are loudness-normalised at build time (audio_real.py), so these gains are comparable across files. Narration is -16 LUFS. music_under = level while the narrator speaks, music_open = level in pauses. Gains are linear (0.5 = -6 dB).",
+  "sfx": {"mean_db": -22, "peak_db": -3},
+  "music_lufs": -23,
+  "sfx_gain": 0.6,
+  "ambience_gain": 0.25,
+  "music_under": 0.3,
+  "music_open": 0.55,
+  "duck": {"attack_s": 0.25, "release_s": 0.6, "merge_gap_s": 0.35},
+  "mute": ["pop", "tick", "flip", "whoosh_long", "sweep", "riser_short", "ding"],
+  "master_lufs": -16,
+  "master_tp": -1.5
+}

@@ -1,5 +1,8 @@
 name: fetch-sfx
-on: workflow_dispatch          # run from the Actions tab; downloads only keys that have no file yet
+on:
+  workflow_dispatch:
+    inputs:
+      mode: {description: "fetch = download missing keys, candidates = list matches to audition and pin by id", default: fetch}
 permissions:
   contents: write
 jobs:
@@ -7,12 +10,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: python3 src/tts/sfx_real.py fetch
+      - run: python3 src/tts/audio_real.py ${{ inputs.mode || 'fetch' }} sfx
         env:
           FREESOUND_KEY: ${{ secrets.FREESOUND_KEY }}
-      - run: |
+      - if: ${{ (inputs.mode || 'fetch') == 'fetch' }}
+        run: |
           git config user.name github-actions
           git config user.email actions@users.noreply.github.com
           git add sfx-real sfx-real-credits.json
-          git commit -m "sfx library" || echo "nothing new"
+          git commit -m "sync" || echo "nothing new"
+          git pull --rebase -q || true
           git push

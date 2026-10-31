@@ -1,0 +1,1 @@
+{"sfx": {}, "music": {}, "levels": {"sfx_gain": 0.6, "ambience_gain": 0.25, "music_under": 0.3, "music_open": 0.55, "duck": {"attack_s": 0.25, "release_s": 0.6, "merge_gap_s": 0.35}, "mute": ["pop", "tick", "flip", "whoosh_long", "sweep", "riser_short", "ding"]}}

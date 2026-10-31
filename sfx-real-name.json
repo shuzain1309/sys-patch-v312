@@ -1,5 +1,5 @@
 {
- "_doc": "keys: script key -> Freesound search text (CC0 only, short sounds), or a Freesound sound id (number) to pin a sound you like. drop: keys made silent.",
+ "_doc": "keys: script key -> Freesound search text (CC0 only), a Freesound id (number) to pin a sound, or {q,id,max}. Keys ending _loop are ambience beds (need max, e.g. 60). Real recordings only; nothing is synthesised. 'drop' is no longer used.",
  "gain_db": -6,
  "legacy_gain_db": 0,
  "max_seconds": 8,
@@ -25,7 +25,41 @@
   "cheer": "crowd cheer",
   "horn": "war horn",
   "howl": "wolf howl",
-  "trumpet": "elephant trumpet"
+  "trumpet": "elephant trumpet",
+  "whoosh": "whoosh transition swoosh",
+  "riser": "cinematic riser tension",
+  "rain_loop": {
+   "q": "rain loop",
+   "max": 60
+  },
+  "wind_loop": {
+   "q": "wind loop outdoors",
+   "max": 60
+  },
+  "fire_loop": {
+   "q": "fire crackling loop",
+   "max": 60
+  },
+  "waves_loop": {
+   "q": "sea waves loop",
+   "max": 60
+  },
+  "crowd_loop": {
+   "q": "crowd murmur ambience loop",
+   "max": 60
+  },
+  "battle_loop": {
+   "q": "distant battle ambience",
+   "max": 60
+  },
+  "march_loop": {
+   "q": "soldiers marching loop",
+   "max": 40
+  },
+  "hooves_loop": {
+   "q": "horse gallop loop",
+   "max": 30
+  }
  },
  "drop": [
   "baby_cry",

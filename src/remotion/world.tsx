@@ -2,7 +2,7 @@
 // Stickman rig (poses, blink, breathing, lip-sync), 25 props, parallax backdrops, a Stage engine.
 // Copy once to src/remotion/world.tsx next to kit.tsx. Do not edit per video.
 import React from 'react';
-import {Easing, interpolate, random, spring, useCurrentFrame, useVideoConfig} from 'remotion';
+import {Easing, interpolate, random, Sequence, spring, useCurrentFrame, useVideoConfig} from 'remotion';
 import {loadFont as loadHand} from '@remotion/google-fonts/PatrickHand';
 
 export const HAND = typeof window === 'undefined' ? 'sans-serif' : loadHand('normal', {weights: ['400'], subsets: ['latin']}).fontFamily;
@@ -28,7 +28,7 @@ const pop = (f: number, fps: number, at: number) => {
 };
 
 // ===================== STICKMAN =====================
-export type PoseName = 'idle' | 'point' | 'wave' | 'shrug' | 'think' | 'shock' | 'cheer' | 'open' | 'walk' | 'run' | 'attack' | 'fall' | 'salute' | 'cower';
+export type PoseName = 'idle' | 'point' | 'wave' | 'shrug' | 'think' | 'shock' | 'cheer' | 'open' | 'walk' | 'run' | 'attack' | 'fall' | 'salute' | 'cower' | 'sit' | 'kneel' | 'bow' | 'block';
 export type Face = 'smile' | 'neutral' | 'shock' | 'sad' | 'angry';
 type Ang = [number, number];
 const POSES: Record<Exclude<PoseName, 'walk' | 'run'>, {l: Ang; r: Ang}> = {
@@ -44,35 +44,58 @@ const POSES: Record<Exclude<PoseName, 'walk' | 'run'>, {l: Ang; r: Ang}> = {
   shock: {l: [-128, -150], r: [128, 150]},
   cheer: {l: [-138, -158], r: [138, 158]},
   open: {l: [-68, -84], r: [68, 84]},
+  sit: {l: [-8, 20], r: [8, -20]},
+  kneel: {l: [-12, 10], r: [12, -10]},
+  bow: {l: [-6, -2], r: [6, 2]},
+  block: {l: [-72, -100], r: [50, 66]},
 };
-export type Look = {hat: 'none' | 'explorer' | 'top' | 'crown' | 'cap' | 'helmet' | 'straw' | 'bowler' | 'tricorn' | 'bun' | 'laurel' | 'crest' | 'hood'; shirt: string; pants: string; skin: string; extra?: 'scarf' | 'beard' | 'apron'; ec?: string; cape?: string; toga?: string; armor?: boolean};
+const LEAN: Partial<Record<PoseName, number>> = {walk: 2, run: 12, attack: 10, cower: 14, bow: 38, kneel: 6, block: 8};
+
+export type Hair = 'none' | 'short' | 'long' | 'topknot' | 'curly' | 'wild' | 'parted' | 'bald';
+export type Outfit = 'tunic' | 'robe' | 'coat' | 'dress' | 'armor' | 'toga';
+export type Look = {hat: 'none' | 'explorer' | 'top' | 'crown' | 'cap' | 'helmet' | 'straw' | 'bowler' | 'tricorn' | 'bun' | 'laurel' | 'crest' | 'hood'; shirt: string; pants: string; skin: string; extra?: 'scarf' | 'beard' | 'apron'; ec?: string; cape?: string; toga?: string; armor?: boolean;
+  outfit?: Outfit; hair?: Hair; hc?: string; facial?: 'full' | 'goatee' | 'stache' | 'long'; trim?: string; sleeve?: string; bare?: boolean; shoes?: string; fc?: string; glasses?: boolean};
 export const LOOKS: Record<string, Look> = {
-  narrator: {hat: 'explorer', shirt: '#efe6cf', pants: '#6b5a45', skin: '#f3dcc6', extra: 'scarf', ec: '#c0392b'},
-  merchant: {hat: 'top', shirt: '#2b2d42', pants: '#2b2d42', skin: '#efd3b8'},
-  banker: {hat: 'bowler', shirt: '#44464f', pants: '#2f3038', skin: '#eed2b6', extra: 'beard', ec: '#6d5a48'},
-  king: {hat: 'crown', shirt: '#6a2c91', pants: '#4a1d68', skin: '#f0d2b6', extra: 'beard', ec: '#d8d8d8'},
-  soldier: {hat: 'helmet', shirt: '#9a2a2a', pants: '#3d3d4d', skin: '#e7c4a4'},
-  sailor: {hat: 'tricorn', shirt: '#e8e8e8', pants: '#2d4a7a', skin: '#dcb592'},
-  worker: {hat: 'cap', shirt: '#8a6a4a', pants: '#4d4033', skin: '#d7a985'},
-  farmer: {hat: 'straw', shirt: '#5d8a4a', pants: '#6b5a45', skin: '#d9b08c', extra: 'apron', ec: '#e9dcb8'},
-  woman: {hat: 'bun', shirt: '#c0526b', pants: '#6d3f4d', skin: '#e8c4a6'},
-  blue: {hat: 'none', shirt: '#3b6fb6', pants: '#26467a', skin: '#e9c9a8'},
-  green: {hat: 'none', shirt: '#3f9d63', pants: '#276b43', skin: '#dcb58f'},
+  narrator: {hat: 'explorer', shirt: '#d9c79a', pants: '#6b5a45', skin: '#f3dcc6', extra: 'scarf', ec: '#c0392b', hair: 'short', hc: '#a8a8a8', facial: 'stache', trim: '#8a6d3b', shoes: '#5a4632'},
+  merchant: {hat: 'top', shirt: '#2b2d42', pants: '#2b2d42', skin: '#efd3b8', outfit: 'coat', trim: '#c9a84a', hair: 'short', hc: '#3b2a20', facial: 'stache'},
+  banker: {hat: 'bowler', shirt: '#44464f', pants: '#2f3038', skin: '#eed2b6', outfit: 'coat', trim: '#d8d8d8', hair: 'short', hc: '#6d5a48', facial: 'full', ec: '#6d5a48'},
+  king: {hat: 'crown', shirt: '#6a2c91', pants: '#4a1d68', skin: '#f0d2b6', outfit: 'robe', trim: '#f2c230', cape: '#8e2a2a', hair: 'long', hc: '#d8d8d8', facial: 'long', ec: '#d8d8d8', shoes: '#3a2a1a'},
+  soldier: {hat: 'helmet', shirt: '#9a2a2a', pants: '#3d3d4d', skin: '#e7c4a4', outfit: 'coat', trim: '#d9b24a', shoes: '#2a2a2a'},
+  sailor: {hat: 'tricorn', shirt: '#e8e8e8', pants: '#2d4a7a', skin: '#dcb592', hair: 'long', hc: '#4a3426', facial: 'goatee', trim: '#2d4a7a'},
+  worker: {hat: 'cap', shirt: '#8a6a4a', pants: '#4d4033', skin: '#d7a985', hair: 'short', hc: '#3b2a20', facial: 'stache', shoes: '#3a2a1a'},
+  farmer: {hat: 'straw', shirt: '#5d8a4a', pants: '#6b5a45', skin: '#d9b08c', extra: 'apron', ec: '#e9dcb8', hair: 'short', hc: '#6d5a48', bare: false},
+  woman: {hat: 'bun', shirt: '#c0526b', pants: '#6d3f4d', skin: '#e8c4a6', outfit: 'dress', trim: '#f0d9a8', hc: '#5a3a28'},
+  blue: {hat: 'none', shirt: '#3b6fb6', pants: '#26467a', skin: '#e9c9a8', hair: 'short', hc: '#4a3426'},
+  green: {hat: 'none', shirt: '#3f9d63', pants: '#276b43', skin: '#dcb58f', hair: 'parted', hc: '#2f2a22'},
   // ---- Rome pack
-  senator: {hat: 'none', shirt: '#efe9dc', pants: '#efe9dc', skin: '#efd3b8', toga: '#efe9dc'},
-  caesar: {hat: 'laurel', shirt: '#efe9dc', pants: '#efe9dc', skin: '#efd3b8', toga: '#f3eee2', cape: '#7b2d8e'},
-  emperor: {hat: 'laurel', shirt: '#7b2d8e', pants: '#7b2d8e', skin: '#efd3b8', toga: '#8a3aa0', cape: '#5d1f6e'},
-  legionary: {hat: 'helmet', shirt: '#b53a32', pants: '#6b5a45', skin: '#e7c4a4', armor: true},
-  centurion: {hat: 'crest', shirt: '#b53a32', pants: '#6b5a45', skin: '#e0b896', armor: true, cape: '#a8242c'},
-  barbarian: {hat: 'none', shirt: '#7a5a3a', pants: '#4a3a2a', skin: '#e9c9a8', extra: 'beard', ec: '#c9892f'},
-  gaul: {hat: 'none', shirt: '#2f6f8a', pants: '#8a6b3a', skin: '#f0d2b6', extra: 'beard', ec: '#d9a441'},
-  hannibal: {hat: 'crest', shirt: '#2b2f3a', pants: '#2b2f3a', skin: '#b98a63', armor: true, cape: '#5a1f1f'},
-  vestal: {hat: 'hood', shirt: '#f4f1e6', pants: '#f4f1e6', skin: '#f0d6bd'},
-  plotter: {hat: 'hood', shirt: '#33343f', pants: '#2a2b33', skin: '#e3c3a2'},
-  shepherd: {hat: 'straw', shirt: '#8a7a55', pants: '#5a4a35', skin: '#d6ad88'},
+  senator: {hat: 'none', shirt: '#efe9dc', pants: '#efe9dc', skin: '#efd3b8', toga: '#efe9dc', trim: '#8a2b9a', hair: 'bald', hc: '#b8b8b8', shoes: '#8a5a33'},
+  caesar: {hat: 'laurel', shirt: '#efe9dc', pants: '#efe9dc', skin: '#efd3b8', toga: '#f3eee2', cape: '#7b2d8e', trim: '#7b2d8e', hair: 'bald', hc: '#8a7a6a', shoes: '#8a5a33'},
+  emperor: {hat: 'laurel', shirt: '#7b2d8e', pants: '#7b2d8e', skin: '#efd3b8', outfit: 'robe', toga: undefined, cape: '#5d1f6e', trim: '#f2c230', hair: 'curly', hc: '#4a3426', shoes: '#8a5a33'},
+  legionary: {hat: 'helmet', shirt: '#b53a32', pants: '#6b5a45', skin: '#e7c4a4', armor: true, bare: true, trim: '#c4a24a', shoes: '#7a5230'},
+  centurion: {hat: 'crest', shirt: '#b53a32', pants: '#6b5a45', skin: '#e0b896', armor: true, bare: true, cape: '#a8242c', trim: '#c4a24a', facial: 'stache', hc: '#3b2a20', shoes: '#7a5230'},
+  barbarian: {hat: 'none', shirt: '#7a5a3a', pants: '#4a3a2a', skin: '#e9c9a8', extra: 'beard', ec: '#c9892f', hair: 'wild', hc: '#c9892f', facial: 'full', bare: true, shoes: '#4a3a2a'},
+  gaul: {hat: 'none', shirt: '#2f6f8a', pants: '#8a6b3a', skin: '#f0d2b6', extra: 'beard', ec: '#d9a441', hair: 'wild', hc: '#d9a441', facial: 'stache', trim: '#d9a441', shoes: '#4a3a2a'},
+  hannibal: {hat: 'crest', shirt: '#2b2f3a', pants: '#2b2f3a', skin: '#b98a63', armor: true, cape: '#5a1f1f', trim: '#c4a24a', facial: 'goatee', hc: '#1f1a17', bare: true, shoes: '#2a2a2a'},
+  vestal: {hat: 'hood', shirt: '#f4f1e6', pants: '#f4f1e6', skin: '#f0d6bd', outfit: 'robe', trim: '#d8c48a'},
+  plotter: {hat: 'hood', shirt: '#33343f', pants: '#2a2b33', skin: '#e3c3a2', outfit: 'robe', trim: '#555769', facial: 'goatee', hc: '#1f1a17'},
+  shepherd: {hat: 'straw', shirt: '#8a7a55', pants: '#5a4a35', skin: '#d6ad88', hair: 'short', hc: '#5a4a35', facial: 'full', ec: '#6d5a48'},
+  // ---- generic history cast
+  queen: {hat: 'crown', shirt: '#2f6f8a', pants: '#2f6f8a', skin: '#f0d2b6', outfit: 'dress', trim: '#f2c230', hair: 'long', hc: '#5a3a28', cape: '#7b2d8e'},
+  general: {hat: 'cap', shirt: '#4a5a3a', pants: '#3a4a2f', skin: '#e7c4a4', outfit: 'coat', trim: '#d9b24a', hair: 'short', hc: '#3b2a20', facial: 'stache', shoes: '#2a2a2a'},
+  monk: {hat: 'none', shirt: '#8a5a33', pants: '#8a5a33', skin: '#efd3b8', outfit: 'robe', trim: '#d8c48a', hair: 'bald', hc: '#5a4a35', shoes: '#5a4632'},
+  scholar: {hat: 'none', shirt: '#3b5a8a', pants: '#3b5a8a', skin: '#efd3b8', outfit: 'robe', trim: '#d8d8d8', hair: 'topknot', hc: '#1f1a17', facial: 'goatee', shoes: '#2a2a2a'},
+  // narrator costumes by topic (set THEME.narrator): same guide, dressed for the era
+  narrator_rome: {hat: 'laurel', shirt: '#efe9dc', pants: '#efe9dc', skin: '#f3dcc6', toga: '#efe9dc', trim: '#8a2b9a', hair: 'short', hc: '#a8a8a8', facial: 'stache', shoes: '#8a5a33'},
+  narrator_war: {hat: 'helmet', shirt: '#6b5a45', pants: '#4a3a2a', skin: '#f3dcc6', outfit: 'coat', trim: '#c4a24a', facial: 'stache', hc: '#a8a8a8', shoes: '#2a2a2a'},
+  narrator_medieval: {hat: 'hood', shirt: '#5a4a7a', pants: '#3a3050', skin: '#f3dcc6', outfit: 'robe', trim: '#d8c48a', facial: 'long', hc: '#c8c8c8', fc: '#c8c8c8', shoes: '#3a2a1a'},
+  narrator_modern: {hat: 'cap', shirt: '#3b5a8a', pants: '#2f3038', skin: '#f3dcc6', outfit: 'coat', trim: '#d8d8d8', hair: 'short', hc: '#a8a8a8', facial: 'stache', shoes: '#2a2a2a'},
+  // Fact Check Frank: shown translucent (ghost) with a FACT CHECK badge. v0 design, awaiting brand sheet
+  frank: {hat: 'none', shirt: '#3f7fbf', pants: '#2f4f7a', skin: '#f3dcc6', outfit: 'coat', trim: '#f2c230', hair: 'parted', hc: '#5a3a28', glasses: true, shoes: '#22304a'},
+  peasant: {hat: 'straw', shirt: '#a8946a', pants: '#6b5a45', skin: '#d9b08c', hair: 'short', hc: '#4a3426', shoes: '#5a4632'},
 };
-export type Held = 'sword' | 'spear' | 'torch' | 'scroll' | 'dagger' | 'goblet' | 'standard' | 'lyre' | 'coin';
-export type ActorT = {who?: string; x: number | [number, number]; y?: number; s?: number; pose?: PoseName; face?: Face; flip?: boolean; say?: string; at?: number; talk?: boolean; look?: string | Look; raw?: boolean; held?: Held; shield?: boolean; fa?: number; hide?: number};
+
+export type Held = 'sword' | 'spear' | 'torch' | 'scroll' | 'dagger' | 'goblet' | 'standard' | 'lyre' | 'coin' | 'magnifier';
+export type ActorT = {who?: string; x: number | [number, number]; y?: number; s?: number; pose?: PoseName; face?: Face; flip?: boolean; say?: string; at?: number; talk?: boolean; look?: string | Look; raw?: boolean; held?: Held; shield?: boolean; fa?: number; hide?: number; ghost?: number};
 
 const Hat: React.FC<{k: Look['hat']; top: number; skin: string}> = ({k, top, skin}) => {
   switch (k) {
@@ -102,8 +125,40 @@ const HeldArt: React.FC<{k: Held; f: number}> = ({k, f}) => {
     case 'scroll': return (<g {...OL}><rect x={-34} y={-70} width={68} height={86} rx={8} fill="#f3e6bf" /><rect x={-40} y={-76} width={80} height={12} rx={6} fill="#a8793f" /><rect x={-40} y={10} width={80} height={12} rx={6} fill="#a8793f" /><path d="M-20 -46 H20 M-20 -26 H20 M-20 -6 H8" stroke="#8a6a3a" strokeWidth={3} /></g>);
     case 'goblet': return (<g {...OL}><path d="M-22 -50 L22 -50 L14 -10 L-14 -10Z" fill="#e2b84a" /><rect x={-4} y={-10} width={8} height={26} fill="#e2b84a" /><rect x={-16} y={14} width={32} height={8} rx={3} fill="#e2b84a" /></g>);
     case 'lyre': return (<g {...OL}><path d="M-34 -80 Q-40 -20 0 -10 Q40 -20 34 -80" fill="none" strokeWidth={9} stroke="#c4a24a" />{[-18, -6, 6, 18].map((x, i) => <path key={i} d={`M${x} -80 V-18`} stroke="#8a6a3a" strokeWidth={2.5} />)}</g>);
+    case 'magnifier': return (<g {...OL}><rect x={-4} y={-4} width={8} height={46} rx={4} fill="#6b3a2a" /><circle cx={0} cy={-34} r={30} fill="#bfe6ff" fillOpacity={0.45} stroke="#c4a24a" strokeWidth={7} /><path d="M-16 -44 Q-8 -54 6 -52" fill="none" stroke="#fff" strokeWidth={4} /></g>);
     case 'coin': return (<g {...OL}><circle cx={0} cy={-24} r={26} fill="#f6cf4a" /><circle cx={0} cy={-24} r={17} fill="none" stroke="#b8860b" strokeWidth={3} /></g>);
   }
+};
+
+const HAIRLESS: Look['hat'][] = ['helmet', 'crest', 'hood', 'bun'];
+const outfitOf = (l: Look): Outfit => l.outfit ?? (l.armor ? 'armor' : l.toga ? 'toga' : 'tunic');
+
+// hair that sits behind the head (long styles) and in front of it (fringe), both drawn from the head centre
+const HairBack: React.FC<{k: Hair; y: number; c: string}> = ({k, y, c}) => {
+  if (k === 'long') return <path d={`M-58 ${y - 6} Q-76 ${y + 70} -50 ${y + 104} L50 ${y + 104} Q76 ${y + 70} 58 ${y - 6}Z`} fill={c} stroke={INK} strokeWidth={3} strokeLinejoin="round" />;
+  if (k === 'wild') return <path d={`M-60 ${y - 10} L-78 ${y + 30} L-62 ${y + 36} L-74 ${y + 78} L-44 ${y + 66} L-30 ${y + 96} L0 ${y + 72} L30 ${y + 96} L44 ${y + 66} L74 ${y + 78} L62 ${y + 36} L78 ${y + 30} L60 ${y - 10}Z`} fill={c} stroke={INK} strokeWidth={3} strokeLinejoin="round" />;
+  return null;
+};
+const HairFront: React.FC<{k: Hair; y: number; c: string}> = ({k, y, c}) => {
+  const S = {fill: c, stroke: INK, strokeWidth: 3, strokeLinejoin: 'round'} as const;
+  switch (k) {
+    case 'short': case 'long': return <path d={`M-56 ${y - 2} Q-62 ${y - 66} 0 ${y - 66} Q62 ${y - 66} 56 ${y - 2} Q50 ${y - 30} 30 ${y - 40} Q0 ${y - 28} -30 ${y - 42} Q-50 ${y - 30} -56 ${y - 2}Z`} {...S} />;
+    case 'parted': return <g><path d={`M-56 ${y - 2} Q-62 ${y - 66} 0 ${y - 66} Q62 ${y - 66} 56 ${y - 2} Q52 ${y - 32} 14 ${y - 44} Q-30 ${y - 34} -56 ${y - 2}Z`} {...S} /><path d={`M14 ${y - 62} Q16 ${y - 50} 14 ${y - 44}`} fill="none" stroke={INK} strokeWidth={2.5} /></g>;
+    case 'topknot': return <g><circle cx={0} cy={y - 76} r={15} {...S} /><path d={`M-12 ${y - 62} h24`} stroke={INK} strokeWidth={4} /><path d={`M-56 ${y - 2} Q-62 ${y - 66} 0 ${y - 66} Q62 ${y - 66} 56 ${y - 2} Q50 ${y - 28} 0 ${y - 30} Q-50 ${y - 28} -56 ${y - 2}Z`} {...S} /></g>;
+    case 'curly': return <g {...S}>{Array.from({length: 7}, (_, i) => { const a = Math.PI * (0.06 + i * 0.148); return <circle key={i} cx={-Math.cos(a) * 52} cy={y - 8 - Math.sin(a) * 52} r={14} />; })}</g>;
+    case 'wild': return <path d={`M-58 ${y} Q-66 ${y - 70} -20 ${y - 70} L-10 ${y - 84} L2 ${y - 70} L16 ${y - 86} L24 ${y - 68} Q66 ${y - 68} 58 ${y} Q46 ${y - 24} 24 ${y - 36} L8 ${y - 22} L-8 ${y - 38} L-28 ${y - 30} Q-48 ${y - 22} -58 ${y}Z`} {...S} />;
+    case 'bald': return <g {...S}><path d={`M-55 ${y + 6} Q-60 ${y - 20} -50 ${y - 30} Q-54 ${y - 8} -46 ${y + 12}Z`} /><path d={`M55 ${y + 6} Q60 ${y - 20} 50 ${y - 30} Q54 ${y - 8} 46 ${y + 12}Z`} /></g>;
+    default: return null;
+  }
+};
+const Facial: React.FC<{k?: Look['facial']; y: number; c: string}> = ({k, y, c}) => {
+  const S = {fill: c, stroke: INK, strokeWidth: 3, strokeLinejoin: 'round'} as const;
+  if (!k) return null;
+  const stache = <path d={`M-30 ${y + 14} Q-14 ${y + 4} 0 ${y + 14} Q14 ${y + 4} 30 ${y + 14} Q18 ${y + 30} 0 ${y + 22} Q-18 ${y + 30} -30 ${y + 14}Z`} {...S} />;
+  if (k === 'stache') return stache;
+  if (k === 'goatee') return <g><path d={`M-16 ${y + 36} Q0 ${y + 82} 16 ${y + 36} Q0 ${y + 44} -16 ${y + 36}Z`} {...S} />{stache}</g>;
+  const ext = k === 'long' ? 70 : 0;
+  return <g><path d={`M-52 ${y - 4} Q-56 ${y + 66 + ext} 0 ${y + 76 + ext * 1.6} Q56 ${y + 66 + ext} 52 ${y - 4} Q40 ${y + 24} 0 ${y + 20} Q-40 ${y + 24} -52 ${y - 4}Z`} {...S} />{stache}</g>;
 };
 
 export const Actor: React.FC<{a: ActorT; words?: WordT[]; seed?: string}> = ({a, words, seed = 'a'}) => {
@@ -132,6 +187,8 @@ export const Actor: React.FC<{a: ActorT; words?: WordT[]; seed?: string}> = ({a,
     R = [p.r[0] + sw, p.r[1] + sw + (pose === 'wave' ? Math.sin(f / 4) * 22 : 0)];
     LL = [-5, -3];
     RL = [5, 3];
+    if (pose === 'sit') { LL = [88, 2]; RL = [92, -2]; }
+    if (pose === 'kneel') { LL = [-24, -86]; RL = [76, -6]; }
     if (pose === 'attack') {
       const k = Math.sin(f / 3.2);
       R = [105 + k * 55, 95 + k * 75];
@@ -154,8 +211,11 @@ export const Actor: React.FC<{a: ActorT; words?: WordT[]; seed?: string}> = ({a,
   const blink = (f + Math.floor(ph * 20)) % 110 < 4;
   const face: Face = a.face ?? 'smile';
   const bob = pose === 'walk' || pose === 'run' ? -Math.abs(Math.sin(w)) * (pose === 'run' ? 12 : 7) : pose === 'cheer' ? -Math.abs(Math.sin(f / 4)) * 14 : Math.sin(f / 14 + ph) * 1.6;
-  const hipY = -150, shY = -268, headY = -340 + bob * 0.4, HR = 58;
-  const shL: [number, number] = [-12, shY + 4 + bob * 0.5], shR: [number, number] = [12, shY + 4 + bob * 0.5];
+  const dy = pose === 'sit' ? 74 : pose === 'kneel' ? 64 : 0; // body drops; legs fold
+  const lean = LEAN[pose] ?? 0;
+  const hipY = -150 + dy, shY = -268 + dy, headY = -340 + dy + bob * 0.4, HR = 58;
+  const SHX = 26; // half shoulder width
+  const shL: [number, number] = [-SHX + 2, shY + 10 + bob * 0.5], shR: [number, number] = [SHX - 2, shY + 10 + bob * 0.5];
   const arm = (sh: [number, number], ang: Ang) => {
     const el = P(sh[0], sh[1], 62, ang[0]);
     const hd = P(el[0], el[1], 62, ang[1]);
@@ -163,54 +223,98 @@ export const Actor: React.FC<{a: ActorT; words?: WordT[]; seed?: string}> = ({a,
   };
   const aL = arm(shL, L), aR = arm(shR, R);
   const leg = (hx: number, ang: Ang) => {
-    const kn = P(hx, hipY, 75, ang[0]);
+    const kn = P(hx, hipY + 4, 75, ang[0]);
     const ft = P(kn[0], kn[1], 75, ang[1]);
     return {kn, ft};
   };
-  const lL = leg(-10, LL), lR = leg(10, RL);
+  const lL = leg(-11, LL), lR = leg(11, RL);
   const e = a.at !== undefined ? pop(f, fps, a.at * d) : {o: 1, k: 1};
   const s = (a.s ?? 1) * (a.raw ? 1 : CHAR);
+  const out = outfitOf(look);
+  const hair: Hair = look.hair ?? (HAIRLESS.includes(look.hat) ? 'none' : 'short');
+  const hc = look.hc ?? '#4a3426';
+  const facial = look.facial ?? (look.extra === 'beard' ? 'full' : undefined);
+  const fc = look.fc ?? (look.extra === 'beard' && look.ec ? look.ec : hc); // facial hair colour: never the scarf/apron colour
+  const trim = look.trim ?? mix(look.shirt, -0.35);
+  const shoes = look.shoes ?? '#3b2c22';
+  const sleeve = look.bare || out === 'armor' ? look.skin : look.sleeve ?? look.shirt;
   const ls = (p: [number, number][], w2: number, col: string) => <polyline points={p.map((q) => q.join(',')).join(' ')} fill="none" stroke={col} strokeWidth={w2} strokeLinecap="round" strokeLinejoin="round" />;
   const limb = (p: [number, number][], w2: number, col: string) => (<g>{ls(p, w2 + 6, INK)}{ls(p, w2, col)}</g>);
+  const sleeved = (sh: [number, number], ar: {el: [number, number]; hd: [number, number]}) => (
+    <g>{limb([sh, ar.el], 19, sleeve)}{limb([ar.el, ar.hd], out === 'robe' || out === 'coat' ? 17 : look.bare || out === 'armor' ? 15 : 17, out === 'robe' || out === 'coat' ? sleeve : look.bare || out === 'armor' ? look.skin : sleeve)}
+      {(out === 'coat' || out === 'robe') && <circle cx={ar.hd[0]} cy={ar.hd[1]} r={11} fill={trim} stroke={INK} strokeWidth={3} />}</g>);
+  const hand = (p: [number, number]) => <g><circle cx={p[0]} cy={p[1]} r={10} fill={look.skin} stroke={INK} strokeWidth={3} /></g>;
+  const shoe = (ft: [number, number], dir: number) => <path d={`M${ft[0] - 12 * dir} ${ft[1] - 12} Q${ft[0] - 12 * dir} ${ft[1] - 20} ${ft[0] - 2 * dir} ${ft[1] - 19} L${ft[0] + 10 * dir} ${ft[1] - 14} Q${ft[0] + 30 * dir} ${ft[1] - 12} ${ft[0] + 28 * dir} ${ft[1] + 1} L${ft[0] - 12 * dir} ${ft[1] + 1}Z`} fill={shoes} stroke={INK} strokeWidth={3} strokeLinejoin="round" />;
   const browY = headY - 22;
   const sayT = a.say ? a.say.split(' ') : [];
   const bx = 0;
+  const sway = Math.sin(f / 8) * 6 + (pose === 'walk' || pose === 'run' ? Math.sin(w) * 10 : 0);
+  const longGarment = out === 'robe' || out === 'dress';
+  const hem = longGarment ? -16 + dy * 0.2 : 0;
+  const legCol = out === 'armor' && look.bare ? look.skin : look.pants;
   return (
-    <g transform={`translate(${x} ${a.y ?? 940}) scale(${(a.flip ? -1 : 1) * s * e.k} ${s * e.k})`} opacity={e.o * gone}>
-      <ellipse cx={0} cy={4} rx={86} ry={13} fill="#000" opacity={0.18} />
+    <g transform={`translate(${x} ${a.y ?? 940}) scale(${(a.flip ? -1 : 1) * s * e.k} ${s * e.k})`} opacity={e.o * gone * (a.ghost ?? 1) * (a.ghost !== undefined ? 0.92 + Math.sin(f / 9 + ph) * 0.08 : 1)}>
+      {a.ghost !== undefined && <g fill="#9fd8ff"><ellipse cx={0} cy={-200} rx={170} ry={280} opacity={0.08} /><ellipse cx={0} cy={-200} rx={135} ry={245} opacity={0.1} /><ellipse cx={0} cy={-200} rx={100} ry={210} opacity={0.12} /></g>}
+      {a.ghost === undefined && <ellipse cx={0} cy={4} rx={86} ry={13} fill="#000" opacity={0.18} />}
       <g transform={`rotate(${-fr * 88})`}>
-      {look.cape && <path d={`M-14 ${shY} Q${-58 - Math.sin(f / 8) * 12} ${hipY - 20} ${-36 - Math.sin(f / 8) * 20} ${hipY + 70} L18 ${hipY + 30} L14 ${shY}Z`} fill={look.cape} stroke={INK} strokeWidth={3} />}
-      {limb([[-10, hipY], lL.kn, lL.ft], 14, look.pants)}
-      {limb([[10, hipY], lR.kn, lR.ft], 14, look.pants)}
-      <path d={`M${lL.ft[0]} ${lL.ft[1]} l16 0`} stroke={INK} strokeWidth={12} strokeLinecap="round" />
-      <path d={`M${lR.ft[0]} ${lR.ft[1]} l16 0`} stroke={INK} strokeWidth={12} strokeLinecap="round" />
-      {limb([shL, aL.el, aL.hd], 9, INK)}
-      {/* torso */}
-      <path d={`M0 ${shY} L0 ${hipY}`} stroke={INK} strokeWidth={52} strokeLinecap="round" />
-      <path d={`M0 ${shY} L0 ${hipY - 6}`} stroke={look.shirt} strokeWidth={46} strokeLinecap="round" />
-      {look.extra === 'apron' && <rect x={-16} y={shY + 30} width={32} height={90} rx={8} fill={look.ec} stroke={INK} strokeWidth={3} />}
-      {look.extra === 'scarf' && <g fill={look.ec} stroke={INK} strokeWidth={3}><ellipse cx={0} cy={shY - 6} rx={28} ry={11} /><path d={`M10 ${shY} L30 ${shY + 74} L12 ${shY + 62} L2 ${shY + 8}Z`} /></g>}
-      {look.toga && <g stroke={INK} strokeWidth={3}><path d={`M-22 ${shY - 4} L24 ${shY + 8} L24 ${hipY + 60} L-24 ${hipY + 60} L-24 ${shY + 40}Z`} fill={look.toga} /><path d={`M-22 ${shY - 4} L24 ${hipY + 40}`} stroke="#8a2b9a" strokeWidth={9} /></g>}
-      {look.armor && <g stroke={INK} strokeWidth={3}><rect x={-22} y={shY + 4} width={44} height={96} rx={10} fill="#b9c0c9" />{[0, 1, 2, 3].map((i) => <path key={i} d={`M-22 ${shY + 22 + i * 20} H22`} />)}<rect x={-24} y={hipY - 12} width={48} height={14} fill="#8f4a2f" /></g>}
-      <rect x={-24} y={hipY - 8} width={48} height={30} rx={8} fill={look.pants} stroke={INK} strokeWidth={3} />
-      {limb([shR, aR.el, aR.hd], 9, INK)}
-      <circle cx={aL.hd[0]} cy={aL.hd[1]} r={9} fill={look.skin} stroke={INK} strokeWidth={3} />
-      <circle cx={aR.hd[0]} cy={aR.hd[1]} r={9} fill={look.skin} stroke={INK} strokeWidth={3} />
+      {look.cape && <path d={`M-18 ${shY + 4} Q${-64 - sway} ${hipY - 20} ${-40 - sway * 1.6} ${hipY + 96} L22 ${hipY + 50} L18 ${shY + 4}Z`} fill={look.cape} stroke={INK} strokeWidth={3} strokeLinejoin="round" />}
+      {/* legs */}
+      {!longGarment && <g>{limb([[-11, hipY + 4], lL.kn, lL.ft], 20, legCol)}{limb([[11, hipY + 4], lR.kn, lR.ft], 20, legCol)}</g>}
+      {longGarment && <g>{limb([[-11, hipY + 4], lL.kn, lL.ft], 18, look.pants)}{limb([[11, hipY + 4], lR.kn, lR.ft], 18, look.pants)}</g>}
+      {longGarment && (() => {
+        const wide = out === 'dress' ? 30 : 20, top = out === 'dress' ? hipY - 2 : hipY + 26;
+        return (<g stroke={INK} strokeWidth={3} strokeLinejoin="round"><path d={`M-${SHX - 1} ${top} Q-${SHX + wide + 14} ${hipY + 90} -${SHX + wide + sway * 0.3} ${hem} L${SHX + wide - sway * 0.3} ${hem} Q${SHX + wide + 14} ${hipY + 90} ${SHX - 1} ${top}Z`} fill={look.shirt} /><path d={`M-${SHX + wide + sway * 0.3} ${hem - 8} L${SHX + wide - sway * 0.3} ${hem - 8}`} stroke={trim} strokeWidth={9} /></g>);
+      })()}
+      {shoe(lL.ft, 1)}{shoe(lR.ft, 1)}
+      {out === 'armor' && <g stroke={INK} strokeWidth={2.5}>{[lL, lR].map((q, i) => <path key={i} d={`M${q.ft[0] - 8} ${q.ft[1] - 14} L${q.kn[0] - 8} ${q.kn[1] + 22} M${q.ft[0] + 8} ${q.ft[1] - 14} L${q.kn[0] + 8} ${q.kn[1] + 22}`} />)}</g>}
+      {/* upper body leans about the hip */}
+      <g transform={`rotate(${lean} 0 ${hipY})`}>
+      {sleeved(shL, aL)}
+      {/* torso: a shaped garment instead of a tube */}
+      <path d={`M-${SHX} ${shY + 8} Q-${SHX} ${shY - 6} -14 ${shY - 6} L14 ${shY - 6} Q${SHX} ${shY - 6} ${SHX} ${shY + 8} L${SHX - 5} ${hipY - 6} L${SHX - 1} ${hipY + 26} L-${SHX - 1} ${hipY + 26} L-${SHX - 5} ${hipY - 6}Z`} fill={out === 'armor' ? look.shirt : look.shirt} stroke={INK} strokeWidth={3.5} strokeLinejoin="round" />
+      <path d={`M${SHX - 9} ${shY + 2} L${SHX - 5} ${hipY - 6} L${SHX - 1} ${hipY + 26} L${SHX - 12} ${hipY + 26}Z`} fill={mix(look.shirt, -0.16)} opacity={0.7} />
+      {out === 'coat' && <g stroke={INK} strokeWidth={3}><path d={`M-${SHX - 1} ${hipY + 26} L-${SHX + 3} ${hipY + 62} L${SHX + 3} ${hipY + 62} L${SHX - 1} ${hipY + 26}Z`} fill={look.shirt} /><path d={`M0 ${shY - 4} V${hipY + 62}`} />{[0, 1, 2].map((i) => <circle key={i} cx={8} cy={shY + 24 + i * 28} r={3.5} fill={trim} stroke="none" />)}<path d={`M-14 ${shY - 6} L0 ${shY + 20} L14 ${shY - 6}Z`} fill={trim} /><rect x={-SHX + 1} y={hipY - 14} width={SHX * 2 - 2} height={11} fill={mix(look.pants, -0.1)} /><rect x={-9} y={hipY - 15} width={18} height={13} rx={2} fill={trim} /><rect x={-SHX - 4} y={shY - 4} width={14} height={9} rx={3} fill={trim} /><rect x={SHX - 10} y={shY - 4} width={14} height={9} rx={3} fill={trim} /></g>}
+      {out === 'tunic' && <g stroke={INK} strokeWidth={3}><rect x={-SHX + 2} y={hipY - 12} width={SHX * 2 - 4} height={10} fill={mix(look.shirt, -0.3)} /><path d={`M-12 ${shY - 6} Q0 ${shY + 8} 12 ${shY - 6}`} fill="none" /></g>}
+      {out === 'robe' && <g stroke={INK} strokeWidth={3}><path d={`M-12 ${shY - 6} L0 ${hipY + 26} L12 ${shY - 6}`} fill="none" stroke={trim} strokeWidth={6} /><rect x={-SHX + 1} y={hipY - 14} width={SHX * 2 - 2} height={12} fill={trim} /></g>}
+      {out === 'dress' && <g stroke={INK} strokeWidth={3}><rect x={-SHX + 1} y={hipY - 16} width={SHX * 2 - 2} height={11} fill={trim} /><path d={`M-14 ${shY - 6} Q0 ${shY + 14} 14 ${shY - 6}`} fill="none" stroke={trim} strokeWidth={5} /></g>}
+      {out === 'toga' && <g stroke={INK} strokeWidth={3} strokeLinejoin="round"><path d={`M-${SHX + 2} ${shY - 2} L${SHX + 4} ${shY + 20} L${SHX + 6} ${hipY + 74} L-${SHX + 6} ${hipY + 74} L-${SHX - 4} ${shY + 54}Z`} fill={look.toga} /><path d={`M-${SHX + 2} ${shY - 2} L${SHX + 6} ${hipY + 56}`} fill="none" stroke={trim} strokeWidth={9} />{[0, 1, 2].map((i) => <path key={i} d={`M-${SHX - 2} ${shY + 56 + i * 26} Q0 ${shY + 64 + i * 26} ${SHX + 4} ${shY + 52 + i * 26}`} fill="none" strokeWidth={2} opacity={0.55} />)}</g>}
+      {out === 'armor' && <g stroke={INK} strokeWidth={3} strokeLinejoin="round">
+        {[-20, -10, 0, 10, 20].map((o, i) => <rect key={i} x={o - 5} y={hipY + 20} width={10} height={36} rx={4} fill={look.shirt} />)}
+        <path d={`M-${SHX - 3} ${shY + 2} Q-${SHX} ${shY - 6} -12 ${shY - 6} L12 ${shY - 6} Q${SHX} ${shY - 6} ${SHX - 3} ${shY + 2} L${SHX - 6} ${hipY - 4} L-${SHX - 6} ${hipY - 4}Z`} fill="#b9c0c9" />
+        {[0, 1, 2, 3, 4].map((i) => <path key={i} d={`M-${SHX - 5} ${shY + 14 + i * 20} Q0 ${shY + 20 + i * 20} ${SHX - 5} ${shY + 14 + i * 20}`} fill="none" />)}
+        <ellipse cx={-SHX - 2} cy={shY + 6} rx={15} ry={11} fill="#b9c0c9" /><ellipse cx={SHX + 2} cy={shY + 6} rx={15} ry={11} fill="#b9c0c9" />
+        <rect x={-SHX} y={hipY - 14} width={SHX * 2} height={11} fill={trim} /><circle cx={0} cy={hipY - 8} r={5} fill="#e2b84a" /></g>}
+      {look.extra === 'apron' && <rect x={-17} y={shY + 34} width={34} height={96} rx={8} fill={look.ec} stroke={INK} strokeWidth={3} />}
+      {look.extra === 'scarf' && <g fill={look.ec} stroke={INK} strokeWidth={3} strokeLinejoin="round"><ellipse cx={0} cy={shY - 4} rx={26} ry={10} /><path d={`M8 ${shY} L${28 + sway * 0.4} ${shY + 70} L10 ${shY + 60} L0 ${shY + 8}Z`} /></g>}
+      {sleeved(shR, aR)}
+      {hand(aL.hd)}{hand(aR.hd)}
       {a.held && <g transform={`translate(${aR.hd[0]} ${aR.hd[1]}) rotate(${pose === 'attack' ? Math.sin(f / 3.2) * 70 + 20 : pose === 'point' || pose === 'salute' ? 78 : pose === 'cheer' ? 12 : -8})`}><HeldArt k={a.held} f={f} /></g>}
       {a.shield && <g transform={`translate(${aL.hd[0] - 6} ${aL.hd[1] - 8})`}><rect x={-34} y={-58} width={68} height={112} rx={14} fill="#b3202a" stroke={INK} strokeWidth={4} /><rect x={-34} y={-58} width={68} height={112} rx={14} fill="none" stroke="#e2b84a" strokeWidth={5} /><circle cx={0} cy={-2} r={13} fill="#e2b84a" stroke={INK} strokeWidth={3} /></g>}
-      {/* head */}
-      <path d={`M0 ${shY - 18} L0 ${headY + HR - 4}`} stroke={INK} strokeWidth={9} />
-      <circle cx={0} cy={headY} r={HR} fill={look.skin} stroke={INK} strokeWidth={4} />
-      {look.extra === 'beard' && <path d={`M-42 ${headY + 8} Q0 ${headY + 84} 42 ${headY + 8} Q20 ${headY + 24} 0 ${headY + 24} Q-20 ${headY + 24} -42 ${headY + 8}Z`} fill={look.ec} stroke={INK} strokeWidth={3} />}
+      {/* neck + head */}
+      <path d={`M0 ${shY - 10} L0 ${headY + HR - 8}`} stroke={INK} strokeWidth={20} strokeLinecap="round" />
+      <path d={`M0 ${shY - 10} L0 ${headY + HR - 8}`} stroke={look.skin} strokeWidth={14} strokeLinecap="round" />
+      <HairBack k={hair} y={headY} c={hc} />
+      <ellipse cx={-56} cy={headY + 6} rx={9} ry={13} fill={look.skin} stroke={INK} strokeWidth={3} />
+      <ellipse cx={56} cy={headY + 6} rx={9} ry={13} fill={look.skin} stroke={INK} strokeWidth={3} />
+      <ellipse cx={0} cy={headY} rx={56} ry={HR} fill={look.skin} stroke={INK} strokeWidth={4} />
+      <path d={`M-46 ${headY + 36} Q0 ${headY + 66} 46 ${headY + 36}`} fill="none" stroke={mix(look.skin, -0.12)} strokeWidth={5} opacity={0.5} />
+      <HairFront k={hair} y={headY} c={hc} />
       {/* face */}
-      {blink ? (<g stroke={INK} strokeWidth={4} strokeLinecap="round"><path d={`M-26 ${headY - 2} h14`} /><path d={`M12 ${headY - 2} h14`} /></g>) : (<g fill={INK}><circle cx={-19} cy={headY - 2} r={face === 'shock' ? 6.5 : 5} /><circle cx={19} cy={headY - 2} r={face === 'shock' ? 6.5 : 5} /></g>)}
-      <g stroke={INK} strokeWidth={4} strokeLinecap="round" fill="none">
-        {face === 'angry' ? (<><path d={`M-30 ${browY + 2} L-8 ${browY + 12}`} /><path d={`M30 ${browY + 2} L8 ${browY + 12}`} /></>) : face === 'sad' ? (<><path d={`M-30 ${browY + 10} L-8 ${browY}`} /><path d={`M30 ${browY + 10} L8 ${browY}`} /></>) : face === 'shock' ? (<><path d={`M-30 ${browY - 6} Q-19 ${browY - 14} -8 ${browY - 6}`} /><path d={`M30 ${browY - 6} Q19 ${browY - 14} 8 ${browY - 6}`} /></>) : (<><path d={`M-30 ${browY} Q-19 ${browY - 5} -8 ${browY}`} /><path d={`M30 ${browY} Q19 ${browY - 5} 8 ${browY}`} /></>)}
-        {a.talk ? null : face === 'smile' ? <path d={`M-16 ${headY + 20} Q0 ${headY + 34} 16 ${headY + 20}`} /> : face === 'sad' || face === 'angry' ? <path d={`M-14 ${headY + 30} Q0 ${headY + 18} 14 ${headY + 30}`} /> : face === 'neutral' ? <path d={`M-12 ${headY + 25} h24`} /> : null}
+      <ellipse cx={-30} cy={headY + 16} rx={9} ry={6} fill="#e57373" opacity={0.28} /><ellipse cx={30} cy={headY + 16} rx={9} ry={6} fill="#e57373" opacity={0.28} />
+      {blink ? (<g stroke={INK} strokeWidth={4} strokeLinecap="round"><path d={`M-27 ${headY - 2} h15`} /><path d={`M12 ${headY - 2} h15`} /></g>) : (<g><g fill="#fff" stroke={INK} strokeWidth={2.5}><ellipse cx={-19} cy={headY - 2} rx={face === 'shock' ? 10 : 8.5} ry={face === 'shock' ? 11 : 9.5} /><ellipse cx={19} cy={headY - 2} rx={face === 'shock' ? 10 : 8.5} ry={face === 'shock' ? 11 : 9.5} /></g><g fill={INK}><circle cx={-18} cy={headY - 1} r={face === 'shock' ? 3.2 : 4.6} /><circle cx={20} cy={headY - 1} r={face === 'shock' ? 3.2 : 4.6} /></g></g>)}
+      {look.glasses && <g fill="#bfe6ff" fillOpacity={0.3} stroke={INK} strokeWidth={3.5}><circle cx={-19} cy={headY - 2} r={15} /><circle cx={19} cy={headY - 2} r={15} /><path d={`M-4 ${headY - 3} h8`} fill="none" /></g>}
+      <path d={`M3 ${headY + 2} Q11 ${headY + 14} 0 ${headY + 17}`} fill="none" stroke={INK} strokeWidth={3} strokeLinecap="round" />
+      <g stroke={INK} strokeWidth={5} strokeLinecap="round" fill="none">
+        {face === 'angry' ? (<><path d={`M-32 ${browY + 2} L-8 ${browY + 14}`} /><path d={`M32 ${browY + 2} L8 ${browY + 14}`} /></>) : face === 'sad' ? (<><path d={`M-32 ${browY + 12} L-8 ${browY}`} /><path d={`M32 ${browY + 12} L8 ${browY}`} /></>) : face === 'shock' ? (<><path d={`M-31 ${browY - 8} Q-19 ${browY - 16} -7 ${browY - 8}`} /><path d={`M31 ${browY - 8} Q19 ${browY - 16} 7 ${browY - 8}`} /></>) : (<><path d={`M-31 ${browY + 2} Q-19 ${browY - 5} -7 ${browY + 2}`} /><path d={`M31 ${browY + 2} Q19 ${browY - 5} 7 ${browY + 2}`} /></>)}
       </g>
-      {a.talk && <ellipse cx={0} cy={headY + 26} rx={face === 'shock' ? 11 : 13} ry={3 + open * 11} fill="#5a1f1f" stroke={INK} strokeWidth={3} />}
-      {!a.talk && face === 'shock' && <ellipse cx={0} cy={headY + 28} rx={10} ry={13} fill="#5a1f1f" stroke={INK} strokeWidth={3} />}
+      <Facial k={facial} y={headY} c={fc} />
+      <g stroke={INK} strokeWidth={4} strokeLinecap="round" fill="none">
+        {a.talk ? null : face === 'smile' ? <path d={`M-16 ${headY + 28} Q0 ${headY + 42} 16 ${headY + 28}`} /> : face === 'sad' || face === 'angry' ? <path d={`M-14 ${headY + 38} Q0 ${headY + 26} 14 ${headY + 38}`} /> : face === 'neutral' ? <path d={`M-12 ${headY + 33} h24`} /> : null}
+      </g>
+      {a.talk && <ellipse cx={0} cy={headY + 34} rx={face === 'shock' ? 11 : 13} ry={3 + open * 11} fill="#5a1f1f" stroke={INK} strokeWidth={3} />}
+      {!a.talk && face === 'shock' && <ellipse cx={0} cy={headY + 36} rx={10} ry={13} fill="#5a1f1f" stroke={INK} strokeWidth={3} />}
       <Hat k={look.hat} top={headY - HR + 4} skin={look.skin} />
+      </g>
       </g>
       {a.say && fr === 0 && (() => {
         const at0 = (a.at ?? 0) * d;
@@ -242,8 +346,8 @@ export const Actor: React.FC<{a: ActorT; words?: WordT[]; seed?: string}> = ({a,
 };
 
 // ===================== PROPS =====================
-export type PropKind = 'house' | 'tudor' | 'church' | 'cactus' | 'tree' | 'skyscraper' | 'factory' | 'mountain' | 'ship' | 'wall' | 'flag' | 'coins' | 'crown' | 'bank' | 'fire' | 'smoke' | 'sun' | 'moon' | 'cloud' | 'sign' | 'banner' | 'crowd' | 'crate' | 'road' | 'waves' | 'column' | 'temple' | 'arch' | 'colosseum' | 'wolf' | 'elephant' | 'standard' | 'tent' | 'torch' | 'throne' | 'basket' | 'shieldwall' | 'river' | 'birds' | 'galley' | 'tower' | 'stonewall' | 'hill' | 'balcony' | 'rubble' | 'cabbage' | 'legion';
-export type PropT = {k: PropKind; x: number; y: number; s?: number; d?: number; c?: string; t?: string; n?: number; at?: number; flip?: boolean};
+export type PropKind = 'house' | 'tudor' | 'church' | 'cactus' | 'tree' | 'skyscraper' | 'factory' | 'mountain' | 'ship' | 'wall' | 'flag' | 'coins' | 'crown' | 'bank' | 'fire' | 'smoke' | 'sun' | 'moon' | 'cloud' | 'sign' | 'banner' | 'crowd' | 'crate' | 'road' | 'waves' | 'column' | 'temple' | 'arch' | 'colosseum' | 'wolf' | 'elephant' | 'standard' | 'tent' | 'torch' | 'throne' | 'basket' | 'shieldwall' | 'river' | 'birds' | 'galley' | 'tower' | 'stonewall' | 'hill' | 'balcony' | 'rubble' | 'cabbage' | 'legion' | 'troop';
+export type PropT = {k: PropKind; x: number; y: number; s?: number; d?: number; c?: string; t?: string; n?: number; at?: number; flip?: boolean; kind?: TroopKind; form?: 'block' | 'line' | 'wedge' | 'scatter'; fight?: boolean; march?: boolean; c2?: string};
 
 const Shadow: React.FC<{w: number}> = ({w}) => <ellipse cx={0} cy={4} rx={w} ry={w / 12} fill="#000" opacity={0.16} />;
 const Smoke: React.FC<{x: number; y: number; f: number; col?: string}> = ({x, y, f, col = '#f2f2f2'}) => (
@@ -293,6 +397,81 @@ const Flame: React.FC<{f: number; k: number; w: number; h: number}> = ({f, k, w,
       <path d={`M${-w} 0 Q${-w * 0.9} ${-h * 0.5} ${sw} ${-h} Q${w * 0.9} ${-h * 0.5} ${w} 0Z`} fill="#f26b1d" />
       <path d={`M${-w * 0.6} 0 Q${-w * 0.5} ${-h * 0.45} ${sw * 0.7} ${-h * 0.72} Q${w * 0.5} ${-h * 0.45} ${w * 0.6} 0Z`} fill="#fbb02d" />
       <path d={`M${-w * 0.3} 0 Q${-w * 0.25} ${-h * 0.25} ${sw * 0.4} ${-h * 0.4} Q${w * 0.25} ${-h * 0.25} ${w * 0.3} 0Z`} fill="#ffe27a" />
+    </g>
+  );
+};
+
+
+// ===================== TROOPS (armies are instanced, never one Actor per soldier) =====================
+// Each soldier type is drawn ONCE per scene in <defs> (3 poses) and placed with <use>, so 400 soldiers cost ~400 nodes.
+export type TroopKind = 'legion' | 'barbarian' | 'gaul' | 'generic';
+const TROOP: Record<TroopKind, {tunic: string; helm: string | null; shield: string; skin: string; hair?: string; round?: boolean; weapon: 'spear' | 'axe' | 'sword'}> = {
+  legion: {tunic: '#b53a32', helm: '#b9c0c9', shield: '#a8242c', skin: '#e7c4a4', weapon: 'spear'},
+  barbarian: {tunic: '#7a5a3a', helm: null, shield: '#8a6b3a', skin: '#e9c9a8', hair: '#c9892f', round: true, weapon: 'axe'},
+  gaul: {tunic: '#2f6f8a', helm: null, shield: '#d9a441', skin: '#f0d2b6', hair: '#d9a441', round: true, weapon: 'sword'},
+  generic: {tunic: '#4a6a9a', helm: '#8a8f99', shield: '#3a4a6a', skin: '#e7c4a4', weapon: 'spear'},
+};
+const SoldierDef: React.FC<{id: string; k: TroopKind; col?: string; col2?: string}> = ({id, k, col, col2}) => {
+  const T = TROOP[k];
+  const tunic = col ?? T.tunic, shield = col2 ?? T.shield;
+  const S = {stroke: INK, strokeWidth: 2.5, strokeLinejoin: 'round', strokeLinecap: 'round'} as const;
+  const body = (legs: string, arm: string, wpn: React.ReactNode) => (
+    <g>
+      <path d={legs} stroke={INK} strokeWidth={8} fill="none" strokeLinecap="round" />
+      <path d={legs} stroke={mix(tunic, -0.35)} strokeWidth={4.5} fill="none" strokeLinecap="round" />
+      {wpn}
+      <rect x={-13} y={-74} width={26} height={44} rx={7} fill={tunic} {...S} />
+      <rect x={-13} y={-36} width={26} height={7} fill={mix(tunic, -0.4)} {...S} />
+      <path d={arm} stroke={INK} strokeWidth={8} fill="none" strokeLinecap="round" /><path d={arm} stroke={T.skin} strokeWidth={4.5} fill="none" strokeLinecap="round" />
+      <circle cx={0} cy={-86} r={12} fill={T.skin} {...S} />
+      <circle cx={-4} cy={-87} r={1.8} fill={INK} /><circle cx={5} cy={-87} r={1.8} fill={INK} /><path d="M-3 -80 q3 2 6 0" fill="none" stroke={INK} strokeWidth={1.8} />
+      {T.helm ? <g><path d="M-13 -87 Q-13 -106 0 -106 Q13 -106 13 -87Z" fill={T.helm} {...S} /><rect x={-1.5} y={-108} width={3} height={7} fill="#a8242c" stroke="none" /></g>
+        : <path d={`M-13 -88 Q-15 -108 0 -106 Q15 -108 13 -88 Q9 -98 0 -98 Q-9 -98 -13 -88Z`} fill={T.hair} {...S} />}
+      {T.round ? <g><circle cx={-24} cy={-52} r={19} fill={shield} {...S} /><circle cx={-24} cy={-52} r={5} fill="#e2b84a" {...S} /></g>
+        : <g><rect x={-37} y={-76} width={22} height={46} rx={7} fill={shield} {...S} /><circle cx={-26} cy={-53} r={5} fill="#e2b84a" {...S} /></g>}
+    </g>
+  );
+  const w = (a: number): React.ReactNode =>
+    T.weapon === 'spear' ? <g transform={`rotate(${a} 17 -56)`}><path d="M17 -10 V-128" stroke={INK} strokeWidth={5} /><path d="M17 -10 V-128" stroke="#8a5a33" strokeWidth={2.5} /><path d="M12 -124 L17 -142 L22 -124Z" fill="#dfe5ec" {...S} /></g>
+    : T.weapon === 'axe' ? <g transform={`rotate(${a} 17 -56)`}><path d="M17 -20 V-100" stroke={INK} strokeWidth={5} /><path d="M17 -20 V-100" stroke="#8a5a33" strokeWidth={2.5} /><path d="M17 -100 Q40 -104 38 -80 Q26 -84 17 -80Z" fill="#aeb6c0" {...S} /></g>
+    : <g transform={`rotate(${a} 17 -56)`}><path d="M17 -52 V-106" stroke="#dfe5ec" strokeWidth={5} {...S} /><rect x={11} y={-56} width={12} height={5} fill="#c4a24a" {...S} /></g>;
+  return (
+    <>
+      <g id={`${id}a`}>{body('M-7 0 L-5 -32 M8 0 L5 -32', 'M12 -66 L19 -56', w(0))}</g>
+      <g id={`${id}b`}>{body('M-4 -2 L-5 -32 M13 0 L5 -32', 'M12 -66 L19 -56', w(0))}</g>
+      <g id={`${id}c`}>{body('M-7 0 L-5 -32 M8 0 L5 -32', 'M12 -66 L26 -64', w(72))}</g>
+    </>
+  );
+};
+const formation = (n: number, form: string, rows: number | undefined, seed: string) => {
+  const out: {x: number; y: number; r: number}[] = [];
+  const cols = form === 'line' ? n : Math.max(2, Math.round(Math.sqrt(n * 1.7)));
+  const R = form === 'line' ? 1 : rows ?? Math.ceil(n / cols);
+  if (form === 'wedge') {
+    for (let r = 0, k = 0; k < n; r++) for (let c = 0; c <= r * 2 && k < n; c++, k++) out.push({x: (c - r) * 40, y: -r * 26, r});
+  } else if (form === 'scatter') {
+    for (let k = 0; k < n; k++) out.push({x: (random(`${seed}x${k}`) - 0.5) * 70 * cols, y: -random(`${seed}y${k}`) * 26 * R, r: Math.floor(random(`${seed}y${k}`) * R)});
+  } else {
+    for (let k = 0; k < n; k++) { const r = Math.floor(k / cols), c = k % cols; out.push({x: (c - (cols - 1) / 2) * 44 + (r % 2) * 10 + (random(`${seed}j${k}`) - 0.5) * 6, y: -r * 26, r}); }
+  }
+  return out;
+};
+const Troop: React.FC<{p: PropT; f: number; seed: string}> = ({p, f, seed}) => {
+  const kind: TroopKind = p.kind ?? 'legion';
+  const id = `tp${seed.replace(/[^a-zA-Z0-9]/g, '')}`;
+  const n = Math.min(p.n ?? 24, 600);
+  const pts = formation(n, p.form ?? 'block', undefined, id);
+  const maxR = Math.max(...pts.map((q) => q.r), 1);
+  const items = pts.map((q, i) => ({...q, i, sc: 1 - (q.r / maxR) * 0.28 + (random(`${id}s${i}`) - 0.5) * 0.06})).sort((a, b) => a.y - b.y);
+  return (
+    <g>
+      <defs><SoldierDef id={id} k={kind} col={p.c} col2={p.c2} /></defs>
+      {items.map((q) => {
+        const ph = f / 6 + q.i * 0.9 + random(`${id}p${q.i}`) * 6;
+        const v = p.fight ? (Math.sin(ph * 1.1) > 0.35 ? 'c' : 'a') : p.march ? (Math.floor(ph / 1.2) % 2 ? 'a' : 'b') : 'a';
+        const bob = p.fight ? -Math.abs(Math.sin(ph * 0.9)) * 5 : p.march ? -Math.abs(Math.sin(ph * 0.9)) * 4 : Math.sin(f / 14 + q.i) * 0.8;
+        return <use key={q.i} href={`#${id}${v}`} transform={`translate(${q.x} ${q.y + bob}) scale(${q.sc * 1.35})`} />;
+      })}
     </g>
   );
 };
@@ -373,6 +552,7 @@ const PropArt: React.FC<{p: PropT; f: number; seed: string}> = ({p, f, seed}) =>
     case 'balcony': return (<g {...OL}><Shadow w={190} /><rect x={-190} y={-30} width={380} height={30} fill="#d6cfbd" /><rect x={-190} y={-130} width={380} height={14} fill="#d6cfbd" />{Array.from({length: 9}, (_, i) => <rect key={i} x={-176 + i * 44} y={-116} width={16} height={86} rx={5} fill="#efe9db" />)}<rect x={-190} y={-30} width={380} height={400} fill="#c9c2b2" /></g>);
     case 'rubble': return (<g {...OL}>{[[-40, -14, 30], [0, -20, 40], [46, -12, 26], [-8, -44, 28]].map(([x, y, r], i) => <circle key={i} cx={x} cy={y} r={r / 2 + 6} fill={i % 2 ? '#bdb6a6' : '#a8a292'} />)}</g>);
     case 'cabbage': return (<g {...OL}><Shadow w={60} /><circle cx={0} cy={-50} r={48} fill="#7dbb4e" /><path d="M-40 -50 Q0 -90 40 -50 M-30 -30 Q0 -62 30 -30" fill="none" stroke="#4f8a30" strokeWidth={4} /></g>);
+    case 'troop': return <Troop p={p} f={f} seed={seed} />;
     case 'legion': return (<g>{Array.from({length: p.n ?? 12}, (_, i) => { const col = i % 4, row = Math.floor(i / 4); return <g key={i} transform={`translate(${col * 78 - 120 + Math.sin(f / 5 + i) * 0} ${-row * 26 + Math.abs(Math.sin(f / 6 + col)) * -5}) scale(0.4)`}><Actor a={{x: 0, y: 0, look: 'legionary', pose: 'idle', held: 'spear', shield: true, raw: true}} seed={`${seed}l${i}`} /></g>; })}</g>);
     case 'fire': return (<g><Flame f={f} k={0} w={60 * (p.s ?? 1)} h={170} /><g transform="translate(-44 0)"><Flame f={f} k={1} w={40} h={110} /></g><g transform="translate(46 0)"><Flame f={f} k={2} w={44} h={130} /></g></g>);
     case 'smoke': return <Smoke x={0} y={0} f={f} col={c ?? '#cfcfcf'} />;
@@ -458,7 +638,19 @@ export const Weather: React.FC<{k: WeatherKind | WeatherKind[]; seed?: string}> 
 export type BgKind = 'desert' | 'grass' | 'sea' | 'street' | 'interior';
 export type Tod = 'day' | 'dusk' | 'night' | 'fire';
 export type TextT = {t: string; x: number; y: number; at?: number; size?: number; color?: string};
-export type StageT = {shake?: {at: number; amp?: number}; flash?: {at: number; c?: string}; bars?: boolean; spot?: {x: number; y: number; r?: number}; bg: BgKind; tod?: Tod; props?: PropT[]; actors?: ActorT[]; texts?: TextT[]; fx?: WeatherKind | WeatherKind[]; cam?: {x?: [number, number]; z?: [number, number]}};
+export type StageT = {shake?: {at: number; amp?: number}; flash?: {at: number; c?: string}; bars?: boolean; spot?: {x: number; y: number; r?: number}; bg: BgKind; tod?: Tod; props?: PropT[]; actors?: ActorT[]; texts?: TextT[]; fx?: WeatherKind | WeatherKind[]; cam?: {x?: [number, number]; z?: [number, number]; at?: [number, number]}; shots?: ShotT[]; labels?: LabelT[]};
+// Screen-space labels that follow the camera: name (anchored to an actor), faction pill, place, date chip, fact-check badge
+export type LabelT = {k: 'name' | 'faction' | 'place' | 'date' | 'fact'; t: string; sub?: string; actor?: number; x?: number; y?: number; c?: string; at?: number; until?: number; below?: boolean};
+// camera helpers: `cam: bust(actor)` frames head and shoulders of that actor, `cam: pushIn(actor)` a slow push toward the face
+export const bust = (a: ActorT, z = 2.3): NonNullable<StageT['cam']> => { const x = Array.isArray(a.x) ? a.x[1] : a.x; return {at: [x, (a.y ?? 940) - 300 * CHAR * (a.s ?? 1)], z: [z, z]}; };
+export const pushIn = (a: ActorT, from = 1.6, to = 2.4): NonNullable<StageT['cam']> => ({...bust(a), z: [from, to]});
+// A scene can cut between camera set-ups: each shot overrides the base stage (cam, actors, props...) until `until` (0..1 of the scene).
+export type ShotT = {until: number; st: Partial<Omit<StageT, 'shots'>>};
+export const shotSpans = (st: StageT): {st: StageT; a0: number; a1: number}[] => {
+  if (!st.shots?.length) return [{st, a0: 0, a1: 1}];
+  let a0 = 0;
+  return st.shots.map((sh, i) => { const a1 = i === st.shots!.length - 1 ? 1 : Math.min(1, Math.max(a0, sh.until)); const o = {st: {...st, ...sh.st, shots: undefined} as StageT, a0, a1}; a0 = a1; return o; });
+};
 const SKY: Record<Tod, [string, string]> = {day: ['#69bff0', '#e8f7ff'], dusk: ['#323c7c', '#f7ab6c'], night: ['#050919', '#1c2a58'], fire: ['#2a0a0a', '#ff8a3a']};
 const GROUND: Record<BgKind, string> = {desert: '#dcae72', grass: '#86bb5f', sea: '#2f86c4', street: '#9096a0', interior: '#a06f44'};
 const HZ = 700;
@@ -509,7 +701,23 @@ const Backdrop: React.FC<{bg: BgKind; tod: Tod; f: number; cx: number; seed: str
   );
 };
 
-export const Stage: React.FC<{st: StageT; words?: WordT[]; seed: string}> = ({st, words, seed}) => {
+
+const LabelArt: React.FC<{l: LabelT; x: number; y: number; f: number; d: number}> = ({l, x, y, f, d}) => {
+  const p = pop(f, 30, (l.at ?? 0) * d), out = l.until !== undefined ? clamp01((l.until * d - f) / 6) : 1;
+  const tw = (s: string, fs: number) => s.length * fs * 0.52 + 36;
+  const body = (() => {
+    switch (l.k) {
+      case 'name': { const w = Math.max(tw(l.t, 34), l.sub ? tw(l.sub, 24) : 0), h = l.sub ? 88 : 56; return (<g><rect x={-w / 2} y={-h / 2} width={w} height={h} rx={14} fill="#fffaf0" stroke={INK} strokeWidth={3} /><text y={l.sub ? -6 : 11} textAnchor="middle" fontFamily={HAND} fontSize={34} fontWeight={700} fill={INK}>{l.t}</text>{l.sub && <text y={28} textAnchor="middle" fontFamily={HAND} fontSize={24} fill="#6b5a45">{l.sub}</text>}</g>); }
+      case 'faction': { const w = tw(l.t, 30) + 10; return (<g><rect x={-w / 2} y={-22} width={w} height={44} rx={9} fill={l.c ?? '#c0392b'} stroke="#fff" strokeWidth={3} /><text y={10} textAnchor="middle" fontFamily={HAND} fontSize={30} fontWeight={700} fill="#fff" letterSpacing={1.5}>{l.t.toUpperCase()}</text></g>); }
+      case 'place': return <text textAnchor="middle" fontFamily={HAND} fontSize={50} fill="#fff" stroke={INK} strokeWidth={8} paintOrder="stroke" strokeLinejoin="round">{l.t}</text>;
+      case 'date': { const w = tw(l.t, 36); return (<g><rect x={0} y={-24} width={w} height={50} rx={10} fill="#1f2433" opacity={0.88} /><text x={w / 2} y={12} textAnchor="middle" fontFamily={HAND} fontSize={36} fill="#fff">{l.t}</text></g>); }
+      case 'fact': return (<g><rect x={-140} y={-28} width={280} height={56} rx={12} fill="#f2c230" stroke={INK} strokeWidth={4} /><circle cx={-106} cy={0} r={18} fill="#2f9e5a" stroke={INK} strokeWidth={3} /><path d="M-116 0 L-108 8 L-95 -8" fill="none" stroke="#fff" strokeWidth={5} strokeLinecap="round" strokeLinejoin="round" /><text x={22} y={11} textAnchor="middle" fontFamily={HAND} fontSize={32} fontWeight={700} fill={INK} letterSpacing={1}>FACT CHECK</text></g>);
+    }
+  })();
+  return <g transform={`translate(${x} ${y + (1 - p.k) * 14})`} opacity={p.o * out}>{body}</g>;
+};
+
+const StageOne: React.FC<{st: StageT; words?: WordT[]; seed: string}> = ({st, words, seed}) => {
   const f = useCurrentFrame();
   const {fps, durationInFrames: d} = useVideoConfig();
   const tod = st.tod ?? 'day';
@@ -536,7 +744,7 @@ export const Stage: React.FC<{st: StageT; words?: WordT[]; seed: string}> = ({st
   return (
     <svg viewBox="0 0 1920 1080" width={1920} height={1080} style={{position: 'absolute', inset: 0}}>
       <defs><radialGradient id={`vg${seed}`}><stop offset="0.55" stopColor="#000" stopOpacity={0} /><stop offset="1" stopColor="#000" stopOpacity={0.45} /></radialGradient></defs>
-      <g transform={`translate(${shx} ${shy}) translate(960 700) scale(${z}) translate(-960 -700)`}>
+      <g transform={`translate(${shx} ${shy}) ${st.cam?.at ? `translate(960 540) scale(${z}) translate(${-st.cam.at[0]} ${-st.cam.at[1]})` : `translate(960 700) scale(${z}) translate(-960 -700)`}`}>
         <Backdrop bg={st.bg} tod={tod} f={f} cx={cx} seed={seed} />
         {items.map((q) => q.el)}
         <rect width={1920} height={1080} fill={tint} />
@@ -546,6 +754,21 @@ export const Stage: React.FC<{st: StageT; words?: WordT[]; seed: string}> = ({st
       <rect width={1920} height={1080} fill={`url(#vg${seed})`} />
       {fl > 0 && <rect width={1920} height={1080} fill={st.flash?.c ?? '#fff'} opacity={fl * 0.9} />}
       {barH > 0 && <g><rect width={1920} height={barH} fill="#000" /><rect y={1080 - barH} width={1920} height={barH} fill="#000" /></g>}
+      {(() => {
+        // actor labels use the same camera maths as the world group, so they stay at a readable size in close-ups
+        const zz = z, ctx = st.cam?.at ? [960 - st.cam.at[0] * zz, 540 - st.cam.at[1] * zz] : [960 - 960 * zz, 700 - 700 * zz];
+        const toS = (wx: number, wy: number): [number, number] => [ctx[0] + (wx - cx) * zz, ctx[1] + wy * zz];
+        const frank = (st.actors ?? []).some((q) => (q.look ?? q.who) === 'frank');
+        const labs: LabelT[] = [...(st.labels ?? []), ...(frank && !(st.labels ?? []).some((q) => q.k === 'fact') ? [{k: 'fact', t: 'FACT CHECK'} as LabelT] : [])];
+        return labs.map((l, i) => {
+          let x = l.x ?? 960, y = l.y ?? 120;
+          if (l.k === 'fact') { x = l.x ?? 1740; y = l.y ?? 70; }
+          if (l.k === 'date') { x = l.x ?? 36; y = l.y ?? 60; }
+          const a = l.actor !== undefined ? (st.actors ?? [])[l.actor] : undefined;
+          if (a) { const ax = Array.isArray(a.x) ? a.x[1] : a.x, sc = (a.s ?? 1) * CHAR; const q = toS(ax, (a.y ?? 940) + (l.below ? 74 : -(404 * sc + (l.sub ? 62 : 38)))); x = q[0]; y = Math.min(1040, Math.max(70, q[1])); }
+          return <LabelArt key={i} l={l} x={x} y={y} f={f} d={d} />;
+        });
+      })()}
       {(st.texts ?? []).map((q, i) => {
         const at = (q.at ?? 0) * d, n = Math.round(interpolate(f, [at, at + q.t.length * 2.2], [0, q.t.length], C));
         return <text key={i} x={q.x} y={q.y} textAnchor="middle" fontFamily={HAND} fontSize={q.size ?? 84} fill={q.color ?? '#fff'} stroke={INK} strokeWidth={9} paintOrder="stroke" strokeLinejoin="round">{q.t.slice(0, n)}</text>;
@@ -569,3 +792,16 @@ export const Paper: React.FC = () => (
     <rect width={1920} height={1080} fill="#ebe5d4" /><rect width={1920} height={1080} fill="url(#dots)" opacity={0.5} /><rect width={1920} height={1080} fill="url(#pv)" />
   </svg>
 );
+
+export const Stage: React.FC<{st: StageT; words?: WordT[]; seed: string}> = (props) => {
+  const {durationInFrames: d} = useVideoConfig();
+  if (!props.st.shots?.length) return <StageOne {...props} />;
+  return (
+    <>
+      {shotSpans(props.st).map((sp, i) => {
+        const from = Math.round(sp.a0 * d), len = Math.max(1, Math.round(sp.a1 * d) - from);
+        return (<Sequence key={i} from={from} durationInFrames={len} layout="none"><StageOne st={sp.st} words={props.words} seed={`${props.seed}h${i}`} /></Sequence>);
+      })}
+    </>
+  );
+};

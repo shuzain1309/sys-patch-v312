@@ -10,8 +10,9 @@ import {wipe} from '@remotion/transitions/wipe';
 import {flip} from '@remotion/transitions/flip';
 import {loadFont as loadInter} from '@remotion/google-fonts/Inter';
 import {loadFont as loadAnton} from '@remotion/google-fonts/Anton';
-import {Stage, NarratorOverlay, Paper, Icon, Weather, HAND, INK, StageT, PropT, ActorT, PoseName, Face, WeatherKind} from './world';
+import {Stage, shotSpans, NarratorOverlay, Paper, Icon, Weather, HAND, INK, StageT, PropT, ActorT, PoseName, Face, WeatherKind} from './world';
 import {GeoMap, GeoT} from './geo';
+import audioManifest from '../../public/audio/manifest.json'; // written by CI (audio_real.py build): which real recordings exist + mix levels from audio-mix.json
 
 // ---------- types ----------
 export type Tr = 'fade' | 'slide' | 'wipe' | 'flip' | 'none'; // transition INTO this scene
@@ -35,7 +36,8 @@ export type Scene = Base &
     | {type: 'versus'; aTitle: string; bTitle: string; rows: {icon: string; label: string}[]}
     | {type: 'custom'; render: React.FC<{frames: number}>}
   );
-export type Theme = {fps: number; hue: number; bg: string; fg: string; accent: string; accent2: string; music?: string};
+export type Theme = {fps: number; hue: number; bg: string; fg: string; accent: string; accent2: string; narrator?: string};
+export type MusicCue = {from: string; key: string | null; v?: number; xf?: number}; // from = scene id where this track starts; key null = silence; xf = crossfade seconds
 export type {StageT, GeoT, PropT, ActorT, PoseName, Face, WeatherKind};
 export type Timing = {seconds: number; words?: {w: string; s: number; e: number}[]}; // s,e = seconds from scene start
 
@@ -409,11 +411,12 @@ const Body: React.FC<{s: Scene; T: Theme; tm?: Timing}> = ({s, T, tm}) => {
 
 const wantAudio = () => !getRemotionEnvironment().isRendering || (getInputProps() as any).audio === true; // preview, or the audio-only render (--props '{"audio":true}')
 
-// ---------- sound effects (synthesised by src/tts/sfx.py into public/sfx/*.wav) ----------
+// ---------- sound: real recordings only (see src/tts/audio_real.py). Levels live in audio-mix.json, not here ----------
 type Cue = {at: number; k: string; v?: number; loop?: boolean};
-const SFX_GAIN = 0.4; // master gain for every effect, so narration always stays on top
-const AMBIENT = false; // looped beds (rain, wind, steps, fire) off: they read as noise
-const MUTE = new Set(['pop', 'tick', 'flip', 'whoosh', 'whoosh_long', 'sweep', 'riser', 'riser_short', 'ding']); // synthetic beeps fired on every scene
+type Lv = {sfx_gain: number; ambience_gain: number; music_under: number; music_open: number; duck: {attack_s: number; release_s: number; merge_gap_s: number}; mute: string[]};
+const AM = audioManifest as unknown as {sfx: Record<string, {sec: number}>; music: Record<string, {sec: number}>; levels: Lv};
+const LV = AM.levels;
+const MUTE = new Set(LV.mute);
 const POPSFX: Record<string, string> = {fire: 'ignite', coins: 'coin', wolf: 'howl', elephant: 'trumpet', galley: 'horn', standard: 'horn', legion: 'march_hit', shieldwall: 'shield_hit', temple: 'pop', colosseum: 'boom', birds: 'birds', basket: 'pop', throne: 'pop'};
 const cuesFor = (s: Scene, i: number, dur: number): Cue[] => {
   const c: Cue[] = [];
@@ -421,9 +424,9 @@ const cuesFor = (s: Scene, i: number, dur: number): Cue[] => {
   if (tr === 'slide' || tr === 'wipe') c.push({at: 0, k: 'whoosh', v: 0.5});
   if (tr === 'flip') c.push({at: 0, k: 'flip', v: 0.5});
   const fx = ([] as string[]).concat((s.fx as any) ?? [], s.type === 'stage' || s.type === 'chapter' ? (((s.st as any)?.fx as any) ?? []) : []);
-  if (fx.includes('rain') || fx.includes('storm')) c.push({at: 0, k: 'rain', v: 0.3, loop: true});
+  if (fx.includes('rain') || fx.includes('storm')) c.push({at: 0, k: 'rain_loop', v: 1, loop: true});
   if (fx.includes('storm')) c.push({at: 0.4, k: 'thunder', v: 0.55});
-  if (fx.includes('wind')) c.push({at: 0, k: 'wind', v: 0.25, loop: true});
+  if (fx.includes('wind')) c.push({at: 0, k: 'wind_loop', v: 1, loop: true});
   switch (s.type) {
     case 'chapter': c.push({at: 0.05, k: 'riser', v: 0.45}, {at: 1.0, k: 'impact', v: 0.75}); break;
     case 'kinetic': c.push({at: 0.25, k: 'thud', v: 0.55}); break;
@@ -434,23 +437,24 @@ const cuesFor = (s: Scene, i: number, dur: number): Cue[] => {
     case 'versus': s.rows.forEach((_, j) => c.push({at: (10 + j * 14) / 30, k: 'pop'})); break;
     case 'geo': c.push({at: 0.05, k: 'whoosh_long', v: 0.45}); (s.geo.pins ?? []).forEach((q) => c.push({at: (q.at ?? 0) * dur, k: 'pop'})); (s.geo.routes ?? []).forEach((q) => c.push({at: (q.at ?? 0.1) * dur, k: 'sweep', v: 0.4})); break;
     case 'stage': {
-      const st = s.st;
+      shotSpans(s.st).forEach(({st, a0, a1}) => {
       (st.props ?? []).forEach((p) => {
-        if (p.at !== undefined) c.push({at: p.at * dur, k: POPSFX[p.k] ?? 'pop', v: p.k === 'fire' ? 0.5 : 0.45});
+        if (p.at !== undefined) c.push({at: (a0 + p.at * (a1 - a0)) * dur, k: POPSFX[p.k] ?? 'pop', v: p.k === 'fire' ? 0.5 : 0.45});
       });
       (st.actors ?? []).forEach((a) => {
-        if (a.at !== undefined) c.push({at: a.at * dur, k: 'pop'});
-        if (a.pose === 'attack') [0.18, 0.42, 0.66, 0.86].forEach((q, j) => c.push({at: q * dur, k: j % 2 ? 'sword' : 'slash', v: 0.5}));
-        if (a.fa !== undefined) c.push({at: a.fa * dur, k: 'body_fall', v: 0.6});
+        if (a.at !== undefined) c.push({at: (a0 + a.at * (a1 - a0)) * dur, k: 'pop'});
+        if (a.pose === 'attack') [0.18, 0.42, 0.66, 0.86].forEach((q, j) => c.push({at: (a0 + q * (a1 - a0)) * dur, k: j % 2 ? 'sword' : 'slash', v: 0.5}));
+        if (a.fa !== undefined) c.push({at: (a0 + a.fa * (a1 - a0)) * dur, k: 'body_fall', v: 0.6});
         if (a.pose === 'cheer') c.push({at: 0.05, k: 'cheer_small', v: 0.3});
-        if (Array.isArray(a.x) && a.x[0] !== a.x[1]) c.push({at: 0, k: a.pose === 'run' ? 'run_loop' : 'steps_loop', v: 0.18, loop: true});
+        if (Array.isArray(a.x) && a.x[0] !== a.x[1]) c.push({at: a0 * dur, k: a.pose === 'run' ? 'run_loop' : 'steps_loop', v: 0.18, loop: true});
       });
-      if (st.shake) c.push({at: st.shake.at * dur, k: 'boom', v: 0.6});
-      if (st.flash) c.push({at: st.flash.at * dur, k: 'crack', v: 0.5});
-      if (st.spot) c.push({at: 0, k: 'tense_loop', v: 0.22, loop: true});
-      (st.texts ?? []).forEach((t) => c.push({at: (t.at ?? 0) * dur, k: 'tick', v: 0.35}));
-      if ((st.props ?? []).some((p) => p.k === 'fire')) c.push({at: 0, k: 'fire', v: 0.22, loop: true});
-      if (st.bg === 'sea') c.push({at: 0, k: 'waves', v: 0.2, loop: true});
+      if (st.shake) c.push({at: (a0 + st.shake.at * (a1 - a0)) * dur, k: 'boom', v: 0.6});
+      if (st.flash) c.push({at: (a0 + st.flash.at * (a1 - a0)) * dur, k: 'crack', v: 0.5});
+      if (st.spot) c.push({at: a0 * dur, k: 'tense_loop', v: 0.22, loop: true});
+      (st.texts ?? []).forEach((t) => c.push({at: (a0 + (t.at ?? 0) * (a1 - a0)) * dur, k: 'tick', v: 0.35}));
+      if ((st.props ?? []).some((p) => p.k === 'fire')) c.push({at: a0 * dur, k: 'fire_loop', v: 1, loop: true});
+      if (st.bg === 'sea') c.push({at: a0 * dur, k: 'waves_loop', v: 1, loop: true});
+      });
       break;
     }
   }
@@ -460,20 +464,78 @@ const cuesFor = (s: Scene, i: number, dur: number): Cue[] => {
 const SceneSfx: React.FC<{s: Scene; i: number}> = ({s, i}) => {
   const {fps, durationInFrames: d} = useVideoConfig();
   if (!wantAudio()) return null;
-  const cues = cuesFor(s, i, d / fps).filter((q) => q.at * fps < d - 3 && (AMBIENT || !q.loop) && !MUTE.has(q.k)).slice(0, 6);
+  // only keys that exist as real files; unknown or muted keys are skipped (CI warns about unknown keys before the render)
+  const cues = cuesFor(s, i, d / fps).filter((q) => q.at * fps < d - 3 && AM.sfx[q.k] && !MUTE.has(q.k) && (!q.loop || LV.ambience_gain > 0)).slice(0, 6);
   return (
     <>
       {cues.map((q, j) =>
         q.loop ? (
           <Sequence key={j} from={0} durationInFrames={d}>
-            <Audio src={staticFile(`sfx/${q.k}.wav`)} loop volume={(fr: number) => (q.v ?? 0.3) * SFX_GAIN * Math.min(1, fr / 12, Math.max(0, (d - fr) / 12))} />
+            <Audio src={staticFile(`audio/sfx/${q.k}.wav`)} loop volume={(fr: number) => LV.ambience_gain * (q.v ?? 1) * Math.min(1, fr / 12, Math.max(0, (d - fr) / 12))} />
           </Sequence>
         ) : (
           <Sequence key={j} from={Math.round(q.at * fps)}>
-            <Audio src={staticFile(`sfx/${q.k}.wav`)} volume={(q.v ?? 0.45) * SFX_GAIN} />
+            <Audio src={staticFile(`audio/sfx/${q.k}.wav`)} volume={LV.sfx_gain * (q.v ?? 0.45) / 0.45} />
           </Sequence>
         ),
       )}
+    </>
+  );
+};
+
+// ---------- music: per-chapter tracks, ducked under the narration (deterministic: computed from word timings) ----------
+type Iv = [number, number];
+const speechIntervals = (scenes: Scene[], timings: Record<string, Timing>, gap: number): Iv[] => {
+  const raw: Iv[] = [];
+  let base = 0;
+  scenes.forEach((s) => {
+    const tm = timings[s.id];
+    if (!tm) return;
+    if (tm.words?.length) tm.words.forEach((w) => raw.push([base + w.s, base + w.e]));
+    else raw.push([base, base + tm.seconds]);
+    base += tm.seconds;
+  });
+  const out: Iv[] = [];
+  raw.forEach((r) => (out.length && r[0] - out[out.length - 1][1] < gap ? (out[out.length - 1][1] = Math.max(out[out.length - 1][1], r[1])) : out.push([r[0], r[1]])));
+  return out;
+};
+// 1 while speech is on, ramping up `attack` s before a phrase (we know the future) and down `release` s after it
+const speechAt = (iv: Iv[], t: number, attack: number, release: number) => {
+  let lo = 0, hi = iv.length;
+  while (lo < hi) { const m = (lo + hi) >> 1; iv[m][1] + release < t ? (lo = m + 1) : (hi = m); }
+  let g = 0;
+  for (let j = lo; j < iv.length && iv[j][0] - attack <= t; j++) {
+    const [s, e] = iv[j];
+    g = Math.max(g, t < s ? 1 - (s - t) / attack : t > e ? 1 - (t - e) / release : 1);
+  }
+  return g;
+};
+const MusicBed: React.FC<{segs: {key: string; a: number; b: number; v: number; xf: number}[]; speech: Iv[]; fps: number}> = ({segs, speech, fps}) => {
+  if (!wantAudio()) return null;
+  const {duck} = LV;
+  return (
+    <>
+      {segs.flatMap((g, n) => {
+        const dur = AM.music[g.key].sec, from = Math.max(0, g.a - g.xf), to = g.b + g.xf;
+        // no `loop` prop: a track shorter than its section is repeated as separate sequences, so the volume curve stays on absolute time
+        return Array.from({length: Math.ceil((to - from) / dur)}, (_, r) => {
+          const t0 = from + r * dur, len = Math.min(dur, to - t0);
+          return (
+            <Sequence key={`${n}-${r}`} from={Math.round(t0 * fps)} durationInFrames={Math.max(1, Math.round(len * fps))}>
+              <Audio
+                src={staticFile(`audio/music/${g.key}.wav`)}
+                volume={(fr: number) => {
+                  const t = t0 + fr / fps;
+                  const sp = speechAt(speech, t, duck.attack_s, duck.release_s);
+                  const level = LV.music_under + (LV.music_open - LV.music_under) * (1 - sp);
+                  const fin = Math.min(1, (t - Math.max(0, g.a - g.xf)) / (2 * g.xf || 1)), fout = Math.min(1, (g.b + g.xf - t) / (2 * g.xf || 1));
+                  return level * g.v * Math.max(0, Math.min(fin, fout));
+                }}
+              />
+            </Sequence>
+          );
+        });
+      })}
     </>
   );
 };
@@ -504,7 +566,7 @@ const SceneView: React.FC<{s: Scene; i: number; T: Theme; tm?: Timing}> = ({s, i
       </>
     )}
     {s.fx && <Weather k={s.fx} seed={s.id} />}
-    {s.nar && <NarratorOverlay cfg={{pose: s.nar === true ? 'idle' : s.nar, face: s.face}} words={tm?.words} />}
+    {s.nar && <NarratorOverlay cfg={{pose: s.nar === true ? 'idle' : s.nar, face: s.face, ...(T.narrator ? {look: T.narrator} : {})}} words={tm?.words} />}
     {s.year && <YearBadge y={s.year} T={T} />}
     <SceneSfx s={s} i={i} />
   </AbsoluteFill>
@@ -516,7 +578,7 @@ const SceneView: React.FC<{s: Scene; i: number; T: Theme; tm?: Timing}> = ({s, i
 const TR = 10; // transition frames
 const PRES: Record<Exclude<Tr, 'none'>, any> = {fade: fade(), slide: slide(), wipe: wipe(), flip: flip()}; // any: presentations have differing prop generics
 
-export const makeVideo = (scenes: Scene[], lines: Record<string, string>, T: Theme, timings: Record<string, Timing>) => {
+export const makeVideo = (scenes: Scene[], lines: Record<string, string>, T: Theme, timings: Record<string, Timing>, music: MusicCue[] = []) => {
   scenes.forEach((s) => {
     if (!lines[s.id]) throw new Error(`scene ${s.id} has no narration line in LINES`);
   });
@@ -529,12 +591,23 @@ export const makeVideo = (scenes: Scene[], lines: Record<string, string>, T: The
   });
   const trIn = (i: number): Tr => (i === 0 ? 'none' : scenes[i].tr ?? 'fade');
   const hasAudio = Object.keys(timings).length > 0;
+  // music plan -> segments in absolute seconds (scene starts are cumulative narration seconds, same as narration.mp3)
+  const startOf: Record<string, number> = {};
+  let acc = 0;
+  scenes.forEach((s) => { startOf[s.id] = acc; acc += sec(s); });
+  const segs = music.flatMap((c, n) => {
+    if (startOf[c.from] === undefined) throw new Error(`MUSIC: unknown scene id ${c.from}`);
+    if (!c.key) return [];
+    if (!AM.music[c.key]) { console.warn(`MUSIC: no file for "${c.key}"; section is silent`); return []; }
+    return [{key: c.key, a: startOf[c.from], b: n + 1 < music.length ? startOf[music[n + 1].from] : acc, v: c.v ?? 1, xf: c.xf ?? 2}];
+  });
+  const speech = hasAudio ? speechIntervals(scenes, timings, LV.duck.merge_gap_s) : [];
 
   const Video: React.FC = () => (
     <AbsoluteFill style={{backgroundColor: T.bg}}>
-      {/* Preview only. CI renders video-only chunks; ffmpeg adds narration.mp3 (+ bgm.mp3) afterwards. */}
+      {/* Sound only renders with --props audio=true (CI audio pass) or in preview. */}
       {hasAudio && wantAudio() && <Audio src={staticFile('narration.mp3')} />}
-      {T.music && wantAudio() && <Audio src={staticFile(T.music)} volume={0.07} loop />}
+      {hasAudio && <MusicBed segs={segs} speech={speech} fps={T.fps} />}
       <TransitionSeries>
         {scenes.flatMap((s, i) => {
           const out = i + 1 < scenes.length && trIn(i + 1) !== 'none' ? TR : 0;

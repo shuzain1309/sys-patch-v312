@@ -108,10 +108,8 @@ jobs:
           pip install numpy soundfile
       - name: 6 Merge speech, make captions and SEO
         run: python src/tts/generate_voice.py merge
-      - name: 6b Synthesise sound effects
-        run: python src/tts/sfx.py
-      - name: Real sound effects
-        run: python src/tts/sfx_real.py build public/sfx
+      - name: 6b Real sound effects and music (normalised, nothing synthesised)
+        run: python src/tts/audio_real.py build public/audio out/credits.txt
       - name: 7 Plan render chunks
         id: plan
         run: node src/ci/plan.js
@@ -120,7 +118,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with: {name: narration, path: public/narration.mp3, retention-days: 1}
       - uses: actions/upload-artifact@v4
-        with: {name: sfx, path: public/sfx, retention-days: 1}
+        with: {name: audio, path: public/audio, retention-days: 1}
       - uses: actions/upload-artifact@v4
         with: {name: meta, path: out, retention-days: 1}
 
@@ -144,7 +142,7 @@ jobs:
       - uses: actions/download-artifact@v4
         with: {name: narration, path: public}
       - uses: actions/download-artifact@v4
-        with: {name: sfx, path: public/sfx}
+        with: {name: audio, path: public/audio}
       - uses: actions/setup-node@v4
         with: {node-version: 20}
       - uses: actions/cache@v4
@@ -162,19 +160,25 @@ jobs:
       - name: Render picture, frames ${{ matrix.a }}-${{ matrix.b }}
         run: |
           mkdir -p out
+          T0=$(date +%s)
           npx remotion render src/remotion/index.ts Main out/chunk-${{ matrix.i }}.mp4 \
             --frames=${{ matrix.a }}-${{ matrix.b }} --muted --codec=h264 --crf=21 --x264-preset=veryfast \
             --jpeg-quality=80 --concurrency=$(nproc) --log=warn
+          echo "{\"i\":${{ matrix.i }},\"frames\":$(( ${{ matrix.b }} - ${{ matrix.a }} + 1 )),\"picture_s\":$(( $(date +%s) - T0 )),\"cores\":$(nproc)}" > out/perf-${{ matrix.i }}.json
       - name: Render sound for the same frames (narration + effects + music)
         continue-on-error: true
         run: |
+          T0=$(date +%s)
           npx remotion render src/remotion/index.ts Main out/audio-${{ matrix.i }}.wav --codec=wav \
             --config=remotion.audio.config.ts \
             --frames=${{ matrix.a }}-${{ matrix.b }} --props='{"audio":true}' --log=warn
+          echo "{\"i\":${{ matrix.i }},\"audio_s\":$(( $(date +%s) - T0 ))}" > out/perfa-${{ matrix.i }}.json
       - uses: actions/upload-artifact@v4
         with:
           name: chunk-${{ matrix.i }}
-          path: out/chunk-${{ matrix.i }}.mp4
+          path: |
+            out/chunk-${{ matrix.i }}.mp4
+            out/perf*-${{ matrix.i }}.json
           retention-days: 1
       - uses: actions/upload-artifact@v4
         with:
@@ -188,7 +192,11 @@ jobs:
     needs: [check, merge, render]
     runs-on: ubuntu-24.04
     timeout-minutes: 120
+    permissions:
+      contents: write   # commits the encrypted status.enc the dashboard reads
     env:
+      SLUG: ${{ needs.check.outputs.slug }}
+      SCRIPT_KEY: ${{ secrets.SCRIPT_KEY }}
       RCLONE_CONF: ${{ secrets.RCLONE_CONF }}
       DRIVE_DIR: ${{ vars.DRIVE_DIR || 'Videos' }}
       YT_CLIENT_ID: ${{ secrets.YT_CLIENT_ID }}
@@ -221,17 +229,20 @@ jobs:
           OK=1; for i in $(seq 0 $((N - 1))); do [ -f wavs/audio-$i.wav ] || OK=0; done
           if [ $OK = 1 ]; then
             for i in $(seq 0 $((N - 1))); do echo "file 'wavs/audio-$i.wav'" >> alist.txt; done
-            ffmpeg -y -loglevel error -f concat -safe 0 -i alist.txt -c:a aac -b:a 192k mix.m4a
-            echo "sound: full mix (narration + effects)"
+            ffmpeg -y -loglevel error -f concat -safe 0 -i alist.txt -c copy mix.wav
+            echo "sound: full mix (narration + effects + music)"
           else
             echo "::warning::per-chunk sound render missing; using narration only"
-            ffmpeg -y -loglevel error -i audio/narration.mp3 -c:a aac -b:a 192k mix.m4a
+            ffmpeg -y -loglevel error -i audio/narration.mp3 -ar 48000 mix.wav
           fi
+      - name: Master loudness and sound check
+        run: python src/ci/master.py mix.wav mix.m4a out/mix-qa.json
       - name: Add sound
         run: |
           ffmpeg -y -loglevel error -i video.mp4 -i mix.m4a -c:v copy -c:a copy -shortest final.mp4
           ls -lh final.mp4
       - name: Upload to Google Drive
+        id: drive
         if: env.RCLONE_CONF != ''
         run: |
           sudo apt-get install -y rclone >/dev/null
@@ -239,7 +250,17 @@ jobs:
           printf '%s' "$RCLONE_CONF" > ~/.config/rclone/rclone.conf
           D="gdrive:${DRIVE_DIR}/${{ needs.check.outputs.slug }}"
           rclone copyto final.mp4 "$D/${{ needs.check.outputs.slug }}.mp4" --drive-chunk-size 128M
-          rclone copy out "$D" --include "captions.*" --include "seo.json" --include "description.txt" --include "chapters.txt"
+          rclone copy out "$D" --include "captions.*" --include "seo.json" --include "description.txt" --include "chapters.txt" --include "credits.txt" --include "mix-qa.json"
+          # folder id -> a link only the Drive owner can open (no public sharing is created)
+          ID=$(rclone lsjson "gdrive:${DRIVE_DIR}" --dirs-only | python3 -c "import sys,json;print(next((d['ID'] for d in json.load(sys.stdin) if d['Name']=='${SLUG}'),''))")
+          echo "DRIVE_FOLDER_ID=$ID" >> "$GITHUB_ENV"
+      - name: Report back to the dashboard (encrypted)
+        run: |
+          python3 src/ci/status.py
+          openssl enc -aes-256-cbc -pbkdf2 -iter 10000 -md sha256 -salt -in status.json -out status.enc -pass env:SCRIPT_KEY
+          git config user.name github-actions; git config user.email actions@users.noreply.github.com
+          git pull --rebase --autostash -q || true
+          git add status.enc && git commit -qm "sync" && git push || echo "::warning::could not publish status.enc"
       - name: Upload to YouTube (video + captions + metadata)
         if: env.YT_REFRESH_TOKEN != ''
         run: |
