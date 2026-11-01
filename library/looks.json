@@ -1,0 +1,90 @@
+{
+ "viking": {
+  "hat": "dome",
+  "shirt": "#7a5a3a",
+  "pants": "#4a3a2a",
+  "skin": "#e9c9a8",
+  "outfit": "tunic",
+  "hair": "wild",
+  "hc": "#c9892f",
+  "facial": "full",
+  "fc": "#c9892f",
+  "bare": false,
+  "trim": "#c4a24a",
+  "shoes": "#4a3a2a",
+  "era": "early-medieval"
+ },
+ "knight": {
+  "hat": "greathelm",
+  "shirt": "#aab3be",
+  "pants": "#6b727c",
+  "skin": "#e7c4a4",
+  "outfit": "armor",
+  "bare": false,
+  "cape": "#2b5fb4",
+  "trim": "#d9b24a",
+  "shoes": "#3a3a3a",
+  "era": "medieval"
+ },
+ "pirate": {
+  "hat": "tricorn",
+  "shirt": "#a8242c",
+  "pants": "#2a2b33",
+  "skin": "#d7a985",
+  "outfit": "coat",
+  "hair": "long",
+  "hc": "#2a1f18",
+  "facial": "goatee",
+  "trim": "#c4a24a",
+  "shoes": "#2a2018",
+  "era": "early-modern"
+ },
+ "pharaoh": {
+  "hat": "nemes",
+  "shirt": "#f4f1e6",
+  "pants": "#f4f1e6",
+  "skin": "#c9976a",
+  "outfit": "robe",
+  "hair": "none",
+  "trim": "#e2b84a",
+  "shoes": "#c4a24a",
+  "era": "ancient"
+ },
+ "napoleonic": {
+  "hat": "tricorn",
+  "shirt": "#2b4a8a",
+  "pants": "#efe9dc",
+  "skin": "#e7c4a4",
+  "outfit": "coat",
+  "hair": "short",
+  "hc": "#3b2a20",
+  "trim": "#d9b24a",
+  "shoes": "#2a2a2a",
+  "era": "early-modern"
+ },
+ "conquistador": {
+  "hat": "morion",
+  "shirt": "#9aa3ae",
+  "pants": "#7a2a2a",
+  "skin": "#dcb592",
+  "outfit": "armor",
+  "facial": "goatee",
+  "hc": "#3b2a20",
+  "cape": "#8e2a2a",
+  "trim": "#c4a24a",
+  "shoes": "#3a2a1a",
+  "era": "early-modern"
+ },
+ "sultan": {
+  "hat": "turban",
+  "shirt": "#2f6f8a",
+  "pants": "#2f6f8a",
+  "skin": "#d7a985",
+  "outfit": "robe",
+  "facial": "full",
+  "hc": "#2a1f18",
+  "trim": "#e2b84a",
+  "shoes": "#c4a24a",
+  "era": "medieval"
+ }
+}

@@ -3,7 +3,8 @@
 // Deps: npm i d3-geo topojson-client world-atlas
 import React from 'react';
 import {Easing, interpolate, random, spring, useCurrentFrame, useVideoConfig} from 'remotion';
-import {geoOrthographic, geoMercator, geoPath, geoGraticule10, geoInterpolate, geoDistance, geoTransform} from 'd3-geo';
+import {geoOrthographic, geoMercator, geoPath, geoGraticule10, geoInterpolate, geoDistance, geoTransform, geoCentroid, geoArea} from 'd3-geo';
+import {placeLabels, textBox, closeRing} from './geolabels';
 import {feature, mesh} from 'topojson-client';
 import w110 from 'world-atlas/countries-110m.json';
 import w50 from 'world-atlas/countries-50m.json';
@@ -21,7 +22,9 @@ export type GeoT = {
   dash?: string[]; // extra dashed white outline
   pins?: {name: string; lon: number; lat: number; at?: number}[];
   routes?: {a: [number, number]; b: [number, number]; color?: string; at?: number}[];
-  labels?: {t: string; sub?: string; lon: number; lat: number; at?: number; size?: number}[]; // sub = smaller yellow line (reference style)
+  labels?: {t: string; sub?: string; lon: number; lat: number; at?: number; size?: number; kind?: 'city' | 'sea' | 'river' | 'mountain'}[]; // sub = smaller yellow line (reference style); kind picks the style
+  names?: boolean | string[]; // true = name every highlighted country; or a list of country names to label (neighbours, no fill needed)
+  regions?: {name: string; pts: [number, number][]; color: string; sub?: string; at?: number}[]; // historical polities: a lon/lat outline (Goguryeo, Roman Empire in 117 AD...), filled and named
 };
 
 // ---------- procedural satellite textures (tileable value noise, generated once per browser tab) ----------
@@ -149,6 +152,44 @@ export const GeoMap: React.FC<{g: GeoT; seed: string}> = ({g, seed}) => {
   const at = (v: number | undefined) => spring({frame: f - (v ?? 0) * d, fps, config: {damping: 13, stiffness: 150}});
   const op = (v: number) => Math.min(1, Math.max(0, v));
   const hiNames = Object.keys(g.hi ?? {});
+  // ---- map naming: auto country names, historical regions, collision-free placement. Placement is solved at the END camera state and
+  // applied as fixed pixel offsets, so labels glide with the map instead of hopping while it zooms. Never allowed to break a render. ----
+  const mEnd = to.k / kmax;
+  const named = React.useMemo(() => {
+    type It = {id: string; kind: 'name' | 'region' | 'label' | 'pin'; t: string; sub?: string; pt: number[]; fs: number; style?: string; at?: number; must: boolean; prio: number; dx: number; dy: number; dropped: boolean};
+    const items: It[] = [];
+    try {
+      const pp = geoPath(geo.proj) as any;
+      const wanted = [...(g.names === true ? Object.keys(g.hi ?? {}) : Array.isArray(g.names) ? g.names : [])];
+      wanted.forEach((nm) => {
+        const ft = geo.FS.find((q: any) => q.properties?.name === nm);
+        if (!ft) return;
+        let target: any = ft;
+        if (ft.geometry?.type === 'MultiPolygon') { // the biggest piece only (France without Guiana, Russia without far islands)
+          const big = ft.geometry.coordinates.map((c: any) => ({c, a: geoArea({type: 'Polygon', coordinates: c} as any)})).sort((a: any, b: any) => b.a - a.a)[0];
+          target = {type: 'Polygon', coordinates: big.c};
+        }
+        const ll = geoCentroid(target as any) as [number, number];
+        const pt = geo.proj(ll);
+        if (!pt || !geo.visible(ll)) return;
+        const bb = pp.bounds(target), wid = (bb[1][0] - bb[0][0]) * mEnd, isHi = !!g.hi?.[nm];
+        const fs = Math.max(30, Math.min(84, wid / Math.max(3, nm.length * 0.62)));
+        if (!isHi && wid < 70) return;
+        items.push({id: `n:${nm}`, kind: 'name', t: nm, pt, fs, must: isHi, prio: isHi ? 20 : 10, dx: 0, dy: 0, dropped: false});
+      });
+      (g.regions ?? []).forEach((r, i) => {
+        const ring = closeRing(r.pts), ll = geoCentroid({type: 'Polygon', coordinates: [ring]} as any) as [number, number], pt = geo.proj(ll);
+        if (pt) items.push({id: `r:${i}`, kind: 'region', t: r.name, sub: r.sub, pt, fs: 60, at: r.at, must: true, prio: 30, dx: 0, dy: 0, dropped: false});
+      });
+      (g.pins ?? []).forEach((pn, i) => { const pt = geo.proj([pn.lon, pn.lat]); if (pt) items.push({id: `p:${i}`, kind: 'pin', t: pn.name, pt, fs: 46, must: true, prio: 100, dx: 0, dy: 0, dropped: false}); });
+      (g.labels ?? []).forEach((lb, i) => { const pt = geo.proj([lb.lon, lb.lat]); if (pt) items.push({id: `l:${i}`, kind: 'label', t: lb.t, sub: lb.sub, pt, fs: lb.size ?? (lb.kind === 'sea' ? 56 : lb.kind ? 42 : 72), style: lb.kind, at: lb.at, must: true, prio: 50, dx: 0, dy: 0, dropped: false}); });
+      const end = (pt: number[]) => [960 + mEnd * (pt[0] - 960), 540 + mEnd * (pt[1] - 540)];
+      const placed = placeLabels(items.map((it) => { const e = end(it.pt), b = textBox(it.t, it.fs, it.sub); return {id: it.id, x: e[0], y: e[1] + (it.kind === 'pin' ? 8 : 0), w: b.w, h: b.h + (it.kind === 'pin' ? 60 : 0), prio: it.prio, must: it.must}; }));
+      placed.forEach((p: any, i) => { if (p.dropped) items[i].dropped = true; else { items[i].dx = p.dx; items[i].dy = p.dy; } });
+    } catch (e) { console.warn('map naming skipped:', e); }
+    return items;
+  }, [seed, JSON.stringify(g.names), JSON.stringify(g.regions), JSON.stringify(g.labels), JSON.stringify(g.pins), JSON.stringify(g.hi), mEnd]);
+  const regionPaths = (g.regions ?? []).map((r) => { try { const ring = closeRing(r.pts); const big = geoArea({type: 'Polygon', coordinates: [ring]} as any) > 2 * Math.PI; return (geoPath(geo.proj) as any)({type: 'Polygon', coordinates: [big ? ring.slice().reverse() : ring]}) as string; } catch (e) { return ''; } });
   const rp = (coords: any) => { const pp = geoPath(geo.proj) as any; return (pp({type: 'LineString', coordinates: coords}) ?? '') as string; };
   const R = geo.R * m;
 
@@ -193,6 +234,7 @@ export const GeoMap: React.FC<{g: GeoT; seed: string}> = ({g, seed}) => {
               </g>
             );
           })}
+          {(g.regions ?? []).map((r, i) => regionPaths[i] ? (<g key={`rg${i}`} opacity={op(at(r.at) * 3)}><path d={regionPaths[i]} fill="none" stroke="#fff" strokeWidth={sw(14)} opacity={0.14} strokeLinejoin="round" /><path d={regionPaths[i]} fill={r.color} opacity={0.82} /><path d={regionPaths[i]} fill="none" stroke="#fff" strokeWidth={sw(3.2)} strokeLinejoin="round" /></g>) : null)}
           {(g.dash ?? []).map((n) => { const dd = geo.one(li, n); return dd ? <path key={n} d={dd} fill="none" stroke="#fff" strokeWidth={sw(3)} strokeDasharray={`${12 / m} ${9 / m}`} strokeDashoffset={-f * 0.6 / m} /> : null; })}
           {(g.routes ?? []).map((r, i) => {
             const prog = interpolate(f, [(r.at ?? 0.1) * d, (r.at ?? 0.1) * d + Math.max(30, d * 0.5)], [0, 1], {...C, easing: Easing.inOut(Easing.quad)});
@@ -212,6 +254,15 @@ export const GeoMap: React.FC<{g: GeoT; seed: string}> = ({g, seed}) => {
         const q = sc(hp);
         return <circle key={`h${i}`} cx={q[0]} cy={q[1]} r={12} fill={r.color ?? '#ffd24a'} stroke={INK} strokeWidth={3} />;
       })}
+      {named.filter((it) => (it.kind === 'name' || it.kind === 'region') && !it.dropped).map((it) => {
+        const q = sc(it.pt), e = at(it.at);
+        return (
+          <g key={it.id} opacity={op(e * 3)}>
+            <text x={q[0] + it.dx} y={q[1] + it.dy} textAnchor="middle" fontFamily={HAND} fontSize={it.fs} fill="#fff" stroke={INK} strokeWidth={Math.max(6, it.fs * 0.12)} paintOrder="stroke" letterSpacing={it.kind === 'name' ? 1 : 0}>{it.t}</text>
+            {it.sub && <text x={q[0] + it.dx} y={q[1] + it.dy + it.fs * 0.78} textAnchor="middle" fontFamily={HAND} fontSize={it.fs * 0.62} fill="#ffe14a" stroke={INK} strokeWidth={7} paintOrder="stroke">{it.sub}</text>}
+          </g>
+        );
+      })}
       {(g.pins ?? []).map((pn, i) => {
         const xy = geo.proj([pn.lon, pn.lat]);
         if (!xy || !geo.visible([pn.lon, pn.lat])) return null;
@@ -230,13 +281,18 @@ export const GeoMap: React.FC<{g: GeoT; seed: string}> = ({g, seed}) => {
       {(g.labels ?? []).map((lb, i) => {
         const xy = geo.proj([lb.lon, lb.lat]);
         if (!xy || !geo.visible([lb.lon, lb.lat])) return null;
-        const q = sc(xy), a0 = (lb.at ?? 0) * d;
-        const n = Math.round(interpolate(f, [a0, a0 + lb.t.length * 2.2], [0, lb.t.length], C));
-        const n2 = Math.round(interpolate(f, [a0 + lb.t.length * 2.2 + 6, a0 + lb.t.length * 2.2 + 6 + (lb.sub?.length ?? 0) * 2], [0, lb.sub?.length ?? 0], C));
+        const nm = named.find((q) => q.id === `l:${i}`), q = sc(xy), a0 = (lb.at ?? 0) * d, ox = nm?.dx ?? 0, oy = nm?.dy ?? 0;
+        const typed = (from: number, len: number, per: number) => (len <= 0 ? 0 : Math.round(interpolate(f, [from, from + len * per], [0, len], C)));
+        const n = typed(a0, lb.t.length, 2.2);
+        const n2 = typed(a0 + lb.t.length * 2.2 + 6, lb.sub?.length ?? 0, 2);
+        const fs = lb.size ?? (lb.kind === 'sea' ? 56 : lb.kind ? 42 : 72), kind = lb.kind;
+        const txt = lb.t.slice(0, n);
         return (
           <g key={i}>
-            <text x={q[0]} y={q[1]} textAnchor="middle" fontFamily={HAND} fontSize={lb.size ?? 72} fill="#fff" stroke={INK} strokeWidth={9} paintOrder="stroke">{lb.t.slice(0, n)}</text>
-            {lb.sub && <text x={q[0]} y={q[1] + (lb.size ?? 72) * 0.78} textAnchor="middle" fontFamily={HAND} fontSize={(lb.size ?? 72) * 0.62} fill="#ffe14a" stroke={INK} strokeWidth={7} paintOrder="stroke">{lb.sub.slice(0, n2)}</text>}
+            {kind === 'city' && <circle cx={q[0]} cy={q[1]} r={8} fill="#fff" stroke={INK} strokeWidth={3} opacity={op(at(lb.at) * 3)} />}
+            {kind === 'mountain' && <path d={`M${q[0] - 14} ${q[1] + 8} L${q[0]} ${q[1] - 16} L${q[0] + 14} ${q[1] + 8}Z`} fill="#fff" stroke={INK} strokeWidth={3} opacity={op(at(lb.at) * 3)} />}
+            <text x={q[0] + ox} y={q[1] + oy + (kind === 'city' || kind === 'mountain' ? -26 : 0)} textAnchor="middle" fontFamily={HAND} fontSize={fs} fontStyle={kind === 'sea' || kind === 'river' || kind === 'mountain' ? 'italic' : 'normal'} letterSpacing={kind === 'sea' ? 9 : 0} fill={kind === 'sea' ? '#cfe9ff' : '#fff'} stroke={kind === 'sea' ? '#0b2a52' : INK} strokeWidth={kind === 'sea' ? 6 : kind ? 6 : 9} paintOrder="stroke" opacity={kind === 'sea' ? 0.92 : 1}>{txt}</text>
+            {lb.sub && <text x={q[0] + ox} y={q[1] + oy + fs * 0.78} textAnchor="middle" fontFamily={HAND} fontSize={fs * 0.62} fill="#ffe14a" stroke={INK} strokeWidth={7} paintOrder="stroke">{lb.sub.slice(0, n2)}</text>}
           </g>
         );
       })}

@@ -40,6 +40,7 @@ jobs:
             chapters.json
             seo.json
             meta.json
+            photos.json
           retention-days: 1
 
   # 2. speech is synthesised in 6 parallel shards (every 6th scene each)
@@ -110,6 +111,8 @@ jobs:
         run: python src/tts/generate_voice.py merge
       - name: 6b Real sound effects and music (normalised, nothing synthesised)
         run: python src/tts/audio_real.py build public/audio out/credits.txt
+      - name: 6c Real photos and maps (licence checked; stops here if one is unusable)
+        run: python src/ci/photos.py
       - name: 7 Plan render chunks
         id: plan
         run: node src/ci/plan.js
@@ -119,6 +122,8 @@ jobs:
         with: {name: narration, path: public/narration.mp3, retention-days: 1}
       - uses: actions/upload-artifact@v4
         with: {name: audio, path: public/audio, retention-days: 1}
+      - uses: actions/upload-artifact@v4
+        with: {name: photos, path: public/photos, retention-days: 1, include-hidden-files: true}
       - uses: actions/upload-artifact@v4
         with: {name: meta, path: out, retention-days: 1}
 
@@ -143,6 +148,8 @@ jobs:
         with: {name: narration, path: public}
       - uses: actions/download-artifact@v4
         with: {name: audio, path: public/audio}
+      - uses: actions/download-artifact@v4
+        with: {name: photos, path: public/photos}
       - uses: actions/setup-node@v4
         with: {node-version: 20}
       - uses: actions/cache@v4

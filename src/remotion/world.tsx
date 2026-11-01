@@ -2,7 +2,8 @@
 // Stickman rig (poses, blink, breathing, lip-sync), 25 props, parallax backdrops, a Stage engine.
 // Copy once to src/remotion/world.tsx next to kit.tsx. Do not edit per video.
 import React from 'react';
-import {Easing, interpolate, random, Sequence, spring, useCurrentFrame, useVideoConfig} from 'remotion';
+import libLooks from '../../library/looks.json'; // reusable looks added over time (merged by the dashboard); same fields as Look
+import {Easing, interpolate, random, Sequence, spring, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
 import {loadFont as loadHand} from '@remotion/google-fonts/PatrickHand';
 
 export const HAND = typeof window === 'undefined' ? 'sans-serif' : loadHand('normal', {weights: ['400'], subsets: ['latin']}).fontFamily;
@@ -53,8 +54,8 @@ const LEAN: Partial<Record<PoseName, number>> = {walk: 2, run: 12, attack: 10, c
 
 export type Hair = 'none' | 'short' | 'long' | 'topknot' | 'curly' | 'wild' | 'parted' | 'bald';
 export type Outfit = 'tunic' | 'robe' | 'coat' | 'dress' | 'armor' | 'toga';
-export type Look = {hat: 'none' | 'explorer' | 'top' | 'crown' | 'cap' | 'helmet' | 'straw' | 'bowler' | 'tricorn' | 'bun' | 'laurel' | 'crest' | 'hood'; shirt: string; pants: string; skin: string; extra?: 'scarf' | 'beard' | 'apron'; ec?: string; cape?: string; toga?: string; armor?: boolean;
-  outfit?: Outfit; hair?: Hair; hc?: string; facial?: 'full' | 'goatee' | 'stache' | 'long'; trim?: string; sleeve?: string; bare?: boolean; shoes?: string; fc?: string; glasses?: boolean};
+export type Look = {hat: 'none' | 'explorer' | 'top' | 'crown' | 'cap' | 'helmet' | 'straw' | 'bowler' | 'tricorn' | 'bun' | 'laurel' | 'crest' | 'hood' | 'dome' | 'greathelm' | 'morion' | 'turban' | 'nemes'; shirt: string; pants: string; skin: string; extra?: 'scarf' | 'beard' | 'apron'; ec?: string; cape?: string; toga?: string; armor?: boolean;
+  outfit?: Outfit; hair?: Hair; hc?: string; facial?: 'full' | 'goatee' | 'stache' | 'long'; trim?: string; sleeve?: string; bare?: boolean; shoes?: string; fc?: string; glasses?: boolean; era?: string};
 export const LOOKS: Record<string, Look> = {
   narrator: {hat: 'explorer', shirt: '#d9c79a', pants: '#6b5a45', skin: '#f3dcc6', extra: 'scarf', ec: '#c0392b', hair: 'short', hc: '#a8a8a8', facial: 'stache', trim: '#8a6d3b', shoes: '#5a4632'},
   merchant: {hat: 'top', shirt: '#2b2d42', pants: '#2b2d42', skin: '#efd3b8', outfit: 'coat', trim: '#c9a84a', hair: 'short', hc: '#3b2a20', facial: 'stache'},
@@ -94,8 +95,15 @@ export const LOOKS: Record<string, Look> = {
   peasant: {hat: 'straw', shirt: '#a8946a', pants: '#6b5a45', skin: '#d9b08c', hair: 'short', hc: '#4a3426', shoes: '#5a4632'},
 };
 
+// Per-video and library characters. A script can do:  registerLooks(BIBLE.looks); registerFactions(BIBLE.factions);
+Object.assign(LOOKS, libLooks as unknown as Record<string, Look>);
+export const registerLooks = (o: Record<string, Look> | undefined) => { if (o) Object.assign(LOOKS, o); };
+export type Faction = {c: string; c2?: string; kind?: TroopKind};
+export const FACTIONS: Record<string, Faction> = {};
+export const registerFactions = (o: Record<string, Faction> | undefined) => { if (o) Object.assign(FACTIONS, o); };
+
 export type Held = 'sword' | 'spear' | 'torch' | 'scroll' | 'dagger' | 'goblet' | 'standard' | 'lyre' | 'coin' | 'magnifier';
-export type ActorT = {who?: string; x: number | [number, number]; y?: number; s?: number; pose?: PoseName; face?: Face; flip?: boolean; say?: string; at?: number; talk?: boolean; look?: string | Look; raw?: boolean; held?: Held; shield?: boolean; fa?: number; hide?: number; ghost?: number};
+export type ActorT = {who?: string; x: number | [number, number]; y?: number; s?: number; pose?: PoseName; face?: Face; flip?: boolean; say?: string; at?: number; talk?: boolean; look?: string | Look; raw?: boolean; held?: Held; shield?: boolean; fa?: number; hide?: number; ghost?: number; ns?: boolean};
 
 const Hat: React.FC<{k: Look['hat']; top: number; skin: string}> = ({k, top, skin}) => {
   switch (k) {
@@ -109,6 +117,11 @@ const Hat: React.FC<{k: Look['hat']; top: number; skin: string}> = ({k, top, ski
     case 'tricorn': return (<g {...OL}><path d={`M-78 ${top + 14} L0 ${top - 42} L78 ${top + 14} Q0 ${top + 30} -78 ${top + 14}Z`} fill="#2b2d42" /><path d={`M-78 ${top + 14} Q0 ${top + 30} 78 ${top + 14}`} fill="none" stroke="#d9b24a" strokeWidth={5} /></g>);
     case 'laurel': return (<g {...OL}>{Array.from({length: 9}, (_, i) => { const a = Math.PI * (0.08 + i * 0.105); return <ellipse key={i} cx={-Math.cos(a) * 52} cy={top + 20 - Math.sin(a) * 28} rx={11} ry={6} fill="#3f9a4a" transform={`rotate(${-30 + i * 8} ${-Math.cos(a) * 52} ${top + 20 - Math.sin(a) * 28})`} />; })}</g>);
     case 'crest': return (<g {...OL}><path d={`M-52 ${top + 18} Q-54 ${top - 36} 0 ${top - 38} Q54 ${top - 36} 52 ${top + 18}Z`} fill="#c4a24a" /><path d={`M-60 ${top - 30} Q0 ${top - 92} 60 ${top - 30} L48 ${top - 24} Q0 ${top - 70} -48 ${top - 24}Z`} fill="#b3202a" /><rect x={-5} y={top - 10} width={10} height={34} fill="#a0842f" /></g>);
+    case 'dome': return (<g {...OL}><path d={`M-54 ${top + 20} Q-56 ${top - 40} 0 ${top - 40} Q56 ${top - 40} 54 ${top + 20}Z`} fill="#8f98a3" /><path d={`M-54 ${top + 8} Q0 ${top + 18} 54 ${top + 8}`} fill="none" stroke="#c4a24a" strokeWidth={7} /><rect x={-6} y={top - 4} width={12} height={46} fill="#7f8794" /><path d={`M0 ${top - 40} V${top + 8}`} stroke="#7f8794" strokeWidth={6} /></g>);
+    case 'greathelm': return (<g {...OL}><path d={`M-58 ${top + 78} L-58 ${top - 20} Q-58 ${top - 52} 0 ${top - 52} Q58 ${top - 52} 58 ${top - 20} L58 ${top + 78}Z`} fill="#aeb6c0" /><rect x={-46} y={top + 6} width={92} height={12} rx={4} fill="#1f1f27" /><path d={`M0 ${top - 52} V${top + 78} M-30 ${top + 40} h60`} stroke="#7f8794" strokeWidth={4} fill="none" />{[-30, -14, 2, 18].map((x, i) => <circle key={i} cx={x + 6} cy={top + 52 + (i % 2) * 8} r={2.5} fill="#1f1f27" />)}</g>);
+    case 'morion': return (<g {...OL}><path d={`M-80 ${top + 16} Q0 ${top - 6} 80 ${top + 16} Q60 ${top + 26} 0 ${top + 22} Q-60 ${top + 26} -80 ${top + 16}Z`} fill="#9aa3ae" /><path d={`M-48 ${top + 14} Q-44 ${top - 36} 0 ${top - 36} Q44 ${top - 36} 48 ${top + 14}Z`} fill="#aeb6c0" /><path d={`M-6 ${top - 36} Q0 ${top - 62} 6 ${top - 36}Z`} fill="#9aa3ae" /></g>);
+    case 'turban': return (<g {...OL}><path d={`M-58 ${top + 22} Q-66 ${top - 40} 0 ${top - 48} Q66 ${top - 40} 58 ${top + 22} Q0 ${top + 6} -58 ${top + 22}Z`} fill="#efe9dc" />{[0, 1, 2].map((i) => <path key={i} d={`M${-52 + i * 6} ${top + 8 - i * 14} Q0 ${top - 6 - i * 14} ${52 - i * 6} ${top + 8 - i * 14}`} fill="none" strokeWidth={2.5} opacity={0.6} />)}<circle cx={0} cy={top - 8} r={8} fill="#2b5fb4" /></g>);
+    case 'nemes': return (<g {...OL}><path d={`M-62 ${top + 96} L-58 ${top - 6} Q-56 ${top - 44} 0 ${top - 44} Q56 ${top - 44} 58 ${top - 6} L62 ${top + 96} L40 ${top + 96} L36 ${top + 20} Q0 ${top + 6} -36 ${top + 20} L-40 ${top + 96}Z`} fill="#2b5fb4" />{[0, 1, 2, 3, 4].map((i) => <path key={i} d={`M-58 ${top - 8 + i * 12} Q0 ${top - 16 + i * 12} 58 ${top - 8 + i * 12}`} fill="none" stroke="#e2b84a" strokeWidth={4} />)}<path d={`M-6 ${top - 40} Q0 ${top - 66} 6 ${top - 40}Z`} fill="#e2b84a" /></g>);
     case 'hood': return (<g {...OL}><path d={`M-64 ${top + 74} Q-72 ${top - 40} 0 ${top - 46} Q72 ${top - 40} 64 ${top + 74} Q40 ${top + 30} 0 ${top + 28} Q-40 ${top + 30} -64 ${top + 74}Z`} fill="#3a3b48" /></g>);
     case 'bun': return (<g {...OL}><circle cx={0} cy={top - 34} r={20} fill="#5a3a28" /><path d={`M-50 ${top + 36} Q-56 ${top - 20} 0 ${top - 18} Q56 ${top - 20} 50 ${top + 36} Q40 ${top + 4} 0 ${top + 2} Q-40 ${top + 4} -50 ${top + 36}Z`} fill="#5a3a28" /></g>);
     default: return null;
@@ -130,7 +143,7 @@ const HeldArt: React.FC<{k: Held; f: number}> = ({k, f}) => {
   }
 };
 
-const HAIRLESS: Look['hat'][] = ['helmet', 'crest', 'hood', 'bun'];
+const HAIRLESS: Look['hat'][] = ['helmet', 'crest', 'hood', 'bun', 'greathelm', 'turban', 'nemes'];
 const outfitOf = (l: Look): Outfit => l.outfit ?? (l.armor ? 'armor' : l.toga ? 'toga' : 'tunic');
 
 // hair that sits behind the head (long styles) and in front of it (fringe), both drawn from the head centre
@@ -255,7 +268,7 @@ export const Actor: React.FC<{a: ActorT; words?: WordT[]; seed?: string}> = ({a,
   return (
     <g transform={`translate(${x} ${a.y ?? 940}) scale(${(a.flip ? -1 : 1) * s * e.k} ${s * e.k})`} opacity={e.o * gone * (a.ghost ?? 1) * (a.ghost !== undefined ? 0.92 + Math.sin(f / 9 + ph) * 0.08 : 1)}>
       {a.ghost !== undefined && <g fill="#9fd8ff"><ellipse cx={0} cy={-200} rx={170} ry={280} opacity={0.08} /><ellipse cx={0} cy={-200} rx={135} ry={245} opacity={0.1} /><ellipse cx={0} cy={-200} rx={100} ry={210} opacity={0.12} /></g>}
-      {a.ghost === undefined && <ellipse cx={0} cy={4} rx={86} ry={13} fill="#000" opacity={0.18} />}
+      {a.ghost === undefined && !a.ns && <ellipse cx={0} cy={4} rx={86} ry={13} fill="#000" opacity={0.18} />}
       <g transform={`rotate(${-fr * 88})`}>
       {look.cape && <path d={`M-18 ${shY + 4} Q${-64 - sway} ${hipY - 20} ${-40 - sway * 1.6} ${hipY + 96} L22 ${hipY + 50} L18 ${shY + 4}Z`} fill={look.cape} stroke={INK} strokeWidth={3} strokeLinejoin="round" />}
       {/* legs */}
@@ -325,7 +338,7 @@ export const Actor: React.FC<{a: ActorT; words?: WordT[]; seed?: string}> = ({a,
           if (cur.join(' ').length + wd2.length > 24 && cur.length) lines.push([]);
           lines[lines.length - 1].push(`${i}|${wd2}`);
         });
-        const shown = Math.round(interpolate(f, [at0 + 8, at0 + 8 + all.length * 4], [0, all.length], C));
+        const shown = all.length ? Math.round(interpolate(f, [at0 + 8, at0 + 8 + all.length * 4], [0, all.length], C)) : 0;
         const bw = Math.min(760, 80 + Math.max(...lines.map((l) => l.join(' ').length)) * 19);
         const bh = 36 + lines.length * 52;
         const by = headY - 150 - bh;
@@ -346,8 +359,8 @@ export const Actor: React.FC<{a: ActorT; words?: WordT[]; seed?: string}> = ({a,
 };
 
 // ===================== PROPS =====================
-export type PropKind = 'house' | 'tudor' | 'church' | 'cactus' | 'tree' | 'skyscraper' | 'factory' | 'mountain' | 'ship' | 'wall' | 'flag' | 'coins' | 'crown' | 'bank' | 'fire' | 'smoke' | 'sun' | 'moon' | 'cloud' | 'sign' | 'banner' | 'crowd' | 'crate' | 'road' | 'waves' | 'column' | 'temple' | 'arch' | 'colosseum' | 'wolf' | 'elephant' | 'standard' | 'tent' | 'torch' | 'throne' | 'basket' | 'shieldwall' | 'river' | 'birds' | 'galley' | 'tower' | 'stonewall' | 'hill' | 'balcony' | 'rubble' | 'cabbage' | 'legion' | 'troop';
-export type PropT = {k: PropKind; x: number; y: number; s?: number; d?: number; c?: string; t?: string; n?: number; at?: number; flip?: boolean; kind?: TroopKind; form?: 'block' | 'line' | 'wedge' | 'scatter'; fight?: boolean; march?: boolean; c2?: string};
+export type PropKind = 'house' | 'tudor' | 'church' | 'cactus' | 'tree' | 'skyscraper' | 'factory' | 'mountain' | 'ship' | 'wall' | 'flag' | 'coins' | 'crown' | 'bank' | 'fire' | 'smoke' | 'sun' | 'moon' | 'cloud' | 'sign' | 'banner' | 'crowd' | 'crate' | 'road' | 'waves' | 'column' | 'temple' | 'arch' | 'colosseum' | 'wolf' | 'elephant' | 'standard' | 'tent' | 'torch' | 'throne' | 'basket' | 'shieldwall' | 'river' | 'birds' | 'galley' | 'tower' | 'stonewall' | 'hill' | 'balcony' | 'rubble' | 'cabbage' | 'legion' | 'troop' | 'horse' | 'catapult' | 'ram' | 'siegetower' | 'ballista' | 'gate' | 'longship' | 'fleet' | 'photo';
+export type PropT = {k: PropKind; x: number; y: number; s?: number; d?: number; c?: string; t?: string; n?: number; at?: number; flip?: boolean; kind?: TroopKind; form?: 'block' | 'line' | 'wedge' | 'scatter'; fight?: boolean; march?: boolean; c2?: string; rider?: string; fac?: string; held?: Held; src?: string; w?: number; h?: number; ship?: 'galley' | 'longship' | 'ship'};
 
 const Shadow: React.FC<{w: number}> = ({w}) => <ellipse cx={0} cy={4} rx={w} ry={w / 12} fill="#000" opacity={0.16} />;
 const Smoke: React.FC<{x: number; y: number; f: number; col?: string}> = ({x, y, f, col = '#f2f2f2'}) => (
@@ -404,14 +417,45 @@ const Flame: React.FC<{f: number; k: number; w: number; h: number}> = ({f, k, w,
 
 // ===================== TROOPS (armies are instanced, never one Actor per soldier) =====================
 // Each soldier type is drawn ONCE per scene in <defs> (3 poses) and placed with <use>, so 400 soldiers cost ~400 nodes.
-export type TroopKind = 'legion' | 'barbarian' | 'gaul' | 'generic';
+export type TroopKind = 'legion' | 'barbarian' | 'gaul' | 'generic' | 'cavalry';
 const TROOP: Record<TroopKind, {tunic: string; helm: string | null; shield: string; skin: string; hair?: string; round?: boolean; weapon: 'spear' | 'axe' | 'sword'}> = {
   legion: {tunic: '#b53a32', helm: '#b9c0c9', shield: '#a8242c', skin: '#e7c4a4', weapon: 'spear'},
   barbarian: {tunic: '#7a5a3a', helm: null, shield: '#8a6b3a', skin: '#e9c9a8', hair: '#c9892f', round: true, weapon: 'axe'},
   gaul: {tunic: '#2f6f8a', helm: null, shield: '#d9a441', skin: '#f0d2b6', hair: '#d9a441', round: true, weapon: 'sword'},
   generic: {tunic: '#4a6a9a', helm: '#8a8f99', shield: '#3a4a6a', skin: '#e7c4a4', weapon: 'spear'},
+  cavalry: {tunic: '#b53a32', helm: '#b9c0c9', shield: '#a8242c', skin: '#e7c4a4', weapon: 'spear'},
+};
+const HorseDef: React.FC<{id: string; col?: string; col2?: string}> = ({id, col, col2}) => {
+  const T = TROOP.cavalry, tunic = col ?? T.tunic, coat = col2 ?? '#8a5a33';
+  const S = {stroke: INK, strokeWidth: 2.5, strokeLinejoin: 'round', strokeLinecap: 'round'} as const;
+  const leg = (x: number, a: number, b: number) => <g><path d={`M${x} -62 L${x + a} -30 L${x + b} 0`} stroke={INK} strokeWidth={10} fill="none" strokeLinecap="round" strokeLinejoin="round" /><path d={`M${x} -62 L${x + a} -30 L${x + b} 0`} stroke={coat} strokeWidth={6} fill="none" strokeLinecap="round" strokeLinejoin="round" /></g>;
+  const horse = (fl: [number, number], bl: [number, number], fr: [number, number], br: [number, number], rider: number) => (
+    <g>
+      {leg(-34, br[0], br[1])}{leg(36, fr[0], fr[1])}
+      <path d="M-62 -70 Q-84 -60 -80 -30" fill="none" stroke={INK} strokeWidth={9} strokeLinecap="round" /><path d="M-62 -70 Q-84 -60 -80 -30" fill="none" stroke={mix(coat, -0.4)} strokeWidth={5} strokeLinecap="round" />
+      <ellipse cx={0} cy={-76} rx={64} ry={30} fill={coat} {...S} />
+      <path d="M44 -88 Q70 -128 92 -126 L112 -108 L96 -92 Q80 -96 62 -66Z" fill={coat} {...S} /><circle cx={98} cy={-112} r={2.5} fill={INK} />
+      {leg(-44, bl[0], bl[1])}{leg(26, fl[0], fl[1])}
+      <path d="M-40 -100 Q0 -112 40 -100 L40 -84 Q0 -94 -40 -84Z" fill={tunic} {...S} />
+      <g transform={`translate(0 ${rider})`}>
+        <rect x={-12} y={-146} width={24} height={44} rx={7} fill={tunic} {...S} />
+        <circle cx={0} cy={-158} r={11} fill={T.skin} {...S} />
+        <path d="M-12 -160 Q-12 -178 0 -178 Q12 -178 12 -160Z" fill={T.helm!} {...S} />
+        <path d="M10 -128 L26 -112" stroke={T.skin} strokeWidth={5} strokeLinecap="round" />
+        <path d="M24 -96 L52 -190" stroke={INK} strokeWidth={5} /><path d="M24 -96 L52 -190" stroke="#8a5a33" strokeWidth={2.5} /><path d="M47 -184 L54 -204 L58 -182Z" fill="#dfe5ec" {...S} />
+      </g>
+    </g>
+  );
+  return (
+    <>
+      <g id={`${id}a`}>{horse([30, 46], [-30, -52], [34, 52], [-34, -60], 0)}</g>
+      <g id={`${id}b`}>{horse([12, 8], [-8, -14], [14, 10], [-10, -16], -4)}</g>
+      <g id={`${id}c`}>{horse([44, 62], [-46, -70], [40, 58], [-50, -66], 2)}</g>
+    </>
+  );
 };
 const SoldierDef: React.FC<{id: string; k: TroopKind; col?: string; col2?: string}> = ({id, k, col, col2}) => {
+  if (k === 'cavalry') return <HorseDef id={id} col={col} col2={col2} />;
   const T = TROOP[k];
   const tunic = col ?? T.tunic, shield = col2 ?? T.shield;
   const S = {stroke: INK, strokeWidth: 2.5, strokeLinejoin: 'round', strokeLinecap: 'round'} as const;
@@ -443,34 +487,35 @@ const SoldierDef: React.FC<{id: string; k: TroopKind; col?: string; col2?: strin
     </>
   );
 };
-const formation = (n: number, form: string, rows: number | undefined, seed: string) => {
+const formation = (n: number, form: string, rows: number | undefined, seed: string, dx = 44, dy = 26) => {
   const out: {x: number; y: number; r: number}[] = [];
   const cols = form === 'line' ? n : Math.max(2, Math.round(Math.sqrt(n * 1.7)));
   const R = form === 'line' ? 1 : rows ?? Math.ceil(n / cols);
   if (form === 'wedge') {
-    for (let r = 0, k = 0; k < n; r++) for (let c = 0; c <= r * 2 && k < n; c++, k++) out.push({x: (c - r) * 40, y: -r * 26, r});
+    for (let r = 0, k = 0; k < n; r++) for (let c = 0; c <= r * 2 && k < n; c++, k++) out.push({x: (c - r) * (dx - 4), y: -r * dy, r});
   } else if (form === 'scatter') {
-    for (let k = 0; k < n; k++) out.push({x: (random(`${seed}x${k}`) - 0.5) * 70 * cols, y: -random(`${seed}y${k}`) * 26 * R, r: Math.floor(random(`${seed}y${k}`) * R)});
+    for (let k = 0; k < n; k++) out.push({x: (random(`${seed}x${k}`) - 0.5) * (dx * 1.6) * cols, y: -random(`${seed}y${k}`) * dy * R, r: Math.floor(random(`${seed}y${k}`) * R)});
   } else {
-    for (let k = 0; k < n; k++) { const r = Math.floor(k / cols), c = k % cols; out.push({x: (c - (cols - 1) / 2) * 44 + (r % 2) * 10 + (random(`${seed}j${k}`) - 0.5) * 6, y: -r * 26, r}); }
+    for (let k = 0; k < n; k++) { const r = Math.floor(k / cols), c = k % cols; out.push({x: (c - (cols - 1) / 2) * dx + (r % 2) * (dx * 0.23) + (random(`${seed}j${k}`) - 0.5) * 6, y: -r * dy, r}); }
   }
   return out;
 };
 const Troop: React.FC<{p: PropT; f: number; seed: string}> = ({p, f, seed}) => {
-  const kind: TroopKind = p.kind ?? 'legion';
+  const F = p.fac ? FACTIONS[p.fac] : undefined;
+  const kind: TroopKind = p.kind ?? F?.kind ?? 'legion';
   const id = `tp${seed.replace(/[^a-zA-Z0-9]/g, '')}`;
   const n = Math.min(p.n ?? 24, 600);
-  const pts = formation(n, p.form ?? 'block', undefined, id);
+  const cav = kind === 'cavalry', pts = formation(n, p.form ?? 'block', undefined, id, cav ? 112 : 44, cav ? 46 : 26);
   const maxR = Math.max(...pts.map((q) => q.r), 1);
   const items = pts.map((q, i) => ({...q, i, sc: 1 - (q.r / maxR) * 0.28 + (random(`${id}s${i}`) - 0.5) * 0.06})).sort((a, b) => a.y - b.y);
   return (
     <g>
-      <defs><SoldierDef id={id} k={kind} col={p.c} col2={p.c2} /></defs>
+      <defs><SoldierDef id={id} k={kind} col={p.c ?? F?.c} col2={p.c2 ?? F?.c2} /></defs>
       {items.map((q) => {
         const ph = f / 6 + q.i * 0.9 + random(`${id}p${q.i}`) * 6;
-        const v = p.fight ? (Math.sin(ph * 1.1) > 0.35 ? 'c' : 'a') : p.march ? (Math.floor(ph / 1.2) % 2 ? 'a' : 'b') : 'a';
-        const bob = p.fight ? -Math.abs(Math.sin(ph * 0.9)) * 5 : p.march ? -Math.abs(Math.sin(ph * 0.9)) * 4 : Math.sin(f / 14 + q.i) * 0.8;
-        return <use key={q.i} href={`#${id}${v}`} transform={`translate(${q.x} ${q.y + bob}) scale(${q.sc * 1.35})`} />;
+        const v = cav ? (p.fight || p.march ? ['a', 'b', 'c', 'b'][Math.floor(ph / 1.1) % 4] : 'b') : p.fight ? (Math.sin(ph * 1.1) > 0.35 ? 'c' : 'a') : p.march ? (Math.floor(ph / 1.2) % 2 ? 'a' : 'b') : 'a';
+        const bob = cav && (p.fight || p.march) ? -Math.abs(Math.sin(ph * 0.9)) * 7 : p.fight ? -Math.abs(Math.sin(ph * 0.9)) * 5 : p.march ? -Math.abs(Math.sin(ph * 0.9)) * 4 : Math.sin(f / 14 + q.i) * 0.8;
+        return <use key={q.i} href={`#${id}${v}`} transform={`translate(${q.x} ${q.y + bob}) scale(${q.sc * (cav ? 1.05 : 1.35)})`} />;
       })}
     </g>
   );
@@ -552,6 +597,129 @@ const PropArt: React.FC<{p: PropT; f: number; seed: string}> = ({p, f, seed}) =>
     case 'balcony': return (<g {...OL}><Shadow w={190} /><rect x={-190} y={-30} width={380} height={30} fill="#d6cfbd" /><rect x={-190} y={-130} width={380} height={14} fill="#d6cfbd" />{Array.from({length: 9}, (_, i) => <rect key={i} x={-176 + i * 44} y={-116} width={16} height={86} rx={5} fill="#efe9db" />)}<rect x={-190} y={-30} width={380} height={400} fill="#c9c2b2" /></g>);
     case 'rubble': return (<g {...OL}>{[[-40, -14, 30], [0, -20, 40], [46, -12, 26], [-8, -44, 28]].map(([x, y, r], i) => <circle key={i} cx={x} cy={y} r={r / 2 + 6} fill={i % 2 ? '#bdb6a6' : '#a8a292'} />)}</g>);
     case 'cabbage': return (<g {...OL}><Shadow w={60} /><circle cx={0} cy={-50} r={48} fill="#7dbb4e" /><path d="M-40 -50 Q0 -90 40 -50 M-30 -30 Q0 -62 30 -30" fill="none" stroke="#4f8a30" strokeWidth={4} /></g>);
+    case 'horse': {
+      const gal = p.t !== 'stand', w = f / 3.2, coat = p.c ?? '#8a5a33', bob = gal ? -Math.abs(Math.sin(w)) * 9 : Math.sin(f / 14) * 1.5;
+      const leg = (x: number, off: number) => { const s = gal ? Math.sin(w + off) : 0, a = s * 34, k = gal ? Math.max(0, Math.sin(w + off + 1.2)) * 46 : 0, kn = P(x, -112, 54, a), ft = P(kn[0], kn[1], 54, a - k); const d = `M${x} -112 L${kn[0]} ${kn[1]} L${ft[0]} ${ft[1]}`; return (<g><path d={d} stroke={INK} strokeWidth={17} fill="none" strokeLinecap="round" strokeLinejoin="round" /><path d={d} stroke={coat} strokeWidth={11} fill="none" strokeLinecap="round" strokeLinejoin="round" /><rect x={ft[0] - 8} y={ft[1] - 6} width={16} height={10} rx={3} fill="#3a2a1a" stroke={INK} strokeWidth={2} /></g>); };
+      const tail = Math.sin(w * 0.9) * 14;
+      return (
+        <g {...OL}><Shadow w={140} />
+          {leg(-60, 3.0)}{leg(52, 0.6)}
+          {p.rider && <Actor a={{look: p.rider, x: -6, y: -122 + bob, s: 0.5, pose: p.held === 'spear' || p.held === 'sword' ? 'point' : 'idle', face: 'angry', held: p.held, ns: true}} seed={`${seed}rd`} />}
+          <g transform={`translate(0 ${bob})`}>
+            <path d={`M-96 -150 Q${-150 - tail} ${-140} ${-138 - tail} ${-70}`} fill="none" stroke={INK} strokeWidth={20} strokeLinecap="round" /><path d={`M-96 -150 Q${-150 - tail} ${-140} ${-138 - tail} ${-70}`} fill="none" stroke={mix(coat, -0.4)} strokeWidth={13} strokeLinecap="round" />
+            <ellipse cx={0} cy={-150} rx={108} ry={50} fill={coat} />
+            <path d="M70 -170 Q112 -240 150 -240 L186 -212 L160 -184 Q134 -190 108 -124Z" fill={coat} />
+            <path d="M74 -176 Q94 -236 126 -240 Q108 -206 92 -158Z" fill={mix(coat, -0.4)} />
+            <path d="M138 -240 L146 -266 L158 -240Z" fill={coat} /><circle cx={158} cy={-214} r={5} fill={INK} /><path d="M178 -204 q8 6 4 14" fill="none" strokeWidth={2.5} />
+            <path d="M-56 -184 Q0 -202 62 -184 L62 -150 Q0 -166 -56 -150Z" fill={p.c2 ?? '#a8242c'} /><path d="M-56 -184 Q0 -202 62 -184" fill="none" stroke="#e2b84a" strokeWidth={5} />
+          </g>
+          {leg(-72, 2.4)}{leg(40, 0)}
+        </g>
+      );
+    }
+    case 'catapult': {
+      const per = 84, ph = f % per, fire = p.t === 'fire', lerp = (a: number, b: number, u: number) => a + (b - a) * Math.min(1, Math.max(0, u));
+      const th = fire ? (ph < 9 ? lerp(-120, 40, ph / 9) : ph < 24 ? lerp(40, 14, (ph - 9) / 15) : lerp(14, -120, (ph - 24) / 58)) : -120;
+      const pv: [number, number] = [0, -140], tip = P(pv[0], pv[1], 0, 0), L = 190, tx = pv[0] + L * Math.sin(rad(th)), ty = pv[1] - L * Math.cos(rad(th));
+      const u = fire ? (ph - 9) / 52 : -1, sx = tx + 1000 * u, sy = ty - 640 * u + 820 * u * u;
+      return (
+        <g {...OL}><Shadow w={170} />
+          {[-84, 84].map((x, i) => <g key={i}><circle cx={x} cy={-34} r={34} fill="#6b4a2a" /><circle cx={x} cy={-34} r={9} fill="#3a2a1a" />{[0, 60, 120].map((a) => <path key={a} d={`M${x} -34 L${x + 34 * Math.sin(rad(a))} ${-34 + 34 * Math.cos(rad(a))} M${x} -34 L${x - 34 * Math.sin(rad(a))} ${-34 - 34 * Math.cos(rad(a))}`} strokeWidth={4} />)}</g>)}
+          <path d="M-130 -58 L130 -58 L110 -90 L-110 -90Z" fill="#8a5a33" />
+          <path d="M-60 -90 L-24 -150 L-10 -150 L-34 -90Z M60 -90 L24 -150 L10 -150 L34 -90Z" fill="#a8693a" /><rect x={-34} y={-156} width={68} height={16} rx={6} fill="#6b4a2a" />
+          <path d={`M${pv[0] - 0.35 * L * Math.sin(rad(th))} ${pv[1] + 0.35 * L * Math.cos(rad(th))} L${tx} ${ty}`} stroke={INK} strokeWidth={22} strokeLinecap="round" /><path d={`M${pv[0] - 0.35 * L * Math.sin(rad(th))} ${pv[1] + 0.35 * L * Math.cos(rad(th))} L${tx} ${ty}`} stroke="#a8693a" strokeWidth={14} strokeLinecap="round" />
+          <circle cx={tx} cy={ty} r={20} fill="#6b4a2a" />
+          {(!fire || ph < 10) && <circle cx={tx} cy={ty - 22} r={20} fill="#9a9a9a" />}
+          {fire && ph >= 10 && ph < 70 && <g><circle cx={sx} cy={sy} r={20} fill="#9a9a9a" /></g>}
+        </g>
+      );
+    }
+    case 'ram': {
+      const hit = p.t === 'hit', sw = hit ? Math.sin(f / 5) * 70 : Math.sin(f / 20) * 10;
+      return (
+        <g {...OL}><Shadow w={210} />
+          {[-120, -40, 40, 120].map((x, i) => <g key={i}><circle cx={x} cy={-28} r={28} fill="#6b4a2a" /><circle cx={x} cy={-28} r={7} fill="#3a2a1a" /></g>)}
+          <rect x={-170} y={-58} width={340} height={22} fill="#8a5a33" />
+          {[-150, -70, 70, 150].map((x, i) => <rect key={i} x={x - 7} y={-190} width={14} height={134} fill="#6b4a2a" />)}
+          <path d="M-190 -184 L0 -270 L190 -184 L190 -150 L-190 -150Z" fill="#9a7650" />
+          {[-130, -70, -10, 50, 110].map((x, i) => <path key={i} d={`M${x} -246 L${x + 20} -156`} stroke="#6b4a2a" strokeWidth={3} fill="none" />)}
+          <path d="M-190 -150 H190" stroke="#c4a24a" strokeWidth={6} />
+          <g transform={`translate(${sw} 0)`}><path d="M-110 -150 L-90 -112 M110 -150 L90 -112" stroke={INK} strokeWidth={4} fill="none" /><rect x={-170} y={-122} width={330} height={34} rx={17} fill="#6b4a2a" /><path d="M160 -124 L222 -105 L160 -86Z" fill="#7f8794" /><path d="M-120 -122 V-88 M-40 -122 V-88 M40 -122 V-88 M120 -122 V-88" stroke="#7f8794" strokeWidth={5} /></g>
+        </g>
+      );
+    }
+    case 'siegetower': {
+      const down = p.t === 'down', sway = Math.sin(f / 22) * 1.2;
+      return (
+        <g {...OL} transform={`rotate(${sway} 0 0)`}><Shadow w={130} />
+          {[-64, 64].map((x, i) => <g key={i}><circle cx={x} cy={-34} r={34} fill="#6b4a2a" /><circle cx={x} cy={-34} r={8} fill="#3a2a1a" /></g>)}
+          <rect x={-96} y={-470} width={192} height={440} fill="#9a7650" />
+          {[0, 1, 2, 3, 4, 5, 6, 7].map((i) => <path key={i} d={`M-96 ${-440 + i * 52} H96`} stroke="#6b4a2a" strokeWidth={4} />)}
+          {[-70, 0, 70].map((x, i) => <path key={i} d={`M${x} -470 V-30`} stroke="#6b4a2a" strokeWidth={3} opacity={0.6} />)}
+          <path d="M-96 -250 L96 -250 M-96 -360 L96 -360" stroke="#c4a24a" strokeWidth={7} />
+          {[-300, -190, -80].map((y, i) => <rect key={i} x={20} y={y} width={50} height={14} fill="#2a2018" />)}
+          {[-110, -66, -22, 22, 66, 100].map((x, i) => <rect key={i} x={x - 14} y={-508} width={28} height={40} fill="#9a7650" />)}
+          <rect x={-100} y={-476} width={200} height={14} fill="#6b4a2a" />
+          <rect x={-5} y={-570} width={10} height={90} fill="#6b4a2a" /><path d="M5 -566 L66 -548 L5 -526Z" fill="#b3202a" />
+          {down ? <path d="M96 -440 L206 -380 L206 -362 L96 -420Z" fill="#8a5a33" /> : <rect x={96} y={-440} width={16} height={120} fill="#8a5a33" />}
+        </g>
+      );
+    }
+    case 'ballista': {
+      const per = 70, ph = f % per, fire = p.t === 'fire', pull = fire ? (ph < 40 ? ph / 40 : ph < 46 ? 1 - (ph - 40) / 6 : 0) : 1, bolt = fire && ph >= 42 ? (ph - 42) * 46 : 0;
+      return (
+        <g {...OL}><Shadow w={120} />
+          {[-60, 60].map((x, i) => <g key={i}><circle cx={x} cy={-26} r={26} fill="#6b4a2a" /><circle cx={x} cy={-26} r={6} fill="#3a2a1a" /></g>)}
+          <path d="M-90 -50 L110 -50 L90 -84 L-70 -84Z" fill="#8a5a33" /><rect x={-60} y={-104} width={160} height={20} fill="#a8693a" />
+          <path d={`M-10 -130 Q${-70 * (0.4 + pull * 0.6)} -170 ${-50 * (0.4 + pull * 0.6)} -250 M-10 -130 Q${-70 * (0.4 + pull * 0.6)} -90 ${-50 * (0.4 + pull * 0.6)} -10`} fill="none" stroke={INK} strokeWidth={16} /><path d={`M-10 -130 Q${-70 * (0.4 + pull * 0.6)} -170 ${-50 * (0.4 + pull * 0.6)} -250`} fill="none" stroke="#a8693a" strokeWidth={9} />
+          <path d={`M${-50 * (0.4 + pull * 0.6)} -250 L${-80 * pull + 40} -128 L${-50 * (0.4 + pull * 0.6)} -6`} fill="none" strokeWidth={3} />
+          <g transform={`translate(${bolt} 0)`}><path d={`M${-80 * pull + 40} -128 L${120} -128`} stroke={INK} strokeWidth={6} /><path d={`M${-80 * pull + 40} -128 L${120} -128`} stroke="#8a5a33" strokeWidth={3} /><path d="M120 -136 L152 -128 L120 -120Z" fill="#dfe5ec" /></g>
+        </g>
+      );
+    }
+    case 'gate': {
+      const open = p.t === 'open', n = 1;
+      return (
+        <g {...OL}><Shadow w={230} />
+          {[-190, 190].map((x, i) => <g key={i}><rect x={x - 70} y={-420} width={140} height={420} fill="#bdb6a6" />{[-60, -20, 20, 60].map((o, j) => <rect key={j} x={x + o - 14} y={-458} width={28} height={40} fill="#bdb6a6" />)}<rect x={x - 12} y={-330} width={24} height={50} rx={12} fill="#2a2018" /></g>)}
+          <rect x={-130} y={-320} width={260} height={320} fill="#bdb6a6" />{[-110, -66, -22, 22, 66, 110].map((x, i) => <rect key={i} x={x - 16} y={-358} width={32} height={40} fill="#bdb6a6" />)}
+          <path d="M-96 0 V-190 Q-96 -270 0 -270 Q96 -270 96 -190 V0Z" fill={open ? '#1b1410' : '#6b4a2a'} />
+          {!open && <g stroke="#3a2a1a" strokeWidth={6}><path d="M0 -270 V0 M-96 -150 H96 M-96 -60 H96" /><circle cx={-24} cy={-100} r={8} fill="#c4a24a" /><circle cx={24} cy={-100} r={8} fill="#c4a24a" /></g>}
+          {open && <g stroke="#6b6f78" strokeWidth={6}>{[-72, -36, 0, 36, 72].map((x, i) => <path key={i} d={`M${x} -270 V-${210 + (i % 2) * 6}`} />)}<path d="M-92 -250 H92" /></g>}
+        </g>
+      );
+    }
+    case 'longship': {
+      const bob = Math.sin(f / 16 + p.x) * 7, ro = Math.sin(f / 7) * 18, sail = p.c ?? '#b3202a';
+      return (
+        <g {...OL} transform={`translate(0 ${bob})`}>
+          <path d="M-230 -90 Q-250 -150 -226 -190 Q-200 -170 -196 -120 L190 -110 Q236 -112 270 -176 Q286 -138 252 -70 Q200 -20 120 0 L-150 6 Q-210 -14 -230 -90Z" fill="#6e4325" />
+          <path d="M-196 -120 L190 -110 L196 -86 L-200 -92Z" fill="#a8693a" />
+          <path d="M-230 -90 Q-262 -150 -240 -214 L-216 -208 Q-236 -166 -214 -128Z" fill="#8a5a33" /><path d="M-232 -204 Q-262 -222 -246 -246 Q-216 -236 -218 -206Z" fill="#8a5a33" /><circle cx={-238} cy={-224} r={4} fill={INK} />
+          {Array.from({length: 9}, (_, i) => <circle key={i} cx={-160 + i * 44} cy={-100} r={15} fill={i % 2 ? '#e2b84a' : '#b3202a'} />)}
+          {Array.from({length: 6}, (_, i) => <path key={i} d={`M${-120 + i * 54} -76 L${-140 + i * 54 + ro} -6`} stroke={INK} strokeWidth={6} fill="none" />)}
+          <rect x={-6} y={-380} width={12} height={290} fill="#8a5a33" />
+          <path d="M-110 -370 H110 L96 -180 H-96Z" fill={sail} />{[-60, 0, 60].map((x, i) => <path key={i} d={`M${x} -370 V-180`} stroke="#f4f1e6" strokeWidth={10} />)}<path d="M-110 -370 H110" stroke="#e2b84a" strokeWidth={8} />
+        </g>
+      );
+    }
+    case 'fleet': {
+      const n = Math.min(p.n ?? 4, 8);
+      return (<g>{Array.from({length: n}, (_, i) => { const k = 1 - (i / Math.max(1, n)) * 0.45; return (<g key={i} transform={`translate(${(i - (n - 1) / 2) * 250 * (p.flip ? -1 : 1)} ${-i * 22}) scale(${k})`}><PropArt p={{k: p.ship ?? 'galley', x: i * 37, y: 0, c: p.c}} f={f + i * 9} seed={`${seed}f${i}`} /></g>); }).reverse()}</g>);
+    }
+    case 'photo': {
+      const w = p.w ?? 360, h = p.h ?? 460, fc = p.c ?? '#c9a84a';
+      return (
+        <g {...OL}><Shadow w={w / 2 + 30} />
+          <path d={`M${-w / 4} ${-h - 80} L${-w / 3} 0 M${w / 4} ${-h - 80} L${w / 3} 0`} stroke="#6b4a2a" strokeWidth={10} fill="none" />
+          <rect x={-w / 2 - 16} y={-h - 96} width={w + 32} height={h + 32} rx={8} fill={fc} />
+          <rect x={-w / 2} y={-h - 80} width={w} height={h} fill="#cfc8b6" />
+          {p.src ? <image href={staticFile(p.src)} x={-w / 2} y={-h - 80} width={w} height={h} preserveAspectRatio="xMidYMid slice" /> : <text y={-h / 2 - 80} textAnchor="middle" fontFamily={HAND} fontSize={40} fill="#6b5a45" stroke="none">photo</text>}
+          <rect x={-w / 2} y={-h - 80} width={w} height={h} fill="none" stroke={INK} strokeWidth={4} />
+          {p.t && <g><rect x={-w / 2 - 6} y={-86} width={w + 12} height={46} rx={10} fill="#fffaf0" /><text y={-52} textAnchor="middle" fontFamily={HAND} fontSize={32} fill={INK} stroke="none">{p.t}</text></g>}
+        </g>
+      );
+    }
     case 'troop': return <Troop p={p} f={f} seed={seed} />;
     case 'legion': return (<g>{Array.from({length: p.n ?? 12}, (_, i) => { const col = i % 4, row = Math.floor(i / 4); return <g key={i} transform={`translate(${col * 78 - 120 + Math.sin(f / 5 + i) * 0} ${-row * 26 + Math.abs(Math.sin(f / 6 + col)) * -5}) scale(0.4)`}><Actor a={{x: 0, y: 0, look: 'legionary', pose: 'idle', held: 'spear', shield: true, raw: true}} seed={`${seed}l${i}`} /></g>; })}</g>);
     case 'fire': return (<g><Flame f={f} k={0} w={60 * (p.s ?? 1)} h={170} /><g transform="translate(-44 0)"><Flame f={f} k={1} w={40} h={110} /></g><g transform="translate(46 0)"><Flame f={f} k={2} w={44} h={130} /></g></g>);
@@ -635,12 +803,12 @@ export const Weather: React.FC<{k: WeatherKind | WeatherKind[]; seed?: string}> 
 };
 
 // ===================== BACKDROPS + STAGE =====================
-export type BgKind = 'desert' | 'grass' | 'sea' | 'street' | 'interior';
+export type BgKind = 'desert' | 'grass' | 'sea' | 'street' | 'interior' | 'steppe' | 'snow' | 'mountains' | 'forest' | 'battlefield' | 'harbor' | 'castle' | 'palace';
 export type Tod = 'day' | 'dusk' | 'night' | 'fire';
 export type TextT = {t: string; x: number; y: number; at?: number; size?: number; color?: string};
 export type StageT = {shake?: {at: number; amp?: number}; flash?: {at: number; c?: string}; bars?: boolean; spot?: {x: number; y: number; r?: number}; bg: BgKind; tod?: Tod; props?: PropT[]; actors?: ActorT[]; texts?: TextT[]; fx?: WeatherKind | WeatherKind[]; cam?: {x?: [number, number]; z?: [number, number]; at?: [number, number]}; shots?: ShotT[]; labels?: LabelT[]};
 // Screen-space labels that follow the camera: name (anchored to an actor), faction pill, place, date chip, fact-check badge
-export type LabelT = {k: 'name' | 'faction' | 'place' | 'date' | 'fact'; t: string; sub?: string; actor?: number; x?: number; y?: number; c?: string; at?: number; until?: number; below?: boolean};
+export type LabelT = {k: 'name' | 'faction' | 'place' | 'date' | 'fact'; t: string; fac?: string; sub?: string; actor?: number; x?: number; y?: number; c?: string; at?: number; until?: number; below?: boolean};
 // camera helpers: `cam: bust(actor)` frames head and shoulders of that actor, `cam: pushIn(actor)` a slow push toward the face
 export const bust = (a: ActorT, z = 2.3): NonNullable<StageT['cam']> => { const x = Array.isArray(a.x) ? a.x[1] : a.x; return {at: [x, (a.y ?? 940) - 300 * CHAR * (a.s ?? 1)], z: [z, z]}; };
 export const pushIn = (a: ActorT, from = 1.6, to = 2.4): NonNullable<StageT['cam']> => ({...bust(a), z: [from, to]});
@@ -652,7 +820,7 @@ export const shotSpans = (st: StageT): {st: StageT; a0: number; a1: number}[] =>
   return st.shots.map((sh, i) => { const a1 = i === st.shots!.length - 1 ? 1 : Math.min(1, Math.max(a0, sh.until)); const o = {st: {...st, ...sh.st, shots: undefined} as StageT, a0, a1}; a0 = a1; return o; });
 };
 const SKY: Record<Tod, [string, string]> = {day: ['#69bff0', '#e8f7ff'], dusk: ['#323c7c', '#f7ab6c'], night: ['#050919', '#1c2a58'], fire: ['#2a0a0a', '#ff8a3a']};
-const GROUND: Record<BgKind, string> = {desert: '#dcae72', grass: '#86bb5f', sea: '#2f86c4', street: '#9096a0', interior: '#a06f44'};
+const GROUND: Record<BgKind, string> = {desert: '#dcae72', grass: '#86bb5f', sea: '#2f86c4', street: '#9096a0', interior: '#a06f44', steppe: '#cdb26a', snow: '#eef3f8', mountains: '#8a9a6a', forest: '#4f7f3f', battlefield: '#7a6244', harbor: '#9a7b52', castle: '#8f8a7a', palace: '#d9d2c1'};
 const HZ = 700;
 
 const Hills: React.FC<{seed: string; base: number; amp: number; col: string; dx: number}> = ({seed, base, amp, col, dx}) => {
@@ -662,10 +830,78 @@ const Hills: React.FC<{seed: string; base: number; amp: number; col: string; dx:
   return <path d={`M-800 1100 L${pts.join(' L')} L2720 1100Z`} fill={col} stroke={INK} strokeWidth={2.5} transform={`translate(${dx} 0)`} />;
 };
 
+
+// ---------- extra backgrounds: a far layer (behind the ground line) and a near layer (on the ground) ----------
+const FarExtra: React.FC<{bg: BgKind; seed: string; cx: number; f: number}> = ({bg, seed, cx, f}) => {
+  const S = {stroke: INK, strokeWidth: 3, strokeLinejoin: 'round'} as const;
+  if (bg === 'mountains' || bg === 'snow') {
+    return (<g transform={`translate(${-cx * 0.22} 0)`}>{Array.from({length: 9}, (_, i) => {
+      const x = -300 + i * 300 + random(`${seed}m${i}`) * 120, h = 230 + random(`${seed}mh${i}`) * 230, y0 = HZ - 8;
+      return (<g key={i}><path d={`M${x - 270} ${y0} L${x} ${y0 - h} L${x + 270} ${y0}Z`} fill={bg === 'snow' ? '#a9b6c8' : '#7d8794'} {...S} /><path d={`M${x - 73} ${y0 - h * 0.73} L${x} ${y0 - h} L${x + 73} ${y0 - h * 0.73} L${x + 34} ${y0 - h * 0.8} L${x} ${y0 - h * 0.7} L${x - 34} ${y0 - h * 0.8}Z`} fill="#fff" stroke={INK} strokeWidth={2.5} strokeLinejoin="round" /></g>);
+    })}</g>);
+  }
+  if (bg === 'forest') {
+    return (<g transform={`translate(${-cx * 0.3} 0)`}>{Array.from({length: 34}, (_, i) => {
+      const x = -200 + i * 80 + random(`${seed}t${i}`) * 40, h = 150 + random(`${seed}th${i}`) * 130;
+      return (<g key={i}><rect x={x - 6} y={HZ - 30} width={12} height={34} fill="#5a3a22" />{[0, 1, 2].map((k) => <path key={k} d={`M${x - 52 + k * 10} ${HZ - 30 - k * h * 0.28} L${x} ${HZ - 30 - h * (0.45 + k * 0.28)} L${x + 52 - k * 10} ${HZ - 30 - k * h * 0.28}Z`} fill={k % 2 ? '#2f6a3c' : '#3a7d46'} {...S} />)}</g>);
+    })}</g>);
+  }
+  if (bg === 'castle') {
+    return (<g transform={`translate(${-cx * 0.18} 0)`} stroke={INK} strokeWidth={3} strokeLinejoin="round">
+      <rect x={-300} y={HZ - 190} width={2600} height={200} fill="#b3ad9c" />
+      {Array.from({length: 60}, (_, i) => <rect key={i} x={-300 + i * 44} y={HZ - 226} width={26} height={38} fill="#b3ad9c" />)}
+      {Array.from({length: 6}, (_, i) => { const x = 140 + i * 420; return (<g key={i}><rect x={x - 60} y={HZ - 330} width={120} height={340} fill="#a7a190" />{[-48, -16, 16, 48].map((o, j) => <rect key={j} x={x + o - 11} y={HZ - 364} width={22} height={36} fill="#a7a190" />)}<rect x={x - 12} y={HZ - 250} width={24} height={52} rx={12} fill="#2a2018" /></g>); })}
+      {[0, 1, 2, 3].map((i) => <g key={i} transform={`translate(${280 + i * 520} ${HZ - 330})`}><rect x={-3} y={-60} width={6} height={64} fill="#6b4a2a" /><path d="M3 -58 L50 -44 L3 -28Z" fill={i % 2 ? '#b3202a' : '#2b5fb4'} /></g>)}
+    </g>);
+  }
+  if (bg === 'battlefield') {
+    return (<g>
+      <rect y={HZ - 150} width={1920} height={150} fill="#3a2a22" opacity={0.28} />
+      {Array.from({length: 7}, (_, i) => { const x = 140 + i * 280 + random(`${seed}bf${i}`) * 90, rise = ((f * 0.6 + i * 40) % 200); return (<g key={i} transform={`translate(${x - cx * 0.2} ${HZ - 20})`} opacity={0.5}>{[0, 1, 2, 3].map((k) => <circle key={k} cx={Math.sin((rise + k * 30) / 30) * 14} cy={-k * 46 - rise * 0.5} r={30 + k * 9} fill="#4a3f3b" />)}<g transform="translate(0 -4) scale(0.6)"><Flame f={f + i * 5} k={i} w={50} h={90} /></g></g>); })}
+    </g>);
+  }
+  return null;
+};
+const NearExtra: React.FC<{bg: BgKind; seed: string; cx: number; f: number}> = ({bg, seed, cx, f}) => {
+  if (bg === 'steppe') {
+    return (<g stroke="#a08a44" strokeWidth={3} strokeLinecap="round" opacity={0.8}>{Array.from({length: 80}, (_, i) => { const x = random(`${seed}g${i}`) * 1920, y = HZ + 20 + random(`${seed}gy${i}`) * 330, sw = Math.sin(f / 18 + i) * 3; return <path key={i} d={`M${x} ${y} q${sw} -14 ${sw * 2} -26 M${x + 6} ${y} q${sw} -12 ${sw * 2 + 4} -22`} fill="none" />; })}</g>);
+  }
+  if (bg === 'battlefield') {
+    return (<g>{Array.from({length: 9}, (_, i) => <ellipse key={i} cx={random(`${seed}mu${i}`) * 1920} cy={HZ + 40 + random(`${seed}mv${i}`) * 300} rx={60 + random(`${seed}mr${i}`) * 80} ry={10 + random(`${seed}mq${i}`) * 14} fill="#4f3d2b" opacity={0.5} />)}
+      {Array.from({length: 7}, (_, i) => { const x = 100 + i * 290 + random(`${seed}st${i}`) * 80, y = HZ + 60 + random(`${seed}sy${i}`) * 240; return <path key={i} d={`M${x} ${y} L${x + 26} ${y - 74}`} stroke="#6b4a2a" strokeWidth={6} strokeLinecap="round" />; })}</g>);
+  }
+  if (bg === 'snow') {
+    return (<g fill="#fff" opacity={0.9}>{Array.from({length: 60}, (_, i) => { const x = (random(`${seed}sn${i}`) * 1980 + Math.sin(f / 30 + i) * 20 - 30) % 1920, y = (random(`${seed}sm${i}`) * 1080 + f * (1.4 + (i % 4) * 0.4)) % 1080; return <circle key={i} cx={x} cy={y} r={2 + (i % 3)} />; })}</g>);
+  }
+  if (bg === 'harbor') {
+    return (<g>
+      <rect y={HZ - 6} width={1920} height={96} fill="#2f86c4" /><rect y={HZ - 6} width={1920} height={30} fill="#5aa9dc" opacity={0.55} />
+      {Array.from({length: 7}, (_, i) => <path key={i} d={`M${i * 300 - 100 + ((f * 2) % 300)} ${HZ + 30 + (i % 3) * 22} q30 -14 60 0 t60 0`} fill="none" stroke="#fff" strokeWidth={4} strokeLinecap="round" opacity={0.6} />)}
+      <rect y={HZ + 90} width={1920} height={14} fill="#6d4a2c" stroke={INK} strokeWidth={3} />
+      {Array.from({length: 18}, (_, i) => <path key={i} d={`M${i * 120 - 40} ${HZ + 104} L${i * 190 - 360} 1080`} stroke="#000" opacity={0.16} strokeWidth={3} />)}
+      {Array.from({length: 8}, (_, i) => <g key={i}><rect x={150 + i * 240} y={HZ + 56} width={16} height={46} fill="#5a3a22" stroke={INK} strokeWidth={3} /></g>)}
+    </g>);
+  }
+  if (bg === 'castle') {
+    return (<g stroke="#000" opacity={0.14}>{Array.from({length: 14}, (_, i) => <path key={i} d={`M${i * 160 - 100} ${HZ + 10} L${i * 260 - 600} 1080`} strokeWidth={3} />)}{[0, 1, 2, 3].map((i) => <path key={i} d={`M0 ${HZ + 70 + i * 90} H1920`} strokeWidth={3} />)}</g>);
+  }
+  return null;
+};
 const Backdrop: React.FC<{bg: BgKind; tod: Tod; f: number; cx: number; seed: string}> = ({bg, tod, f, cx, seed}) => {
   const [t1, t2] = SKY[tod];
   const gc = GROUND[bg];
   const night = tod === 'night' || tod === 'fire';
+  if (bg === 'palace') {
+    return (
+      <g stroke={INK} strokeWidth={3}>
+        <rect width={1920} height={1080} fill="#e6dcc3" stroke="none" />
+        {Array.from({length: 5}, (_, i) => <g key={i}><rect x={i * 420 - 20 + 60} y={150} width={90} height={620} fill="#f1ead6" /><rect x={i * 420 + 30} y={130} width={190} height={34} fill="#d9cfb4" /><rect x={i * 420 + 30} y={744} width={190} height={30} fill="#d9cfb4" />{[0, 1, 2].map((k) => <path key={k} d={`M${i * 420 + 85 + k * 24} 170 V744`} opacity={0.25} />)}</g>)}
+        {[0, 1, 2, 3].map((i) => <g key={i} transform={`translate(${i * 420 + 240} 250)`}><rect x={-60} y={0} width={120} height={300} fill={i % 2 ? '#7b2d8e' : '#a8242c'} /><path d="M-60 300 L0 340 L60 300" fill={i % 2 ? '#7b2d8e' : '#a8242c'} /><circle cx={0} cy={110} r={34} fill="#e2b84a" /></g>)}
+        <rect y={770} width={1920} height={310} fill="#d9d2c1" />
+        {Array.from({length: 16}, (_, i) => <path key={i} d={`M${i * 140 - 100} 770 L${i * 300 - 1100} 1080`} opacity={0.2} />)}{[0, 1, 2].map((i) => <path key={i} d={`M0 ${830 + i * 90} H1920`} opacity={0.2} />)}
+      </g>
+    );
+  }
   if (bg === 'interior') {
     return (
       <g>
@@ -687,15 +923,17 @@ const Backdrop: React.FC<{bg: BgKind; tod: Tod; f: number; cx: number; seed: str
       {night && Array.from({length: 40}, (_, i) => <circle key={i} cx={random(`${seed}sx${i}`) * 1920} cy={random(`${seed}sy${i}`) * 520} r={1.5 + random(`${seed}sr${i}`) * 2} fill="#fff" opacity={0.4 + 0.6 * Math.abs(Math.sin(f / 20 + i))} />)}
       {tod === 'night' ? (<g transform={`translate(${1500 - cx * 0.05} 170)`}><PropArt p={{k: 'moon', x: 0, y: 0}} f={f} seed={seed} /></g>) : (<g transform={`translate(${1480 - cx * 0.05} ${tod === 'dusk' ? 470 : 190})`}><circle r={300} fill={`url(#glow${seed})`} /><circle r={72} fill={tod === 'fire' ? '#ffb347' : '#ffe27a'} /></g>)}
       {[0, 1, 2, 3].map((i) => (<g key={i} transform={`translate(${((random(`${seed}cx${i}`) * 2400 + f * (0.25 + i * 0.1) - cx * 0.1) % 2500) - 300} ${90 + i * 70 + random(`${seed}cy${i}`) * 50}) scale(${0.8 + random(`${seed}cs${i}`) * 0.7})`} opacity={night ? 0.25 : 1}><PropArt p={{k: 'cloud', x: 0, y: 0}} f={f} seed={seed} /></g>))}
-      {bg !== 'sea' && bg !== 'street' && <Hills seed={`${seed}h1`} base={HZ - 20} amp={150} col={mix(gc, bg === 'grass' ? -0.18 : -0.1)} dx={-cx * 0.15} />}
+      {bg !== 'sea' && bg !== 'street' && bg !== 'harbor' && bg !== 'castle' && <Hills seed={`${seed}h1`} base={HZ - 20} amp={150} col={mix(gc, bg === 'grass' ? -0.18 : -0.1)} dx={-cx * 0.15} />}
       {bg === 'street' && <g transform={`translate(${-cx * 0.15} 0)`}>{Array.from({length: 22}, (_, i) => {
         const h = 120 + random(`${seed}bh${i}`) * 260;
         return <rect key={i} x={-600 + i * 150} y={HZ - h} width={120} height={h + 10} fill="#8795b3" stroke={INK} strokeWidth={2.5} opacity={0.85} />;
       })}</g>}
+      <FarExtra bg={bg} seed={seed} cx={cx} f={f} />
       {bg !== 'sea' && <Hills seed={`${seed}h2`} base={HZ + 20} amp={90} col={mix(gc, -0.04)} dx={-cx * 0.3} />}
       <rect y={HZ} width={1920} height={400} fill={gc} stroke={INK} strokeWidth={0} />
       <rect y={HZ} width={1920} height={5} fill={INK} opacity={0.4} />
       {bg === 'sea' && (<g><rect y={HZ - 6} width={1920} height={400} fill="#2f86c4" /><rect y={HZ - 6} width={1920} height={110} fill="#5aa9dc" opacity={0.55} /><PropArt p={{k: 'waves', x: 0, y: 0}} f={f} seed={seed} />{[0, 1, 2].map((i) => <g key={i} transform={`translate(0 ${HZ + 50 + i * 110})`}><PropArt p={{k: 'waves', x: 0, y: 0}} f={f + i * 14} seed={seed} /></g>)}</g>)}
+      <NearExtra bg={bg} seed={seed} cx={cx} f={f} />
       {bg !== 'sea' && <rect y={HZ + 5} width={1920} height={380} fill="#000" opacity={0.04} />}
     </g>
   );
@@ -708,7 +946,7 @@ const LabelArt: React.FC<{l: LabelT; x: number; y: number; f: number; d: number}
   const body = (() => {
     switch (l.k) {
       case 'name': { const w = Math.max(tw(l.t, 34), l.sub ? tw(l.sub, 24) : 0), h = l.sub ? 88 : 56; return (<g><rect x={-w / 2} y={-h / 2} width={w} height={h} rx={14} fill="#fffaf0" stroke={INK} strokeWidth={3} /><text y={l.sub ? -6 : 11} textAnchor="middle" fontFamily={HAND} fontSize={34} fontWeight={700} fill={INK}>{l.t}</text>{l.sub && <text y={28} textAnchor="middle" fontFamily={HAND} fontSize={24} fill="#6b5a45">{l.sub}</text>}</g>); }
-      case 'faction': { const w = tw(l.t, 30) + 10; return (<g><rect x={-w / 2} y={-22} width={w} height={44} rx={9} fill={l.c ?? '#c0392b'} stroke="#fff" strokeWidth={3} /><text y={10} textAnchor="middle" fontFamily={HAND} fontSize={30} fontWeight={700} fill="#fff" letterSpacing={1.5}>{l.t.toUpperCase()}</text></g>); }
+      case 'faction': { const w = tw(l.t, 30) + 10; return (<g><rect x={-w / 2} y={-22} width={w} height={44} rx={9} fill={l.c ?? (l.fac ? FACTIONS[l.fac]?.c : undefined) ?? '#c0392b'} stroke="#fff" strokeWidth={3} /><text y={10} textAnchor="middle" fontFamily={HAND} fontSize={30} fontWeight={700} fill="#fff" letterSpacing={1.5}>{l.t.toUpperCase()}</text></g>); }
       case 'place': return <text textAnchor="middle" fontFamily={HAND} fontSize={50} fill="#fff" stroke={INK} strokeWidth={8} paintOrder="stroke" strokeLinejoin="round">{l.t}</text>;
       case 'date': { const w = tw(l.t, 36); return (<g><rect x={0} y={-24} width={w} height={50} rx={10} fill="#1f2433" opacity={0.88} /><text x={w / 2} y={12} textAnchor="middle" fontFamily={HAND} fontSize={36} fill="#fff">{l.t}</text></g>); }
       case 'fact': return (<g><rect x={-140} y={-28} width={280} height={56} rx={12} fill="#f2c230" stroke={INK} strokeWidth={4} /><circle cx={-106} cy={0} r={18} fill="#2f9e5a" stroke={INK} strokeWidth={3} /><path d="M-116 0 L-108 8 L-95 -8" fill="none" stroke="#fff" strokeWidth={5} strokeLinecap="round" strokeLinejoin="round" /><text x={22} y={11} textAnchor="middle" fontFamily={HAND} fontSize={32} fontWeight={700} fill={INK} letterSpacing={1}>FACT CHECK</text></g>);
@@ -770,7 +1008,7 @@ const StageOne: React.FC<{st: StageT; words?: WordT[]; seed: string}> = ({st, wo
         });
       })()}
       {(st.texts ?? []).map((q, i) => {
-        const at = (q.at ?? 0) * d, n = Math.round(interpolate(f, [at, at + q.t.length * 2.2], [0, q.t.length], C));
+        const at = (q.at ?? 0) * d, n = q.t.length ? Math.round(interpolate(f, [at, at + q.t.length * 2.2], [0, q.t.length], C)) : 0;
         return <text key={i} x={q.x} y={q.y} textAnchor="middle" fontFamily={HAND} fontSize={q.size ?? 84} fill={q.color ?? '#fff'} stroke={INK} strokeWidth={9} paintOrder="stroke" strokeLinejoin="round">{q.t.slice(0, n)}</text>;
       })}
     </svg>
