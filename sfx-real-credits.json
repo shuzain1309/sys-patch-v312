@@ -130,5 +130,119 @@
   "name": "Mastodon trumpet",
   "username": "vintprox",
   "license": "http://creativecommons.org/publicdomain/zero/1.0/"
+ },
+ "whoosh": {
+  "id": 856168,
+  "name": "Cyberpunk Glitch Hologram Transition Whoosh",
+  "username": "brktkrgll",
+  "license": "http://creativecommons.org/publicdomain/zero/1.0/"
+ },
+ "riser": {
+  "id": 754771,
+  "name": "Riser Hit sfx 097",
+  "username": "AudioPapkin",
+  "license": "http://creativecommons.org/publicdomain/zero/1.0/"
+ },
+ "rain_loop": {
+  "id": 728429,
+  "name": "Rain of coins",
+  "username": "Sadiquecat",
+  "license": "http://creativecommons.org/publicdomain/zero/1.0/"
+ },
+ "wind_loop": {
+  "id": 275640,
+  "name": "night ambience",
+  "username": "seth-m",
+  "license": "http://creativecommons.org/publicdomain/zero/1.0/"
+ },
+ "fire_loop": {
+  "id": 650574,
+  "name": "fire crackling loop.wav",
+  "username": "soundofsong",
+  "license": "http://creativecommons.org/publicdomain/zero/1.0/"
+ },
+ "waves_loop": {
+  "id": 145213,
+  "name": "oceanwaves-1.wav",
+  "username": "Rmutt",
+  "license": "http://creativecommons.org/publicdomain/zero/1.0/"
+ },
+ "crowd_loop": {
+  "id": 729330,
+  "name": "Spacious Bar Ambience With Music, Medium Crowd 02",
+  "username": "HECKFRICKER",
+  "license": "http://creativecommons.org/publicdomain/zero/1.0/"
+ },
+ "battle_loop": {
+  "id": 694374,
+  "name": "Fireworks/ Warzone 6",
+  "username": "NearTheAtmoshphere",
+  "license": "http://creativecommons.org/publicdomain/zero/1.0/"
+ },
+ "march_loop": {
+  "id": 475246,
+  "name": "Military Snaredrum",
+  "username": "aUREa",
+  "license": "http://creativecommons.org/publicdomain/zero/1.0/"
+ },
+ "hooves_loop": {
+  "id": 322448,
+  "name": "Horse Gallop Loop.wav",
+  "username": "DeadxCreed",
+  "license": "http://creativecommons.org/publicdomain/zero/1.0/"
+ },
+ "sand_wind_loop": {
+  "id": 615440,
+  "name": "Mount Horeb",
+  "username": "InChristAlone",
+  "license": "http://creativecommons.org/publicdomain/zero/1.0/"
+ },
+ "nile_water_loop": {
+  "id": 728092,
+  "name": "Creek_loop_02",
+  "username": "andrew1280",
+  "license": "http://creativecommons.org/publicdomain/zero/1.0/"
+ },
+ "torch_loop": {
+  "id": 422742,
+  "name": "Fire_Crackle_1.wav",
+  "username": "KieranKeegan",
+  "license": "http://creativecommons.org/publicdomain/zero/1.0/"
+ },
+ "sistrum": {
+  "id": 699,
+  "name": "sistrum.wav",
+  "username": "memexikon",
+  "license": "http://creativecommons.org/publicdomain/zero/1.0/"
+ },
+ "bow_shot": {
+  "id": 384916,
+  "name": "Bow Release (Bow and Arrow) 2",
+  "username": "Ali_6868",
+  "license": "http://creativecommons.org/publicdomain/zero/1.0/"
+ },
+ "whip": {
+  "id": 364729,
+  "name": "finger-snap-stereo-08-triple.wav",
+  "username": "newagesoup",
+  "license": "http://creativecommons.org/publicdomain/zero/1.0/"
+ },
+ "gong": {
+  "id": 266392,
+  "name": "Gong2.wav",
+  "username": "ceich93",
+  "license": "http://creativecommons.org/publicdomain/zero/1.0/"
+ },
+ "drums_war": {
+  "id": 149966,
+  "name": "Muffled Distant Explosion",
+  "username": "NenadSimic",
+  "license": "http://creativecommons.org/publicdomain/zero/1.0/"
+ },
+ "sword_clash": {
+  "id": 326807,
+  "name": "Sword_Clash (33).wav",
+  "username": "JohnBuhr",
+  "license": "http://creativecommons.org/publicdomain/zero/1.0/"
  }
 }
