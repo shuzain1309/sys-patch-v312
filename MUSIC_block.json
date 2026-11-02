@@ -1,0 +1,151 @@
+[
+ {
+  "from": "s001",
+  "key": "egypt_mystery"
+ },
+ {
+  "from": "s016",
+  "key": "nile_calm",
+  "xf": 3
+ },
+ {
+  "from": "s037",
+  "key": "egypt_ancient",
+  "xf": 2
+ },
+ {
+  "from": "s058",
+  "key": "pharaoh_epic",
+  "xf": 3
+ },
+ {
+  "from": "s088",
+  "key": "desert_wind",
+  "xf": 3
+ },
+ {
+  "from": "s107",
+  "key": "march_tense",
+  "xf": 2
+ },
+ {
+  "from": "s129",
+  "key": "ceremony",
+  "xf": 3
+ },
+ {
+  "from": "s157",
+  "key": "egypt_mystery",
+  "xf": 3
+ },
+ {
+  "from": "s180",
+  "key": "tomb_dark",
+  "xf": 3
+ },
+ {
+  "from": "s184",
+  "key": "wonder",
+  "xf": 2
+ },
+ {
+  "from": "s192",
+  "key": "kadesh_battle",
+  "xf": 3
+ },
+ {
+  "from": "s205",
+  "key": "ceremony",
+  "xf": 3
+ },
+ {
+  "from": "s220",
+  "key": "calm_ancient",
+  "xf": 3
+ },
+ {
+  "from": "s232",
+  "key": "tomb_dark",
+  "xf": 3
+ },
+ {
+  "from": "s242",
+  "key": "tragic",
+  "xf": 3
+ },
+ {
+  "from": "s257",
+  "key": "desert_wind",
+  "xf": 3
+ },
+ {
+  "from": "s264",
+  "key": "march_tense",
+  "xf": 3
+ },
+ {
+  "from": "s271",
+  "key": "ptolemaic_court",
+  "xf": 3
+ },
+ {
+  "from": "s297",
+  "key": "cleopatra_drama",
+  "xf": 3
+ },
+ {
+  "from": "s313",
+  "key": "battle",
+  "xf": 2
+ },
+ {
+  "from": "s321",
+  "key": "egypt_ancient",
+  "xf": 3
+ },
+ {
+  "from": "s332",
+  "key": "islamic_conquest",
+  "xf": 3
+ },
+ {
+  "from": "s337",
+  "key": "ceremony",
+  "xf": 3
+ },
+ {
+  "from": "s347",
+  "key": "march_tense",
+  "xf": 3
+ },
+ {
+  "from": "s352",
+  "key": "wonder",
+  "xf": 3
+ },
+ {
+  "from": "s359",
+  "key": "triumph",
+  "xf": 3
+ },
+ {
+  "from": "s364",
+  "key": "modern_tension",
+  "xf": 3
+ },
+ {
+  "from": "s368",
+  "key": "pharaoh_epic",
+  "xf": 3
+ },
+ {
+  "from": "s377",
+  "key": "modern_tension",
+  "xf": 3
+ },
+ {
+  "from": "s381",
+  "key": "nile_calm",
+  "xf": 4
+ }
+]

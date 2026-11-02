@@ -1,5 +1,5 @@
 {
- "_doc": "keys: script key -> Freesound search text (CC0 only), a Freesound id (number) to pin a sound, or {q,id,max}. Keys ending _loop are ambience beds (need max, e.g. 60). Real recordings only; nothing is synthesised. 'drop' is no longer used.",
+ "_doc": "New keys for the Egypt video. Merged into the repo copy by the dashboard. Real CC0 recordings only.",
  "gain_db": -6,
  "legacy_gain_db": 0,
  "max_seconds": 8,
@@ -90,7 +90,15 @@
   "chant_low": "low choir chant ritual",
   "scribble": "writing quill papyrus",
   "sword_clash": "sword clash metal",
-  "camel": "camel grunt"
+  "camel": "camel grunt",
+  "chisel": "chisel hammer stone carving",
+  "cat": "cat meow single",
+  "cannon": "cannon boom distant",
+  "dig_sand": "shovel digging sand gravel",
+  "seagulls_loop": {
+   "q": "seagulls harbor ambience loop",
+   "max": 60
+  }
  },
  "drop": [
   "baby_cry",
