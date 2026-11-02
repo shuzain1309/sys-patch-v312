@@ -1,0 +1,22 @@
+{
+ "min_seconds": 40,
+ "max_seconds": 420,
+ "keys": {
+  "calm_ancient": "calm ancient ambient pad",
+  "ceremony": "ceremonial epic orchestral",
+  "cleopatra_drama": "dramatic romantic strings tension",
+  "desert_wind": "desert wind ambient pad lonely",
+  "egypt_ancient": "ancient egyptian ambient oud ney",
+  "egypt_mystery": "egyptian mystery desert ambient",
+  "islamic_conquest": "middle eastern orchestral epic",
+  "kadesh_battle": "ancient battle drums chariot epic",
+  "march_tense": "marching tension orchestral percussion",
+  "modern_tension": "modern documentary tension underscore",
+  "nile_calm": "calm river morning ambient flute",
+  "pharaoh_epic": "epic ancient pharaoh orchestral percussion",
+  "ptolemaic_court": "hellenistic court strings ambient",
+  "tomb_dark": "dark tomb drone ominous",
+  "triumph": "triumphant heroic brass",
+  "wonder": "curious mysterious wonder ambient"
+ }
+}
