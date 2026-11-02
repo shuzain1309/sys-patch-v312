@@ -67,24 +67,9 @@
    "use": "Tutankhamun"
   },
   {
-   "id": "ramesses_ii",
-   "q": "Ramesses II statue",
-   "use": "Ramesses II"
-  },
-  {
-   "id": "abu_simbel",
-   "q": "Abu Simbel temples",
-   "use": "Ramesses II"
-  },
-  {
    "id": "karnak_hypostyle",
    "q": "Karnak Hypostyle Hall",
    "use": "temples"
-  },
-  {
-   "id": "kadesh_relief",
-   "q": "Battle of Kadesh relief Ramesseum Abu Simbel",
-   "use": "Kadesh, c. 1274 BC"
   },
   {
    "id": "valley_of_kings",
@@ -112,11 +97,6 @@
    "use": "decipherment"
   },
   {
-   "id": "sea_peoples_relief",
-   "q": "Medinet Habu Sea Peoples naval battle relief",
-   "use": "Late Bronze Age collapse"
-  },
-  {
    "id": "dendera_temple",
    "q": "Dendera Temple complex",
    "use": "Ptolemaic"
@@ -134,11 +114,6 @@
   {
    "id": "cleopatra_bust",
    "q": "Cleopatra VII bust Berlin Altes Museum",
-   "use": "Cleopatra"
-  },
-  {
-   "id": "cleopatra_coin",
-   "q": "Cleopatra VII silver tetradrachm coin",
    "use": "Cleopatra"
   },
   {
