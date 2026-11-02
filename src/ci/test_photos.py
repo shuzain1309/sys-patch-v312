@@ -39,4 +39,12 @@ assert 'E.jpg' in open('out/photos-credits.txt').read() and open('out/descriptio
 P.get_json = lambda u: {'query': {'pages': {'1': page(1, 'Z.jpg', 'CC BY-NC 2.0')}}}
 json.dump([{'id': 'bad', 'q': 'x'}], open('photos.json', 'w'))
 assert P.run() == 1
+# audition mode prints licence-safe candidates only
+P.get_json = fake_json
+json.dump({'photos': [{'id': 'forum', 'q': 'Roman Forum'}]}, open('cat.json', 'w'))
+import io, contextlib
+buf = io.StringIO()
+with contextlib.redirect_stdout(buf): P.candidates('cat.json')
+out = buf.getvalue()
+assert 'E.jpg' in out and 'A.jpg' not in out and 'File:' in out.split('Pin a pick')[1], out
 print('OK')

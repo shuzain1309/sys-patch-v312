@@ -59,7 +59,38 @@
   "hooves_loop": {
    "q": "horse gallop loop",
    "max": 30
-  }
+  },
+  "sand_wind_loop": {
+   "q": "desert wind sand loop",
+   "max": 60
+  },
+  "nile_water_loop": {
+   "q": "river water flowing gentle loop",
+   "max": 60
+  },
+  "crowd_ancient_loop": {
+   "q": "market crowd murmur ancient",
+   "max": 60
+  },
+  "torch_loop": {
+   "q": "torch fire crackle loop",
+   "max": 40
+  },
+  "chariot_loop": {
+   "q": "galloping horses chariot loop",
+   "max": 30
+  },
+  "stone_slide": "heavy stone door sliding",
+  "sistrum": "sistrum rattle",
+  "arrow_volley": "arrow volley whoosh",
+  "bow_shot": "bow arrow release",
+  "whip": "whip crack",
+  "gong": "large gong hit",
+  "drums_war": "war drums distant",
+  "chant_low": "low choir chant ritual",
+  "scribble": "writing quill papyrus",
+  "sword_clash": "sword clash metal",
+  "camel": "camel grunt"
  },
  "drop": [
   "baby_cry",

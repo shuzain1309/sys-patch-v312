@@ -1,0 +1,185 @@
+{
+ "_doc": "Egypt photo catalog (search queries, not exact files). Run the photo-candidates workflow to audition the top licence-safe matches per entry, pick one, then in the script write {id, file:'File:Exact Title.jpg'} to pin it. Entries can be pasted into a script's PHOTOS block as they are (CI picks the first usable licence-safe result).",
+ "photos": [
+  {
+   "id": "narmer_palette",
+   "q": "Narmer Palette Egyptian Museum",
+   "use": "unification, c. 3100 BC"
+  },
+  {
+   "id": "djoser_pyramid",
+   "q": "Pyramid of Djoser Saqqara step pyramid",
+   "use": "Old Kingdom"
+  },
+  {
+   "id": "giza_pyramids",
+   "q": "Giza pyramid complex",
+   "use": "Old Kingdom"
+  },
+  {
+   "id": "great_sphinx",
+   "q": "Great Sphinx of Giza",
+   "use": "Old Kingdom"
+  },
+  {
+   "id": "khufu_statuette",
+   "q": "Khufu ivory statuette",
+   "use": "Old Kingdom"
+  },
+  {
+   "id": "khafre_statue",
+   "q": "Statue of Khafre diorite Egyptian Museum",
+   "use": "Old Kingdom"
+  },
+  {
+   "id": "senusret_iii",
+   "q": "Senusret III statue head",
+   "use": "Middle Kingdom"
+  },
+  {
+   "id": "hatshepsut_temple",
+   "q": "Mortuary temple of Hatshepsut Deir el-Bahari",
+   "use": "New Kingdom"
+  },
+  {
+   "id": "hatshepsut_statue",
+   "q": "Hatshepsut statue",
+   "use": "New Kingdom"
+  },
+  {
+   "id": "thutmose_iii",
+   "q": "Thutmose III statue",
+   "use": "New Kingdom"
+  },
+  {
+   "id": "akhenaten",
+   "q": "Akhenaten statue colossus",
+   "use": "Amarna"
+  },
+  {
+   "id": "nefertiti_bust",
+   "q": "Nefertiti Bust Neues Museum Berlin",
+   "use": "Amarna"
+  },
+  {
+   "id": "tutankhamun_mask",
+   "q": "Tutankhamun mask Egyptian Museum Cairo",
+   "use": "Tutankhamun"
+  },
+  {
+   "id": "ramesses_ii",
+   "q": "Ramesses II statue",
+   "use": "Ramesses II"
+  },
+  {
+   "id": "abu_simbel",
+   "q": "Abu Simbel temples",
+   "use": "Ramesses II"
+  },
+  {
+   "id": "karnak_hypostyle",
+   "q": "Karnak Hypostyle Hall",
+   "use": "temples"
+  },
+  {
+   "id": "kadesh_relief",
+   "q": "Battle of Kadesh relief Ramesseum Abu Simbel",
+   "use": "Kadesh, c. 1274 BC"
+  },
+  {
+   "id": "valley_of_kings",
+   "q": "Valley of the Kings",
+   "use": "tombs"
+  },
+  {
+   "id": "weighing_heart",
+   "q": "Papyrus of Ani weighing of the heart",
+   "use": "afterlife"
+  },
+  {
+   "id": "book_of_dead",
+   "q": "Book of the Dead papyrus",
+   "use": "afterlife"
+  },
+  {
+   "id": "nebamun_marsh",
+   "q": "Nebamun tomb painting hunting in the marshes British Museum",
+   "use": "daily life, Nile"
+  },
+  {
+   "id": "rosetta_stone",
+   "q": "Rosetta Stone British Museum",
+   "use": "decipherment"
+  },
+  {
+   "id": "sea_peoples_relief",
+   "q": "Medinet Habu Sea Peoples naval battle relief",
+   "use": "Late Bronze Age collapse"
+  },
+  {
+   "id": "dendera_temple",
+   "q": "Dendera Temple complex",
+   "use": "Ptolemaic"
+  },
+  {
+   "id": "philae_temple",
+   "q": "Philae temple Agilkia",
+   "use": "Ptolemaic and Roman"
+  },
+  {
+   "id": "alexander_mosaic",
+   "q": "Alexander Mosaic Pompeii",
+   "use": "Alexander"
+  },
+  {
+   "id": "cleopatra_bust",
+   "q": "Cleopatra VII bust Berlin Altes Museum",
+   "use": "Cleopatra"
+  },
+  {
+   "id": "cleopatra_coin",
+   "q": "Cleopatra VII silver tetradrachm coin",
+   "use": "Cleopatra"
+  },
+  {
+   "id": "pharos_reconstruction",
+   "q": "Pharos of Alexandria lighthouse reconstruction",
+   "use": "Alexandria"
+  },
+  {
+   "id": "battle_pyramids",
+   "q": "Battle of the Pyramids painting Lejeune 1798",
+   "use": "Napoleon"
+  },
+  {
+   "id": "description_egypte",
+   "q": "Description de l'Egypte plate",
+   "use": "Napoleon"
+  },
+  {
+   "id": "champollion",
+   "q": "Jean-Francois Champollion portrait",
+   "use": "decipherment"
+  },
+  {
+   "id": "suez_canal_1869",
+   "q": "Opening of the Suez Canal 1869 painting",
+   "use": "modern Egypt"
+  },
+  {
+   "id": "nile_satellite",
+   "q": "Nile Delta satellite image NASA",
+   "use": "maps"
+  },
+  {
+   "id": "egypt_night",
+   "q": "Egypt at night Nile lights NASA ISS",
+   "use": "maps"
+  },
+  {
+   "id": "old_map_egypt",
+   "q": "Antique map of ancient Egypt",
+   "use": "maps"
+  }
+ ]
+}

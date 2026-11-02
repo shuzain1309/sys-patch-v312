@@ -1,0 +1,13 @@
+name: photo-candidates
+on:
+  workflow_dispatch:
+    inputs:
+      catalog: {description: "json file with a photos list to audition", default: library/photos-egypt.json}
+permissions:
+  contents: read
+jobs:
+  list:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 src/ci/photos.py candidates "${{ inputs.catalog || 'library/photos-egypt.json' }}"

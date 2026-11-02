@@ -40,7 +40,7 @@ for (const d of declared) if (!used.has(d)) warnings.push(`PHOTOS: "${d}" is dec
 // characters: an unknown look would silently draw a generic blue figure; fail instead. Allowed values are read from world.tsx so they cannot drift.
 const world = fs.existsSync('src/remotion/world.tsx') ? fs.readFileSync('src/remotion/world.tsx', 'utf8') : '';
 const union = (re) => ((world.match(re) || [, ''])[1].match(/'(\w+)'/g) || []).map((s) => s.slice(1, -1));
-const ENUM = {hat: union(/export type Look = \{hat: ([^;]+);/), outfit: union(/export type Outfit = ([^;]+);/), hair: union(/export type Hair = ([^;]+);/), facial: ['full', 'goatee', 'stache', 'long']};
+const ENUM = {hat: union(/export type Look = \{hat: ([^;]+);/), outfit: union(/export type Outfit = ([^;]+);/), hair: union(/export type Hair = ([^;]+);/), facial: union(/facial\?: ([^;]+);/)};
 const builtin = [...(world.match(/^  (\w+): \{hat:/gm) || [])].map((s) => s.trim().split(':')[0]);
 const libFile = fs.existsSync('library/looks.json') ? JSON.parse(fs.readFileSync('library/looks.json', 'utf8')) : {};
 const bible = block('BIBLE') || {};
@@ -59,6 +59,10 @@ Object.entries(bible.looks || {}).forEach(([k, l]) => checkLook(k, l, 'BIBLE'));
 for (const m of new Set([...src.matchAll(/\b(?:look|rider):\s*['"]([\w]+)['"]/g)].map((x) => x[1]))) if (!knownLooks.has(m)) errors.push(`look "${m}" does not exist (built in, library/looks.json, or BIBLE.looks). It would be drawn as a generic blue figure.`);
 const facs = new Set(Object.keys(bible.factions || {}));
 for (const m of new Set([...src.matchAll(/\bfac:\s*['"]([^'"]+)['"]/g)].map((x) => x[1]))) if (!facs.has(m)) errors.push(`faction "${m}" is not declared in BIBLE.factions`);
+// map library: {place:'X'} and {ref:'X'} must exist in library/geo.json (a typo would silently draw nothing)
+const geoLib = fs.existsSync('library/geo.json') ? JSON.parse(fs.readFileSync('library/geo.json', 'utf8')) : {};
+for (const m of new Set([...src.matchAll(/\bplace:\s*['"]([^'"]+)['"]/g)].map((x) => x[1]))) if (!(geoLib.places || {})[m]) errors.push(`map place "${m}" is not in library/geo.json (use lon/lat, or add it)`);
+for (const m of new Set([...src.matchAll(/\bref:\s*['"]([^'"]+)['"]/g)].map((x) => x[1]))) if (!(geoLib.regions || {})[m] && !(geoLib.lines || {})[m]) errors.push(`map ref "${m}" is not a region or line in library/geo.json`);
 // render-cost guardrails (measured: a normal stage ~65 ms/frame, 170 soldiers ~100 ms, 600 soldiers ~190 ms)
 const starts = [...src.matchAll(/\{id:\s*['"](s\d+)['"]/g)].map((m) => ({id: m[1], at: m.index}));
 starts.forEach((s, i) => {

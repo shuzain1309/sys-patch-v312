@@ -5,6 +5,8 @@ import React from 'react';
 import {Easing, interpolate, random, spring, useCurrentFrame, useVideoConfig} from 'remotion';
 import {geoOrthographic, geoMercator, geoPath, geoGraticule10, geoInterpolate, geoDistance, geoTransform, geoCentroid, geoArea} from 'd3-geo';
 import {placeLabels, textBox, closeRing} from './geolabels';
+import {resolveGeo} from './georesolve';
+import geoLib from '../../library/geo.json'; // prebuilt places, historical regions and rivers (Egypt pack); scripts use {place:'Thebes'}, {ref:'upper_egypt'}, {ref:'nile'}
 import {feature, mesh} from 'topojson-client';
 import w110 from 'world-atlas/countries-110m.json';
 import w50 from 'world-atlas/countries-50m.json';
@@ -14,7 +16,7 @@ const C = {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'} as const;
 const feats = (w: any): any[] => (feature(w, w.objects.countries) as any).features;
 const F110 = feats(w110), F50 = feats(w50);
 
-export type GeoT = {
+type GeoStrict = {
   mode?: 'globe' | 'flat';
   from: {lon: number; lat: number; k?: number}; // k = zoom (1 = whole globe / whole world)
   to?: {lon: number; lat: number; k?: number};
@@ -22,9 +24,20 @@ export type GeoT = {
   dash?: string[]; // extra dashed white outline
   pins?: {name: string; lon: number; lat: number; at?: number}[];
   routes?: {a: [number, number]; b: [number, number]; color?: string; at?: number}[];
-  labels?: {t: string; sub?: string; lon: number; lat: number; at?: number; size?: number; kind?: 'city' | 'sea' | 'river' | 'mountain'}[]; // sub = smaller yellow line (reference style); kind picks the style
+  labels?: {t: string; sub?: string; lon: number; lat: number; at?: number; size?: number; kind?: 'city' | 'sea' | 'river' | 'mountain'}[];
+  names?: boolean | string[];
+  lines?: {name?: string; pts: [number, number][]; color?: string; width?: number; at?: number}[];
+  regions?: {name: string; pts: [number, number][]; color: string; sub?: string; at?: number}[];
+};
+// What a script writes. Anywhere a lon/lat is needed you can give {place:'Thebes'} instead (library/geo.json); regions and lines can be {ref:'upper_egypt'} / {ref:'nile'}.
+type Loc = {lon?: number; lat?: number; place?: string; k?: number};
+export type GeoT = Omit<GeoStrict, 'from' | 'to' | 'pins' | 'labels' | 'regions' | 'lines'> & {
+  from: Loc; to?: Loc; // k = zoom (1 = whole globe / whole world)
+  pins?: {name?: string; place?: string; lon?: number; lat?: number; at?: number}[];
+  labels?: {t?: string; place?: string; sub?: string; lon?: number; lat?: number; at?: number; size?: number; kind?: 'city' | 'sea' | 'river' | 'mountain'}[]; // sub = smaller yellow line (reference style); kind picks the style
   names?: boolean | string[]; // true = name every highlighted country; or a list of country names to label (neighbours, no fill needed)
-  regions?: {name: string; pts: [number, number][]; color: string; sub?: string; at?: number}[]; // historical polities: a lon/lat outline (Goguryeo, Roman Empire in 117 AD...), filled and named
+  lines?: {ref?: string; name?: string; pts?: [number, number][]; color?: string; width?: number; at?: number}[]; // rivers and borders: lon/lat polyline or {ref:'nile'}
+  regions?: {ref?: string; name?: string; pts?: [number, number][]; color?: string; sub?: string; at?: number}[]; // historical polities: lon/lat outline or {ref:'new_kingdom_empire'}, filled and named
 };
 
 // ---------- procedural satellite textures (tileable value noise, generated once per browser tab) ----------
@@ -72,7 +85,8 @@ const tex = (kind: 'biome' | 'shade' | 'cloud', size: number): string => {
   return (cache[key] = c.toDataURL('image/png'));
 };
 
-export const GeoMap: React.FC<{g: GeoT; seed: string}> = ({g, seed}) => {
+export const GeoMap: React.FC<{g: GeoT; seed: string}> = ({g: gRaw, seed}) => {
+  const g = React.useMemo(() => resolveGeo(gRaw as any, geoLib as any) as unknown as GeoStrict, [JSON.stringify(gRaw)]);
   const f = useCurrentFrame();
   const {fps, durationInFrames: d} = useVideoConfig();
   const globe = (g.mode ?? 'globe') === 'globe';
@@ -189,6 +203,7 @@ export const GeoMap: React.FC<{g: GeoT; seed: string}> = ({g, seed}) => {
     } catch (e) { console.warn('map naming skipped:', e); }
     return items;
   }, [seed, JSON.stringify(g.names), JSON.stringify(g.regions), JSON.stringify(g.labels), JSON.stringify(g.pins), JSON.stringify(g.hi), mEnd]);
+  const linePaths = (g.lines ?? []).map((l) => { try { return (geoPath(geo.proj) as any)({type: 'LineString', coordinates: l.pts}) as string; } catch (e) { return ''; } });
   const regionPaths = (g.regions ?? []).map((r) => { try { const ring = closeRing(r.pts); const big = geoArea({type: 'Polygon', coordinates: [ring]} as any) > 2 * Math.PI; return (geoPath(geo.proj) as any)({type: 'Polygon', coordinates: [big ? ring.slice().reverse() : ring]}) as string; } catch (e) { return ''; } });
   const rp = (coords: any) => { const pp = geoPath(geo.proj) as any; return (pp({type: 'LineString', coordinates: coords}) ?? '') as string; };
   const R = geo.R * m;
@@ -235,6 +250,7 @@ export const GeoMap: React.FC<{g: GeoT; seed: string}> = ({g, seed}) => {
             );
           })}
           {(g.regions ?? []).map((r, i) => regionPaths[i] ? (<g key={`rg${i}`} opacity={op(at(r.at) * 3)}><path d={regionPaths[i]} fill="none" stroke="#fff" strokeWidth={sw(14)} opacity={0.14} strokeLinejoin="round" /><path d={regionPaths[i]} fill={r.color} opacity={0.82} /><path d={regionPaths[i]} fill="none" stroke="#fff" strokeWidth={sw(3.2)} strokeLinejoin="round" /></g>) : null)}
+          {(g.lines ?? []).map((l, i) => { if (!linePaths[i]) return null; const a0 = (l.at ?? 0.1) * d, prog = interpolate(f, [a0, a0 + Math.max(30, d * 0.4)], [0, 1], {...C, easing: Easing.inOut(Easing.quad)}); return (<g key={`ln${i}`}><path d={linePaths[i]} pathLength={1} fill="none" stroke={INK} strokeWidth={sw((l.width ?? 7) + 4)} strokeLinecap="round" strokeLinejoin="round" strokeDasharray="1" strokeDashoffset={1 - prog} opacity={0.55} /><path d={linePaths[i]} pathLength={1} fill="none" stroke={l.color ?? '#4fb3e8'} strokeWidth={sw(l.width ?? 7)} strokeLinecap="round" strokeLinejoin="round" strokeDasharray="1" strokeDashoffset={1 - prog} /></g>); })}
           {(g.dash ?? []).map((n) => { const dd = geo.one(li, n); return dd ? <path key={n} d={dd} fill="none" stroke="#fff" strokeWidth={sw(3)} strokeDasharray={`${12 / m} ${9 / m}`} strokeDashoffset={-f * 0.6 / m} /> : null; })}
           {(g.routes ?? []).map((r, i) => {
             const prog = interpolate(f, [(r.at ?? 0.1) * d, (r.at ?? 0.1) * d + Math.max(30, d * 0.5)], [0, 1], {...C, easing: Easing.inOut(Easing.quad)});

@@ -154,5 +154,24 @@ def run(photos_json='photos.json', out_dir='public/photos', credits_txt='out/pho
     return 1 if errors else 0
 
 
+def candidates(catalog, n=4):
+    """Audition mode: for each catalog entry list the top usable (licence-safe) results, to pick one and pin it with "file"."""
+    data = json.loads(pathlib.Path(catalog).read_text())
+    for it in data.get('photos', data) if isinstance(data, dict) else data:
+        try:
+            found, why = openverse(it) if it.get('provider') == 'openverse' else commons(it)
+        except Exception as e:
+            print(f'\n== {it.get("id")}: ERROR {e}'); continue
+        print(f'\n== {it.get("id")}  ({it.get("q") or it.get("file")})')
+        for c in found[:n]:
+            print(f'   {c["license"]:<14} {c["title"][:60]:<60} by {c["artist"][:30]}  {c["page"]}')
+        if not found:
+            print('   nothing usable. ' + '; '.join(why[:3]))
+    print('\nPin a pick in your script: {"id": "...", "file": "File:<exact title as shown on the Commons page>"}')
+
+
 if __name__ == '__main__':
-    sys.exit(run(*sys.argv[1:4]))
+    if len(sys.argv) > 2 and sys.argv[1] == 'candidates':
+        candidates(sys.argv[2])
+    else:
+        sys.exit(run(*sys.argv[1:4]))
