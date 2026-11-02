@@ -244,5 +244,23 @@
   "name": "Sword_Clash (33).wav",
   "username": "JohnBuhr",
   "license": "http://creativecommons.org/publicdomain/zero/1.0/"
+ },
+ "cat": {
+  "id": 730100,
+  "name": "Cat meowing for food 3",
+  "username": "Sadiquecat",
+  "license": "http://creativecommons.org/publicdomain/zero/1.0/"
+ },
+ "cannon": {
+  "id": 186945,
+  "name": "cannon_boom5.wav",
+  "username": "ReadeOnly",
+  "license": "http://creativecommons.org/publicdomain/zero/1.0/"
+ },
+ "dig_sand": {
+  "id": 651292,
+  "name": "Digging in wet course sand (1)",
+  "username": "f3bbbo",
+  "license": "http://creativecommons.org/publicdomain/zero/1.0/"
  }
 }
