@@ -1,0 +1,76 @@
+{
+  "version": 1,
+  "remove_watermark": false,
+  "layers": [
+    {
+      "id": "logo",
+      "name": "Polly & Pals logo",
+      "type": "image",
+      "visible": false,
+      "x": 0.8745390412057079,
+      "y": 0.1269552669552669,
+      "w": 0.09541120632831168,
+      "rot": 0,
+      "opacity": 0.92,
+      "fade_in": 0,
+      "fade_out": 0,
+      "start": 0,
+      "end": 0,
+      "shadow": {
+        "on": true,
+        "color": "#000000",
+        "opacity": 0.55,
+        "blur": 14,
+        "dx": 0,
+        "dy": 5
+      },
+      "outline": {
+        "on": false,
+        "color": "#000000",
+        "width": 4
+      },
+      "file": "polly_pals_logo.png",
+      "text": "Your text",
+      "font": "",
+      "size": 0.06,
+      "color": "#FFFFFF",
+      "align": "center",
+      "line_spacing": 1.1
+    },
+    {
+      "id": "channel_name",
+      "name": "ZEUS HISTORY",
+      "type": "text",
+      "visible": true,
+      "x": 0.07472771254478663,
+      "y": 0.99,
+      "w": 0.3,
+      "rot": 0,
+      "opacity": 0.4,
+      "fade_in": 0,
+      "fade_out": 0,
+      "start": 0,
+      "end": 0,
+      "shadow": {
+        "on": true,
+        "color": "#000000",
+        "opacity": 0.6,
+        "blur": 8,
+        "dx": 0,
+        "dy": 3
+      },
+      "outline": {
+        "on": false,
+        "color": "#000000",
+        "width": 4
+      },
+      "file": "",
+      "text": "ZEUS HISTORY",
+      "font": "arabtype",
+      "size": 0.025,
+      "color": "#FFFFFF",
+      "align": "center",
+      "line_spacing": 1.1
+    }
+  ]
+}

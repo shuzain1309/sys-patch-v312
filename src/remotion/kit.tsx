@@ -10,6 +10,7 @@ import {wipe} from '@remotion/transitions/wipe';
 import {flip} from '@remotion/transitions/flip';
 import {loadFont as loadInter} from '@remotion/google-fonts/Inter';
 import {loadFont as loadAnton} from '@remotion/google-fonts/Anton';
+import {BrandLayers} from './brand';
 import {Stage, shotSpans, NarratorOverlay, Paper, Icon, Weather, HAND, INK, StageT, PropT, ActorT, PoseName, Face, WeatherKind} from './world';
 import {GeoMap, GeoT} from './geo';
 import audioManifest from '../../public/audio/manifest.json'; // written by CI (audio_real.py build): which real recordings exist + mix levels from audio-mix.json
@@ -623,6 +624,7 @@ export const makeVideo = (scenes: Scene[], lines: Record<string, string>, T: The
           return els;
         })}
       </TransitionSeries>
+      <BrandLayers />
     </AbsoluteFill>
   );
   return {Video, total: B[scenes.length], fps: T.fps};

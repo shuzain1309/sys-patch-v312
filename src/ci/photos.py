@@ -11,21 +11,23 @@ Licences accepted: public domain, CC0, CC BY (any version). Rejected: NC, ND, fa
 (share-alike can apply to the video). Every image's credit is written to out/photos-credits.txt and into the video description
 ({{CREDITS}} placeholder, or appended automatically when attribution is required). Any failure stops the run BEFORE the render.
 """
-import json, os, pathlib, re, subprocess, sys, tempfile, time, urllib.parse, urllib.request
+import json, os, pathlib, re, shutil, subprocess, sys, tempfile, time, urllib.parse, urllib.request
 
 UA = os.environ.get('PHOTO_UA', 'history-explainer-pipeline/1.0 (educational videos; contact via the GitHub repo)')
 MIN_W = 900
+CACHE = pathlib.Path('photos-cache')  # committed to the repo by the fetch-photos workflow; render runs reuse it and never hit Wikimedia
 
 
-def get(url, tries=3):
+def get(url, tries=6):
     for i in range(tries):
         try:
             with urllib.request.urlopen(urllib.request.Request(url, headers={'User-Agent': UA}), timeout=60) as r:
                 return r.read()
-        except Exception as e:  # network hiccups and 429s: back off and retry
+        except Exception as e:  # 429 from shared runner IPs: honour Retry-After, else back off 8/16/32/64 s
             if i == tries - 1:
                 raise
-            time.sleep(2 + 3 * i)
+            ra = getattr(getattr(e, 'headers', None), 'get', lambda *_: None)('Retry-After')
+            time.sleep(min(90, int(ra)) if ra and ra.isdigit() else (8 * 2 ** i if getattr(e, 'code', 0) == 429 else 2 + 3 * i))
 
 
 def get_json(url):
@@ -126,9 +128,16 @@ def run(photos_json='photos.json', out_dir='public/photos', credits_txt='out/pho
     pathlib.Path(out_dir, '.keep').write_text('')  # the artifact upload needs the folder to exist even when there are no photos
     if not items:
         print('photos: none in this script'); return 0
+    CACHE.mkdir(exist_ok=True)
+    cj = CACHE / 'credits.json'
+    cached = json.loads(cj.read_text()) if cj.exists() else {}
     credits, errors = {}, []
     for it in items:
         pid = it['id']
+        if (CACHE / f'{pid}.jpg').exists() and pid in cached:  # already downloaded: no network
+            shutil.copy(CACHE / f'{pid}.jpg', pathlib.Path(out_dir) / f'{pid}.jpg'); credits[pid] = cached[pid]
+            print(f'{pid}: cached'); continue
+        time.sleep(2)  # be polite between uncached lookups
         try:
             found, why = openverse(it) if it.get('provider') == 'openverse' else commons(it)
             if not found:
@@ -136,7 +145,8 @@ def run(photos_json='photos.json', out_dir='public/photos', credits_txt='out/pho
             last = None
             for cand in found[:3]:  # first candidates may fail to download; try the next
                 try:
-                    to_jpg(get(cand['url']), pathlib.Path(out_dir) / f'{pid}.jpg'); credits[pid] = cand; break
+                    to_jpg(get(cand['url']), pathlib.Path(out_dir) / f'{pid}.jpg'); credits[pid] = cand
+                    shutil.copy(pathlib.Path(out_dir) / f'{pid}.jpg', CACHE / f'{pid}.jpg'); cached[pid] = cand; cj.write_text(json.dumps(cached, indent=1)); break
                 except Exception as e:
                     last = e
             else:

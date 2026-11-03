@@ -1,0 +1,21 @@
+name: fetch-photos
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 src/ci/photos.py photos-list.json public/photos out/photos-credits.txt
+        env:
+          PHOTO_UA: ${{ vars.PHOTO_UA }}
+      - if: always()  # keep whatever downloaded, so a re-run only fetches the missing ones
+        run: |
+          git config user.name github-actions
+          git config user.email actions@users.noreply.github.com
+          git add photos-cache
+          git commit -m "sync" || echo "nothing new"
+          git pull --rebase -q || true
+          git push
