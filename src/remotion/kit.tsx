@@ -11,6 +11,7 @@ import {flip} from '@remotion/transitions/flip';
 import {loadFont as loadInter} from '@remotion/google-fonts/Inter';
 import {loadFont as loadAnton} from '@remotion/google-fonts/Anton';
 import {BrandLayers} from './brand';
+import {fit, measure, avoidRects, SAFE} from './textfit';
 import {Stage, shotSpans, NarratorOverlay, Paper, Icon, Weather, HAND, INK, StageT, PropT, ActorT, PoseName, Face, WeatherKind} from './world';
 import {GeoMap, GeoT} from './geo';
 import audioManifest from '../../public/audio/manifest.json'; // written by CI (audio_real.py build): which real recordings exist + mix levels from audio-mix.json
@@ -96,15 +97,20 @@ type S<K extends Scene['type']> = {s: Extract<Scene, {type: K}>; T: Theme};
 
 const Kinetic: React.FC<S<'kinetic'>> = ({s, T}) => {
   const {f, fps, d} = useP();
-  const words = s.text.split(' ');
+  const F = fit(s.text.toUpperCase(), {fs: s.text.split(' ').length > 6 ? 104 : 130, minFs: 56, maxW: 1560, maxLines: 4, font: 'head', lh: 1.08});
+  let wi = 0; const total = s.text.split(' ').length;
   return (
-    <AbsoluteFill style={{justifyContent: 'center', alignItems: 'center', padding: '100px 160px'}}>
-      <div style={{display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '0 30px', maxWidth: '100%', fontFamily: HEAD, fontSize: words.length > 6 ? 104 : 130, lineHeight: 1.08, textTransform: 'uppercase', textAlign: 'center'}}>
-        {words.map((w, i) => {
-          const p = sp(f, fps, Math.round((i / words.length) * d * 0.6));
-          const hot = s.hi?.includes(w.toLowerCase().replace(/[^a-z0-9]/g, ''));
-          return <span key={i} style={{margin: hot ? '0 16px' : 0, opacity: op(p), translate: `0 ${(1 - op(p)) * 60}px`, scale: String((hot ? 1.12 : 1) * (0.8 + 0.2 * p)), color: hot ? T.accent : T.fg}}>{w}</span>;
-        })}
+    <AbsoluteFill style={{justifyContent: 'center', alignItems: 'center'}}>
+      <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', fontFamily: HEAD, fontSize: F.fs, lineHeight: 1.08, textAlign: 'center', maxWidth: SAFE.r - SAFE.l}}>
+        {F.lines.map((ln, li) => (
+          <div key={li} style={{display: 'flex', gap: `0 ${F.fs * 0.22}px`, justifyContent: 'center', whiteSpace: 'nowrap'}}>
+            {ln.split(' ').map((w) => {
+              const i = wi++, p = sp(f, fps, Math.round((i / total) * d * 0.6));
+              const hot = s.hi?.includes(w.toLowerCase().replace(/[^a-z0-9]/g, ''));
+              return <span key={i} style={{opacity: op(p), translate: `0 ${(1 - op(p)) * 60}px`, scale: String((hot ? 1.06 : 1) * (0.8 + 0.2 * p)), color: hot ? T.accent : T.fg}}>{w}</span>;
+            })}
+          </div>
+        ))}
       </div>
     </AbsoluteFill>
   );
@@ -159,17 +165,19 @@ const Chapter: React.FC<S<'chapter'> & {tm?: Timing}> = ({s, T, tm}) => {
   let delay = 14;
   return (
     <AbsoluteFill>
-      <Stage st={st} words={tm?.words} seed={s.id} />
+      <Stage st={st} words={tm?.words} seed={s.id} avoid={[{x0: 0, y0: 90, x1: 1920, y1: 300}, {x0: 300, y0: 330, x1: 1620, y1: 810}]} />
       <AbsoluteFill style={{background: 'radial-gradient(ellipse at 50% 50%, rgba(0,0,0,.05) 0%, rgba(0,0,0,.45) 100%)'}} />
       <div style={{position: 'absolute', top: 120, width: '100%', textAlign: 'center', fontFamily: HAND, fontSize: 52, letterSpacing: 6, color: T.accent2, ...rise(f, 6)}}>CHAPTER {s.n}</div>
-      {s.kicker && <div style={{position: 'absolute', top: 200, width: '100%', textAlign: 'center', fontFamily: HAND, fontSize: 62, color: '#bfe3ff', textShadow: '0 4px 14px rgba(0,0,0,.6)', ...rise(f, 30)}}>{s.kicker}</div>}
+      {s.kicker && <div style={{position: 'absolute', top: 200, left: 90, width: SAFE.r - SAFE.l, textAlign: 'center', fontFamily: HAND, fontSize: measure(s.kicker ?? '', 62) > SAFE.r - SAFE.l ? 62 * (SAFE.r - SAFE.l) / measure(s.kicker ?? '', 62) : 62, color: '#bfe3ff', textShadow: '0 4px 14px rgba(0,0,0,.6)', ...rise(f, 30)}}>{s.kicker}</div>}
       <AbsoluteFill style={{justifyContent: 'center', alignItems: 'center', paddingTop: 120}}>
         {lines.map((ln, li) => {
           const start = delay;
           delay += ln.length * 1.3 + 8;
-          const size = lines.length === 1 ? 168 : li === 0 ? 120 : 156;
+          const want = lines.length === 1 ? 168 : li === 0 ? 120 : 156;
+          let size = want; const wid = (sz: number) => measure(ln.toUpperCase(), sz, 'hand') * 1.08 + ln.length * sz * 0.02 + 24;
+          while (wid(size) > SAFE.r - SAFE.l - 40 && size > 30) size *= 0.95;
           return (
-            <div key={li} style={{display: 'flex', gap: size * 0.12, fontFamily: HAND, fontSize: size, lineHeight: 1.1, color: cols[li % 3], textTransform: 'uppercase', whiteSpace: 'pre', WebkitTextStroke: '12px #241c17', paintOrder: 'stroke fill'} as any}>
+            <div key={li} style={{display: 'flex', gap: size * 0.02, maxWidth: SAFE.r - SAFE.l, fontFamily: HAND, fontSize: size, lineHeight: 1.1, color: cols[li % 3], textTransform: 'uppercase', whiteSpace: 'pre', WebkitTextStroke: '12px #241c17', paintOrder: 'stroke fill'} as any}>
               {ln.split('').map((ch, ci) => {
                 const p = sp(f, fps, start + ci * 1.3);
                 return <span key={ci} style={{display: 'inline-block', opacity: op(p * 2), translate: `0 ${(1 - op(p)) * 60 + Math.sin(f / 16 + ci) * 3}px`, scale: String(0.5 + 0.5 * p), rotate: `${(1 - op(p)) * (ci % 2 ? 14 : -14)}deg`}}>{ch}</span>;
@@ -189,7 +197,7 @@ const Quote: React.FC<S<'quote'>> = ({s, T}) => {
   return (
     <AbsoluteFill style={{justifyContent: 'center', padding: '0 220px'}}>
       <div style={{position: 'absolute', top: 120, left: 150, fontFamily: HEAD, fontSize: 480, color: T.accent, opacity: 0.35, scale: String(op(sp(f, fps)))}}>“</div>
-      <div style={{fontFamily: BODY, fontWeight: 800, fontSize: 84, lineHeight: 1.2}}>
+      <div style={{fontFamily: BODY, fontWeight: 800, fontSize: fit(s.text, {fs: 84, minFs: 40, maxW: 1480, maxLines: 6, font: 'body', lh: 1.2}).fs, lineHeight: 1.2}}>
         {words.map((w, i) => (
           <span key={i} style={{opacity: op(interpolate(f, [(i / words.length) * d * 0.6, (i / words.length) * d * 0.6 + 8], [0, 1], C)), marginRight: 18}}>{w}</span>
         ))}
@@ -401,7 +409,7 @@ const Body: React.FC<{s: Scene; T: Theme; tm?: Timing}> = ({s, T, tm}) => {
     case 'bars': return <Bars s={s} T={T} />;
     case 'list': return <List s={s} T={T} />;
     case 'character': return <Character s={s} T={T} />;
-    case 'stage': return <Stage st={s.st} words={tm?.words} seed={s.id} />;
+    case 'stage': return <Stage st={s.st} words={tm?.words} seed={s.id} avoid={avoidRects({year: (s as any).year, nar: !!s.nar, fact: true})} />;
     case 'geo': return <GeoMap g={s.geo} seed={s.id} />;
     case 'pie': return <Pie s={s} T={T} />;
     case 'line': return <LineChart s={s} T={T} />;
@@ -418,7 +426,7 @@ type Lv = {sfx_gain: number; ambience_gain: number; music_under: number; music_o
 const AM = audioManifest as unknown as {sfx: Record<string, {sec: number}>; music: Record<string, {sec: number}>; levels: Lv};
 const LV = AM.levels;
 const MUTE = new Set(LV.mute);
-const POPSFX: Record<string, string> = {fire: 'ignite', coins: 'coin', wolf: 'howl', elephant: 'trumpet', galley: 'horn', standard: 'horn', legion: 'march_hit', shieldwall: 'shield_hit', temple: 'pop', colosseum: 'boom', birds: 'birds', basket: 'pop', throne: 'pop'};
+const POPSFX: Record<string, string> = {fire: 'ignite', coins: 'coin', wolf: 'howl', elephant: 'trumpet', galley: 'horn', standard: 'horn', legion: 'march_hit', shieldwall: 'shield_hit', temple: 'pop', colosseum: 'boom', birds: 'birds', basket: 'pop', throne: 'pop', cannon: 'boom', bastille: 'boom', guillotine: 'boom', galleon: 'horn', caravel: 'horn', bell: 'pop', press: 'pop', book: 'pop', globe: 'pop'};
 const cuesFor = (s: Scene, i: number, dur: number): Cue[] => {
   const c: Cue[] = [];
   const tr = i === 0 ? 'none' : s.tr ?? 'fade';
@@ -547,7 +555,7 @@ const SHIFT = 520; // room for the narrator overlay
 
 const YearBadge: React.FC<{y: string; T: Theme}> = ({y}) => {
   const {f} = useP();
-  return <div style={{position: 'absolute', left: 48, top: 44, padding: '6px 26px', borderRadius: 14, background: 'rgba(48,58,82,.88)', color: '#fff', fontFamily: HAND, fontSize: 56, border: `3px solid ${INK}`, ...rise(f, 4, -20)}}>{y}</div>;
+  return <div style={{position: 'absolute', left: 48, top: 44, padding: '6px 26px', borderRadius: 14, background: 'rgba(48,58,82,.88)', color: '#fff', fontFamily: HAND, fontSize: 56, maxWidth: 520, whiteSpace: 'nowrap', border: `3px solid ${INK}`, ...rise(f, 4, -20)}}>{y}</div>;
 };
 
 const SceneView: React.FC<{s: Scene; i: number; T: Theme; tm?: Timing}> = ({s, i, T, tm}) => (

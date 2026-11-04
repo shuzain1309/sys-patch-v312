@@ -337,5 +337,141 @@
   "trim": "#2f6f4a",
   "shoes": "#5a4632",
   "era": "medieval"
+ },
+ "pope": {
+  "hat": "mitre",
+  "shirt": "#f4f1e6",
+  "pants": "#f4f1e6",
+  "skin": "#e7c4a4",
+  "outfit": "robe",
+  "facial": "long",
+  "fc": "#cfcac0",
+  "trim": "#c0392b",
+  "cape": "#c0392b",
+  "era": "early-modern"
+ },
+ "cardinal": {
+  "hat": "biretta",
+  "shirt": "#b3202a",
+  "pants": "#b3202a",
+  "skin": "#e7c4a4",
+  "outfit": "robe",
+  "hair": "short",
+  "hc": "#cfcac0",
+  "facial": "goatee",
+  "fc": "#cfcac0",
+  "era": "early-modern"
+ },
+ "henry8": {
+  "hat": "beret",
+  "shirt": "#a8242c",
+  "pants": "#2a1f18",
+  "skin": "#e7c4a4",
+  "outfit": "coat",
+  "hair": "short",
+  "hc": "#c0562a",
+  "facial": "full",
+  "fc": "#c0562a",
+  "trim": "#e2b84a",
+  "cape": "#6b1a1a",
+  "era": "early-modern"
+ },
+ "huguenot": {
+  "hat": "cavalier",
+  "shirt": "#2a2a30",
+  "pants": "#2a2a30",
+  "skin": "#e7c4a4",
+  "outfit": "coat",
+  "hair": "short",
+  "hc": "#3b2a20",
+  "facial": "stache",
+  "fc": "#3b2a20",
+  "trim": "#efe9dc",
+  "era": "early-modern"
+ },
+ "official": {
+  "hat": "cap",
+  "shirt": "#3a2a4f",
+  "pants": "#2a2a30",
+  "skin": "#e7c4a4",
+  "outfit": "robe",
+  "hair": "short",
+  "hc": "#3b2a20",
+  "era": "early-modern"
+ },
+ "newton": {
+  "hat": "peruke",
+  "shirt": "#4a3a2a",
+  "pants": "#3a2a1a",
+  "skin": "#e7c4a4",
+  "outfit": "coat",
+  "hc": "#e9e4d8",
+  "trim": "#c4a24a",
+  "era": "early-modern"
+ },
+ "sun_king": {
+  "hat": "peruke",
+  "shirt": "#2b3a8a",
+  "pants": "#efe9dc",
+  "skin": "#e7c4a4",
+  "outfit": "coat",
+  "hc": "#4a3426",
+  "trim": "#e2b84a",
+  "cape": "#2b3a8a",
+  "note": "sun-gold trim",
+  "era": "early-modern"
+ },
+ "courtier": {
+  "hat": "peruke",
+  "shirt": "#8a3b8e",
+  "pants": "#efe9dc",
+  "skin": "#e7c4a4",
+  "outfit": "coat",
+  "hc": "#e9e4d8",
+  "trim": "#e2b84a",
+  "era": "early-modern"
+ },
+ "sans_culotte": {
+  "hat": "phrygian",
+  "shirt": "#f1ece0",
+  "pants": "#2b4a8a",
+  "skin": "#e7c4a4",
+  "outfit": "tunic",
+  "hair": "short",
+  "hc": "#3b2a20",
+  "era": "early-modern"
+ },
+ "dutch_merchant": {
+  "hat": "cap",
+  "shirt": "#1f1f27",
+  "pants": "#1f1f27",
+  "skin": "#e7c4a4",
+  "outfit": "coat",
+  "hair": "short",
+  "hc": "#6b3a22",
+  "trim": "#efe9dc",
+  "era": "early-modern"
+ },
+ "napoleon": {
+  "hat": "bicorne",
+  "shirt": "#1f2b5a",
+  "pants": "#efe9dc",
+  "skin": "#e7c4a4",
+  "outfit": "coat",
+  "hair": "short",
+  "hc": "#4a3426",
+  "trim": "#e2b84a",
+  "era": "early-modern"
+ },
+ "colonist": {
+  "hat": "tricorn",
+  "shirt": "#3a4a6a",
+  "pants": "#4a3a2a",
+  "skin": "#e7c4a4",
+  "outfit": "coat",
+  "hair": "short",
+  "hc": "#6b4a2a",
+  "trim": "#8a8a8a",
+  "era": "early-modern"
  }
 }
