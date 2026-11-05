@@ -262,5 +262,41 @@
   "name": "Digging in wet course sand (1)",
   "username": "f3bbbo",
   "license": "http://creativecommons.org/publicdomain/zero/1.0/"
+ },
+ "bells_church": {
+  "id": 633208,
+  "name": "Old Church Bell (no noise)",
+  "username": "igroglaz",
+  "license": "http://creativecommons.org/publicdomain/zero/1.0/"
+ },
+ "blizzard_loop": {
+  "id": 679941,
+  "name": "blizzard looped.aif",
+  "username": "m0ments",
+  "license": "http://creativecommons.org/publicdomain/zero/1.0/"
+ },
+ "rocket": {
+  "id": 840511,
+  "name": "Rocket Launch",
+  "username": "qubodup",
+  "license": "http://creativecommons.org/publicdomain/zero/1.0/"
+ },
+ "neigh": {
+  "id": 656661,
+  "name": "horse",
+  "username": "dontwanttobehere",
+  "license": "http://creativecommons.org/publicdomain/zero/1.0/"
+ },
+ "explosion": {
+  "id": 109734,
+  "name": "double hit distant orchestra.aiff",
+  "username": "SoundCollectah",
+  "license": "http://creativecommons.org/publicdomain/zero/1.0/"
+ },
+ "ice_crack": {
+  "id": 452645,
+  "name": "ice grinding cracking freezing designed.wav",
+  "username": "kyles",
+  "license": "http://creativecommons.org/publicdomain/zero/1.0/"
  }
 }
