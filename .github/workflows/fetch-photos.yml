@@ -1,21 +1,28 @@
 name: fetch-photos
+# Dashboard button "Fetch photos": downloads every picture of the current script (PHOTOS block) and of photos-list.json,
+# slowly (Wikimedia rate limit), stores them in photo-cache/ and commits them. The render then never has to ask Wikimedia.
 on:
   workflow_dispatch:
 permissions:
   contents: write
+concurrency:
+  group: fetch-photos
+  cancel-in-progress: false
 jobs:
   fetch:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: python3 src/ci/photos.py photos-list.json public/photos out/photos-credits.txt
-        env:
-          PHOTO_UA: ${{ vars.PHOTO_UA }}
-      - if: always()  # keep whatever downloaded, so a re-run only fetches the missing ones
-        run: |
+      - run: sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
+      - id: run
+        continue-on-error: true   # some failed: still commit what worked
+        run: python3 src/ci/photos.py fetch photos-list.json
+      - run: |
           git config user.name github-actions
           git config user.email actions@users.noreply.github.com
-          git add photos-cache
-          git commit -m "sync" || echo "nothing new"
+          git add photo-cache
+          git commit -m "photo cache" || echo "nothing new"
           git pull --rebase -q || true
           git push
+      - if: ${{ steps.run.outcome == 'failure' }}
+        run: echo "::warning::some photos failed (see the FAIL lines above). Run Fetch photos again later or pin an exact file."

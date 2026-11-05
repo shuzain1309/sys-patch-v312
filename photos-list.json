@@ -1,5 +1,47 @@
 [
  {
+  "id": "alps_delaroche",
+  "file": "File:Paul Delaroche - Napoleon Crossing the Alps - Google Art Project 2.jpg",
+  "q": "Delaroche Napoleon Crossing the Alps"
+ },
+ {
+  "id": "arcole_gros",
+  "file": "File:Antoine-Jean Gros - Bonaparte on the Bridge at Arcole - Google Art Project.jpg",
+  "q": "Gros Bonaparte Bridge at Arcole"
+ },
+ {
+  "id": "nap_study",
+  "file": "File:Jacques-Louis David - The Emperor Napoleon in His Study at the Tuileries - Google Art Project.jpg",
+  "q": "David Emperor Napoleon in his study at the Tuileries"
+ },
+ {
+  "id": "coronation",
+  "file": "File:Jacques-Louis David - The Coronation of Napoleon (1805-1807).jpg",
+  "q": "David Coronation of Napoleon Louvre"
+ },
+ {
+  "id": "trafalgar",
+  "q": "Battle of Trafalgar painting 1805 Turner"
+ },
+ {
+  "id": "minard",
+  "file": "File:Minard.png",
+  "q": "Minard Napoleon Russian campaign map 1869"
+ },
+ {
+  "id": "meissonier_1814",
+  "q": "Meissonier 1814 Campagne de France Napoleon"
+ },
+ {
+  "id": "scotland_forever",
+  "file": "File:Scotland forever.jpg",
+  "q": "Scotland Forever Lady Butler Scots Greys Waterloo"
+ },
+ {
+  "id": "st_helena",
+  "q": "Napoleon on Saint Helena painting"
+ },
+ {
   "id": "giza_pyramids",
   "q": "Giza pyramid complex"
  },

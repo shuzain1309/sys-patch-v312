@@ -9,7 +9,7 @@ Script block (strict JSON between the markers; CI reads it):
 Use them as {type:'photo', src:'photos/<id>.jpg'} scenes or {k:'photo', src:'photos/<id>.jpg', t:'caption'} props.
 Licences accepted: public domain, CC0, CC BY (any version). Rejected: NC, ND, fair use, GFDL, and CC BY-SA unless the entry has "allow_sa": true
 (share-alike can apply to the video). Every image's credit is written to out/photos-credits.txt and into the video description
-({{CREDITS}} placeholder, or appended automatically when attribution is required). Any failure stops the run BEFORE the render.
+({{CREDITS}} placeholder, or appended automatically when attribution is required). At render time a photo that cannot be fetched becomes a plain placeholder card (PHOTO_STRICT=1 stops the run instead). Best practice: run the dashboard button Fetch photos first; it stores every picture in photo-cache/ (committed).
 """
 import hashlib, json, os, pathlib, re, shutil, subprocess, sys, tempfile, time, urllib.parse, urllib.request
 
@@ -17,15 +17,24 @@ UA = os.environ.get('PHOTO_UA', 'history-explainer-pipeline/1.0 (educational vid
 MIN_W = 900
 
 
-def get(url, tries=3):
+GAP = float(os.environ.get('PHOTO_GAP', '1.5'))  # seconds between any two requests: Wikimedia answers 429 to anonymous bursts
+_last = [0.0]
+
+
+def get(url, tries=6):
     for i in range(tries):
+        wait = GAP - (time.time() - _last[0])
+        if wait > 0:
+            time.sleep(wait)
+        _last[0] = time.time()
         try:
             with urllib.request.urlopen(urllib.request.Request(url, headers={'User-Agent': UA}), timeout=60) as r:
                 return r.read()
-        except Exception as e:  # network hiccups and 429s: back off and retry
+        except Exception as e:  # network hiccups and 429s: back off (honouring Retry-After) and retry
             if i == tries - 1:
                 raise
-            time.sleep(2 + 3 * i)
+            ra = getattr(getattr(e, 'headers', None), 'get', lambda *_: None)('Retry-After')
+            time.sleep(min(90, int(ra) if ra and str(ra).isdigit() else 8 * 2 ** i))
 
 
 def get_json(url):
@@ -149,37 +158,52 @@ def to_cache(pid, it, out_dir, credit):
     (CACHE / f'{pid}.json').write_text(json.dumps({'spec': spec_hash(it), 'credit': credit}, ensure_ascii=False))
 
 
+def placeholder(pid, out_dir):
+    """Plain dark card so a render never dies for one picture (the scene's own title still shows). PHOTO_STRICT=1 fails instead."""
+    r = subprocess.run(['ffmpeg', '-y', '-loglevel', 'error', '-f', 'lavfi', '-i', 'color=c=0x1c2238:s=1600x900', '-frames:v', '1', str(pathlib.Path(out_dir) / f'{pid}.jpg')], capture_output=True, text=True)
+    return r.returncode == 0
+
+
+def fetch_one(it, out_dir):
+    """cache -> network (file, then q fallback) -> cache. Returns (credit, how) or raises."""
+    pid = it['id']
+    hit = from_cache(pid, it, out_dir)
+    if hit:
+        return hit, 'cached'
+    found, why = openverse(it) if it.get('provider') == 'openverse' else commons(it)
+    if not found and it.get('file') and it.get('q'):  # pinned file missing or not licence-safe: fall back to the search text
+        found, why2 = commons({**it, 'file': None}); why += why2
+    if not found:
+        raise RuntimeError('no usable image. ' + '; '.join(why[:4]))
+    last = None
+    for cand in found[:3]:  # first candidates may fail to download; try the next
+        try:
+            to_jpg(get(cand['url']), pathlib.Path(out_dir) / f'{pid}.jpg'); to_cache(pid, it, out_dir, cand)
+            return cand, 'fetched'
+        except Exception as e:
+            last = e
+    raise RuntimeError(f'download failed: {last}')
+
+
 def run(photos_json='photos.json', out_dir='public/photos', credits_txt='out/photos-credits.txt'):
     items = json.loads(pathlib.Path(photos_json).read_text()) if pathlib.Path(photos_json).exists() else []
     pathlib.Path(out_dir).mkdir(parents=True, exist_ok=True)
     pathlib.Path(out_dir, '.keep').write_text('')  # the artifact upload needs the folder to exist even when there are no photos
     if not items:
         print('photos: none in this script'); return 0
+    strict = os.environ.get('PHOTO_STRICT') == '1'
     credits, errors = {}, []
     for it in items:
         pid = it['id']
-        hit = from_cache(pid, it, out_dir)
-        if hit:  # cached: no network, same picture and credit as last time
-            credits[pid] = hit; print(f'{pid}: cached ({hit["title"]})'); continue
         try:
-            found, why = openverse(it) if it.get('provider') == 'openverse' else commons(it)
-            if not found and it.get('file') and it.get('q'):  # pinned file missing or not licence-safe: fall back to the search text
-                found, why2 = commons({**it, 'file': None}); why += why2
-            if not found:
-                raise RuntimeError('no usable image. ' + '; '.join(why[:4]))
-            last = None
-            for cand in found[:3]:  # first candidates may fail to download; try the next
-                try:
-                    to_jpg(get(cand['url']), pathlib.Path(out_dir) / f'{pid}.jpg'); credits[pid] = cand; to_cache(pid, it, out_dir, cand); break
-                except Exception as e:
-                    last = e
-            else:
-                raise RuntimeError(f'download failed: {last}')
-            print(f'{pid}: {credits[pid]["title"]} ({credits[pid]["license"]}) fetched and cached')
+            credits[pid], how = fetch_one(it, out_dir)
+            print(f'{pid}: {credits[pid]["title"][:70]} ({credits[pid]["license"]}) {how}')
         except Exception as e:
             old = from_cache(pid, it, out_dir, stale_ok=True)  # Commons is down or the query changed: an older cached copy beats a failed run
             if old:
                 credits[pid] = old; print(f'::warning::photo {pid}: {e}; using the older cached copy')
+            elif not strict and placeholder(pid, out_dir):
+                print(f'::warning::photo {pid}: {e}; using a plain placeholder card. Run the dashboard button Fetch photos, then render again for the real picture')
             else:
                 errors.append(f'{pid}: {e}')
     pathlib.Path(credits_txt).parent.mkdir(parents=True, exist_ok=True)
@@ -190,6 +214,36 @@ def run(photos_json='photos.json', out_dir='public/photos', credits_txt='out/pho
     for e in errors:
         print('::error::photo ' + e)
     return 1 if errors else 0
+
+
+def entries_from_script(path='src/remotion/current_script.tsx'):
+    f = pathlib.Path(path)
+    m = re.search(r'/\*PHOTOS\*/(.*?)/\*PHOTOS\*/', f.read_text(encoding='utf-8'), re.S) if f.exists() else None
+    return json.loads(m.group(1)) if m else []
+
+
+def load_list(path):
+    d = json.loads(pathlib.Path(path).read_text())
+    return d.get('photos', d) if isinstance(d, dict) else d
+
+
+def fetch(sources=('photos-list.json',)):
+    """Dashboard button 'Fetch photos': download every picture of the current script (first) and of the catalog lists, throttled, into photo-cache/.
+    The workflow commits photo-cache/, so the render finds every photo already stored and never needs Wikimedia."""
+    items, seen = [], set()
+    for it in entries_from_script() + [x for s in sources if pathlib.Path(s).exists() for x in load_list(s)]:
+        if it['id'] not in seen:
+            seen.add(it['id']); items.append(it)
+    tmp = tempfile.mkdtemp()
+    ok = fail = 0
+    for it in items:
+        try:
+            c, how = fetch_one(it, tmp)
+            ok += 1; print(f'OK   {it["id"]:<22} {how:<8} {c["title"][:60]} ({c["license"]})')
+        except Exception as e:
+            fail += 1; print(f'FAIL {it["id"]:<22} {str(e)[:160]}')
+    print(f'\n{ok} stored in photo-cache/, {fail} failed. For a failed one: pin an exact "file" (List photo candidates) or run Fetch photos again a bit later.')
+    return 1 if fail else 0
 
 
 def candidates(catalog, n=4):
@@ -211,5 +265,7 @@ def candidates(catalog, n=4):
 if __name__ == '__main__':
     if len(sys.argv) > 2 and sys.argv[1] == 'candidates':
         candidates(sys.argv[2])
+    elif len(sys.argv) > 1 and sys.argv[1] == 'fetch':
+        sys.exit(fetch(tuple(sys.argv[2:]) or ('photos-list.json',)))
     else:
         sys.exit(run(*sys.argv[1:4]))
