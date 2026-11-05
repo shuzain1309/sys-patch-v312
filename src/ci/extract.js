@@ -22,12 +22,12 @@ const chapters = hits.filter((h) => h.type === 'chapter').map((h, i, arr) => {
 let lexicon = {};
 try { lexicon = JSON.parse(fs.readFileSync('src/tts/lexicon.json', 'utf8')); } catch (e) {}
 const {errors, warnings} = qa(lines, lexicon);
-// audio: a MUSIC track with no file fails NOW (not after a 30 minute render); an unknown effect key only warns and is skipped at render
+// audio: a MUSIC cue pointing at a missing scene still fails NOW; a MUSIC track with no file only WARNS (kit.tsx renders that section silent), so a video never waits on music. An unknown effect key also only warns
 const have = (d) => new Set(fs.existsSync(d) ? fs.readdirSync(d).map((f) => f.replace(/\.[^.]+$/, '')) : []);
 const music = block('MUSIC') || [], haveMusic = have('music-real'), haveSfx = have('sfx-real');
 for (const c of music) {
   if (!allIds.includes(c.from)) errors.push(`MUSIC: scene ${c.from} does not exist`);
-  if (c.key && !haveMusic.has(c.key)) errors.push(`MUSIC: no file music-real/${c.key}.* (add the key to music-name.json and run fetch-music)`);
+  if (c.key && !haveMusic.has(c.key)) warnings.push(`MUSIC: no file music-real/${c.key}.*, that section will play without music (add the key to music-name.json and run fetch-music to fix)`);
 }
 const sfxKeys = new Set([...src.matchAll(/sfx:\s*\[((?:\s*\[[^\]]*\]\s*,?)+)\s*\]/g)].flatMap((m) => [...m[1].matchAll(/['"]([a-z_0-9]+)['"]/g)].map((x) => x[1])));
 // photos: every photos/<id>.jpg used in the script must be declared in PHOTOS (fetched in CI with licence checks); photos.json feeds src/ci/photos.py

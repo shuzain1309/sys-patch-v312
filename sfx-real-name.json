@@ -93,13 +93,23 @@
   "camel": "camel grunt",
   "chisel": "chisel hammer stone carving",
   "cat": "cat meow single",
-  "cannon": "cannon boom distant",
+  "cannon": "cannon fire single shot",
   "dig_sand": "shovel digging sand gravel",
   "seagulls_loop": {
    "q": "seagulls harbor ambience loop",
    "max": 60
   },
-  "blade_drop": "metal blade drop slice"
+  "blade_drop": "metal blade drop slice",
+  "musket_volley": "musket volley gunfire",
+  "snare_march": "snare drum military march",
+  "bugle": "bugle call",
+  "bells_church": "church bells ringing",
+  "blizzard_loop": "blizzard snow wind loop",
+  "rocket": "firework rocket whoosh",
+  "neigh": "horse neigh",
+  "explosion": "explosion distant",
+  "ice_crack": "ice cracking",
+  "water_wade": "wading through water splash"
  },
  "drop": [
   "baby_cry",

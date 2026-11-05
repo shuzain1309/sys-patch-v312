@@ -2,7 +2,7 @@
 """photos.py : real photos, paintings, maps and portraits for a script. Fetched at BUILD time (merge job), never at render time.
 Script block (strict JSON between the markers; CI reads it):
   export const PHOTOS = /*PHOTOS*/ [
-    {"id": "caesar_bust", "file": "File:Gaius Iulius Caesar (Vatican Museum).jpg"},      exact Wikimedia Commons file (preferred: you verified it)
+    {"id": "caesar_bust", "file": "File:Gaius Iulius Caesar (Vatican Museum).jpg", "q": "Julius Caesar bust"},   exact Commons file (preferred); the optional "q" is the fallback search if the file is gone
     {"id": "forum",       "q": "Roman Forum panorama"},                                  search Commons, first usable result
     {"id": "map_gaul",    "q": "Gaul map 58 BC", "provider": "openverse"}                 Openverse (CC images from many sources)
   ]/*PHOTOS*/;
@@ -11,23 +11,21 @@ Licences accepted: public domain, CC0, CC BY (any version). Rejected: NC, ND, fa
 (share-alike can apply to the video). Every image's credit is written to out/photos-credits.txt and into the video description
 ({{CREDITS}} placeholder, or appended automatically when attribution is required). Any failure stops the run BEFORE the render.
 """
-import json, os, pathlib, re, shutil, subprocess, sys, tempfile, time, urllib.parse, urllib.request
+import hashlib, json, os, pathlib, re, shutil, subprocess, sys, tempfile, time, urllib.parse, urllib.request
 
 UA = os.environ.get('PHOTO_UA', 'history-explainer-pipeline/1.0 (educational videos; contact via the GitHub repo)')
 MIN_W = 900
-CACHE = pathlib.Path('photos-cache')  # committed to the repo by the fetch-photos workflow; render runs reuse it and never hit Wikimedia
 
 
-def get(url, tries=6):
+def get(url, tries=3):
     for i in range(tries):
         try:
             with urllib.request.urlopen(urllib.request.Request(url, headers={'User-Agent': UA}), timeout=60) as r:
                 return r.read()
-        except Exception as e:  # 429 from shared runner IPs: honour Retry-After, else back off 8/16/32/64 s
+        except Exception as e:  # network hiccups and 429s: back off and retry
             if i == tries - 1:
                 raise
-            ra = getattr(getattr(e, 'headers', None), 'get', lambda *_: None)('Retry-After')
-            time.sleep(min(90, int(ra)) if ra and ra.isdigit() else (8 * 2 ** i if getattr(e, 'code', 0) == 429 else 2 + 3 * i))
+            time.sleep(2 + 3 * i)
 
 
 def get_json(url):
@@ -122,38 +120,68 @@ def patch_seo(credits, seo_path='out/seo.json', desc_path='out/description.txt')
     dp.write_text(d, encoding='utf-8')
 
 
+CACHE = pathlib.Path(os.environ.get('PHOTO_CACHE', 'photo-cache'))  # kept between runs (actions/cache) and may be committed/pushed to keep photos for good
+
+
+def spec_hash(it):
+    """Identity of a request: same file/query/provider = same picture, so a cached copy is reused without any network call."""
+    key = json.dumps({k: it.get(k) for k in ('file', 'q', 'provider', 'allow_sa')}, sort_keys=True)
+    return hashlib.sha1(key.encode()).hexdigest()[:12]
+
+
+def from_cache(pid, it, out_dir, stale_ok=False):
+    jpg, meta = CACHE / f'{pid}.jpg', CACHE / f'{pid}.json'
+    if not (jpg.exists() and meta.exists()):
+        return None
+    try:
+        m = json.loads(meta.read_text())
+    except Exception:
+        return None
+    if m.get('spec') != spec_hash(it) and not stale_ok:
+        return None
+    shutil.copyfile(jpg, pathlib.Path(out_dir) / f'{pid}.jpg')
+    return m['credit']
+
+
+def to_cache(pid, it, out_dir, credit):
+    CACHE.mkdir(parents=True, exist_ok=True)
+    shutil.copyfile(pathlib.Path(out_dir) / f'{pid}.jpg', CACHE / f'{pid}.jpg')
+    (CACHE / f'{pid}.json').write_text(json.dumps({'spec': spec_hash(it), 'credit': credit}, ensure_ascii=False))
+
+
 def run(photos_json='photos.json', out_dir='public/photos', credits_txt='out/photos-credits.txt'):
     items = json.loads(pathlib.Path(photos_json).read_text()) if pathlib.Path(photos_json).exists() else []
     pathlib.Path(out_dir).mkdir(parents=True, exist_ok=True)
     pathlib.Path(out_dir, '.keep').write_text('')  # the artifact upload needs the folder to exist even when there are no photos
     if not items:
         print('photos: none in this script'); return 0
-    CACHE.mkdir(exist_ok=True)
-    cj = CACHE / 'credits.json'
-    cached = json.loads(cj.read_text()) if cj.exists() else {}
     credits, errors = {}, []
     for it in items:
         pid = it['id']
-        if (CACHE / f'{pid}.jpg').exists() and pid in cached:  # already downloaded: no network
-            shutil.copy(CACHE / f'{pid}.jpg', pathlib.Path(out_dir) / f'{pid}.jpg'); credits[pid] = cached[pid]
-            print(f'{pid}: cached'); continue
-        time.sleep(2)  # be polite between uncached lookups
+        hit = from_cache(pid, it, out_dir)
+        if hit:  # cached: no network, same picture and credit as last time
+            credits[pid] = hit; print(f'{pid}: cached ({hit["title"]})'); continue
         try:
             found, why = openverse(it) if it.get('provider') == 'openverse' else commons(it)
+            if not found and it.get('file') and it.get('q'):  # pinned file missing or not licence-safe: fall back to the search text
+                found, why2 = commons({**it, 'file': None}); why += why2
             if not found:
                 raise RuntimeError('no usable image. ' + '; '.join(why[:4]))
             last = None
             for cand in found[:3]:  # first candidates may fail to download; try the next
                 try:
-                    to_jpg(get(cand['url']), pathlib.Path(out_dir) / f'{pid}.jpg'); credits[pid] = cand
-                    shutil.copy(pathlib.Path(out_dir) / f'{pid}.jpg', CACHE / f'{pid}.jpg'); cached[pid] = cand; cj.write_text(json.dumps(cached, indent=1)); break
+                    to_jpg(get(cand['url']), pathlib.Path(out_dir) / f'{pid}.jpg'); credits[pid] = cand; to_cache(pid, it, out_dir, cand); break
                 except Exception as e:
                     last = e
             else:
                 raise RuntimeError(f'download failed: {last}')
-            print(f'{pid}: {credits[pid]["title"]} ({credits[pid]["license"]})')
+            print(f'{pid}: {credits[pid]["title"]} ({credits[pid]["license"]}) fetched and cached')
         except Exception as e:
-            errors.append(f'{pid}: {e}')
+            old = from_cache(pid, it, out_dir, stale_ok=True)  # Commons is down or the query changed: an older cached copy beats a failed run
+            if old:
+                credits[pid] = old; print(f'::warning::photo {pid}: {e}; using the older cached copy')
+            else:
+                errors.append(f'{pid}: {e}')
     pathlib.Path(credits_txt).parent.mkdir(parents=True, exist_ok=True)
     with open(credits_txt, 'w', encoding='utf-8') as f:
         f.write('Images used by this render\n\n' + '\n'.join(credit_line(k, v) for k, v in credits.items()) + '\n')

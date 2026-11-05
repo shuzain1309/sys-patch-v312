@@ -111,7 +111,12 @@ jobs:
         run: python src/tts/generate_voice.py merge
       - name: 6b Real sound effects and music (normalised, nothing synthesised)
         run: python src/tts/audio_real.py build public/audio out/credits.txt
-      - name: 6c Real photos and maps (licence checked; stops here if one is unusable)
+      - uses: actions/cache@v4
+        with:
+          path: photo-cache
+          key: photos-${{ hashFiles('photos.json') }}
+          restore-keys: photos-
+      - name: 6c Real photos and maps (licence checked, cached in photo-cache/; stops here only if one is unusable AND uncached)
         run: python src/ci/photos.py
       - name: 7 Plan render chunks
         id: plan
