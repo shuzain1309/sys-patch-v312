@@ -22,21 +22,25 @@ const chapters = hits.filter((h) => h.type === 'chapter').map((h, i, arr) => {
 let lexicon = {};
 try { lexicon = JSON.parse(fs.readFileSync('src/tts/lexicon.json', 'utf8')); } catch (e) {}
 const {errors, warnings} = qa(lines, lexicon);
-// audio: a MUSIC cue pointing at a missing scene still fails NOW; a MUSIC track with no file only WARNS (kit.tsx renders that section silent), so a video never waits on music. An unknown effect key also only warns
+// audio: a MUSIC track with no file fails NOW (not after a 30 minute render); an unknown effect key only warns and is skipped at render
 const have = (d) => new Set(fs.existsSync(d) ? fs.readdirSync(d).map((f) => f.replace(/\.[^.]+$/, '')) : []);
 const music = block('MUSIC') || [], haveMusic = have('music-real'), haveSfx = have('sfx-real');
 for (const c of music) {
   if (!allIds.includes(c.from)) errors.push(`MUSIC: scene ${c.from} does not exist`);
-  if (c.key && !haveMusic.has(c.key)) warnings.push(`MUSIC: no file music-real/${c.key}.*, that section will play without music (add the key to music-name.json and run fetch-music to fix)`);
+  if (c.key && !haveMusic.has(c.key)) errors.push(`MUSIC: no file music-real/${c.key}.* (add the key to music-name.json and run fetch-music)`);
 }
 const sfxKeys = new Set([...src.matchAll(/sfx:\s*\[((?:\s*\[[^\]]*\]\s*,?)+)\s*\]/g)].flatMap((m) => [...m[1].matchAll(/['"]([a-z_0-9]+)['"]/g)].map((x) => x[1])));
 // photos: every photos/<id>.jpg used in the script must be declared in PHOTOS (fetched in CI with licence checks); photos.json feeds src/ci/photos.py
 const photos = block('PHOTOS') || [];
-fs.writeFileSync('photos.json', JSON.stringify(photos));
+// THUMB: photos used only by the thumbnail are "soft" (photos.py warns instead of stopping the run; the thumbnail falls back to the stickman)
+const thumb = block('THUMB');
+const thumbPhotos = new Set(thumb ? ['photo', 'photo2'].flatMap((k) => [thumb, ...(thumb.variants || [])].map((v) => v.face && v.face[k]).filter(Boolean)) : []);
 const declared = new Set(photos.map((x) => x.id)), used = new Set([...src.matchAll(/['"]photos\/([a-z0-9_]+)\.jpg['"]/g)].map((m) => m[1]));
 for (const x of photos) if (!/^[a-z0-9_]+$/.test(x.id || '') || !(x.file || x.q)) errors.push(`PHOTOS: entry ${JSON.stringify(x).slice(0, 80)} needs an id (a-z 0-9 _) and a "file" or "q"`);
+for (const x of photos) if (thumbPhotos.has(x.id) && !used.has(x.id)) x.soft = true;
+fs.writeFileSync('photos.json', JSON.stringify(photos));
 for (const u of used) if (!declared.has(u)) errors.push(`photos/${u}.jpg is used but not declared in PHOTOS`);
-for (const d of declared) if (!used.has(d)) warnings.push(`PHOTOS: "${d}" is declared but never used`);
+for (const d of declared) if (!used.has(d) && !thumbPhotos.has(d)) warnings.push(`PHOTOS: "${d}" is declared but never used`);
 // characters: an unknown look would silently draw a generic blue figure; fail instead. Allowed values are read from world.tsx so they cannot drift.
 const world = fs.existsSync('src/remotion/world.tsx') ? fs.readFileSync('src/remotion/world.tsx', 'utf8') : '';
 const union = (re) => ((world.match(re) || [, ''])[1].match(/'(\w+)'/g) || []).map((s) => s.slice(1, -1));
@@ -63,6 +67,14 @@ for (const m of new Set([...src.matchAll(/\bfac:\s*['"]([^'"]+)['"]/g)].map((x) 
 const geoLib = fs.existsSync('library/geo.json') ? JSON.parse(fs.readFileSync('library/geo.json', 'utf8')) : {};
 for (const m of new Set([...src.matchAll(/\bplace:\s*['"]([^'"]+)['"]/g)].map((x) => x[1]))) if (!(geoLib.places || {})[m]) errors.push(`map place "${m}" is not in library/geo.json (use lon/lat, or add it)`);
 for (const m of new Set([...src.matchAll(/\bref:\s*['"]([^'"]+)['"]/g)].map((x) => x[1]))) if (!(geoLib.regions || {})[m] && !(geoLib.lines || {})[m]) errors.push(`map ref "${m}" is not a region or line in library/geo.json`);
+// thumbnail: a bad map name fails NOW (not after the render); the soft `thumb` job reads thumb.json
+const {validateBlock, expand} = require('./thumbcheck');
+if (thumb) {
+  const tv = validateBlock(thumb, {countries: fs.existsSync('library/countries.json') ? JSON.parse(fs.readFileSync('library/countries.json', 'utf8')) : [], regions: Object.keys(geoLib.regions || {})});
+  errors.push(...tv.errors); warnings.push(...tv.warnings);
+  for (const id of thumbPhotos) if (!declared.has(id)) errors.push(`THUMB: face photo "${id}" is not declared in PHOTOS`);
+  fs.writeFileSync('thumb.json', JSON.stringify({variants: expand(thumb)}));
+} else warnings.push('No THUMB block: no thumbnail will be made for this video');
 // render-cost guardrails (measured: a normal stage ~65 ms/frame, 170 soldiers ~100 ms, 600 soldiers ~190 ms)
 const starts = [...src.matchAll(/\{id:\s*['"](s\d+)['"]/g)].map((m) => ({id: m[1], at: m.index}));
 starts.forEach((s, i) => {
