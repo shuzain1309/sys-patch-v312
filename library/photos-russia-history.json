@@ -44,10 +44,7 @@
   "id": "nevsky_ice",
   "q": "Alexander Nevsky Battle on the Ice painting",
   "alt": "Alexander Nevsky",
-  "must": [
-   "nevsky",
-   "ice"
-  ]
+  "file": "File:Alexander Nevsky in the battle with the Swedes by Boris Chorikov.jpg"
  },
  {
   "id": "ugra_standing",
