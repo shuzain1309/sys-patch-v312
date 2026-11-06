@@ -298,5 +298,71 @@
   "name": "ice grinding cracking freezing designed.wav",
   "username": "kyles",
   "license": "http://creativecommons.org/publicdomain/zero/1.0/"
+ },
+ "bomb_blast": {
+  "id": 350602,
+  "name": "Ship_Hit_Shields.wav",
+  "username": "Lambich",
+  "license": "http://creativecommons.org/publicdomain/zero/1.0/"
+ },
+ "train_loop": {
+  "id": 591894,
+  "name": "Train Passing By 49 with Bell, Steam Whistle.mp3",
+  "username": "FunWithSound",
+  "license": "http://creativecommons.org/publicdomain/zero/1.0/"
+ },
+ "geiger_loop": {
+  "id": 555934,
+  "name": "Geiger Counter Hotspot (Sweeping)",
+  "username": "cookies+policy",
+  "license": "http://creativecommons.org/publicdomain/zero/1.0/"
+ },
+ "alarm_loop": {
+  "id": 487525,
+  "name": "Long Very Annoying Siren or Alarm",
+  "username": "NicknameLarry",
+  "license": "http://creativecommons.org/publicdomain/zero/1.0/"
+ },
+ "typewriter": {
+  "id": 712229,
+  "name": "typewriter varied typing",
+  "username": "khwez",
+  "license": "http://creativecommons.org/publicdomain/zero/1.0/"
+ },
+ "sled_bells": {
+  "id": 369506,
+  "name": "Sleigh bells hit",
+  "username": "Selector",
+  "license": "http://creativecommons.org/publicdomain/zero/1.0/"
+ },
+ "cannon_shot": {
+  "id": 581598,
+  "name": "Auto Cannon 3",
+  "username": "SamsterBirdies",
+  "license": "http://creativecommons.org/publicdomain/zero/1.0/"
+ },
+ "sub_ping": {
+  "id": 808185,
+  "name": "Sonar ping",
+  "username": "nicorico_120",
+  "license": "http://creativecommons.org/publicdomain/zero/1.0/"
+ },
+ "snow_wind_loop": {
+  "id": 617558,
+  "name": "City ambiance heavy snow strong wind bird.wav",
+  "username": "itinerantmonk108",
+  "license": "http://creativecommons.org/publicdomain/zero/1.0/"
+ },
+ "door_knock": {
+  "id": 193834,
+  "name": "Door Knock - 18.wav",
+  "username": "Ligidium",
+  "license": "http://creativecommons.org/publicdomain/zero/1.0/"
+ },
+ "glass_break": {
+  "id": 848286,
+  "name": "Glass Break 5",
+  "username": "ElevatorFan2020",
+  "license": "http://creativecommons.org/publicdomain/zero/1.0/"
  }
 }
