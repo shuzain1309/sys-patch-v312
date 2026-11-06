@@ -3,7 +3,7 @@
 // Copy once to src/remotion/world.tsx next to kit.tsx. Do not edit per video.
 import React from 'react';
 import libLooks from '../../library/looks.json'; // reusable looks added over time (merged by the dashboard); same fields as Look
-import {Easing, interpolate, random, Sequence, spring, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
+import {Easing, continueRender, delayRender, interpolate, random, Sequence, spring, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
 import {loadFont as loadHand} from '@remotion/google-fonts/PatrickHand';
 import {fit, measure, placeBox, SAFE, Rect} from './textfit';
 
@@ -55,7 +55,7 @@ const LEAN: Partial<Record<PoseName, number>> = {walk: 2, run: 12, attack: 10, c
 
 export type Hair = 'none' | 'short' | 'long' | 'topknot' | 'curly' | 'wild' | 'parted' | 'bald' | 'bob';
 export type Outfit = 'tunic' | 'robe' | 'coat' | 'dress' | 'armor' | 'toga' | 'kilt' | 'sheath';
-export type Look = {hat: 'none' | 'explorer' | 'top' | 'crown' | 'cap' | 'helmet' | 'straw' | 'bowler' | 'tricorn' | 'bun' | 'laurel' | 'crest' | 'hood' | 'dome' | 'greathelm' | 'morion' | 'turban' | 'nemes' | 'whitecrown' | 'redcrown' | 'pschent' | 'khepresh' | 'linen' | 'jackal' | 'falcon' | 'diadem' | 'fez' | 'bork' | 'mitre' | 'biretta' | 'beret' | 'cavalier' | 'peruke' | 'bicorne' | 'phrygian' | 'plume' | 'bearskin' | 'shako' | 'busby' | 'czapka' | 'casque'; shirt: string; pants: string; skin: string; extra?: 'scarf' | 'beard' | 'apron'; ec?: string; cape?: string; toga?: string; armor?: boolean;
+export type Look = {hat: 'none' | 'explorer' | 'top' | 'crown' | 'cap' | 'helmet' | 'straw' | 'bowler' | 'tricorn' | 'bun' | 'laurel' | 'crest' | 'hood' | 'dome' | 'greathelm' | 'morion' | 'turban' | 'nemes' | 'whitecrown' | 'redcrown' | 'pschent' | 'khepresh' | 'linen' | 'jackal' | 'falcon' | 'diadem' | 'fez' | 'bork' | 'mitre' | 'biretta' | 'beret' | 'cavalier' | 'peruke' | 'bicorne' | 'phrygian' | 'plume' | 'bearskin' | 'shako' | 'busby' | 'czapka' | 'casque' | 'ushanka' | 'boyar' | 'mongol' | 'peaked'; shirt: string; pants: string; skin: string; extra?: 'scarf' | 'beard' | 'apron'; ec?: string; cape?: string; toga?: string; armor?: boolean;
   trim?: string; outfit?: Outfit; hair?: Hair; hc?: string; facial?: 'full' | 'goatee' | 'stache' | 'long' | 'ceremonial'; sleeve?: string; bare?: boolean; shoes?: string; fc?: string; glasses?: boolean; era?: string; kohl?: boolean};
 export const LOOKS: Record<string, Look> = {
   narrator: {hat: 'explorer', shirt: '#d9c79a', pants: '#6b5a45', skin: '#f3dcc6', extra: 'scarf', ec: '#c0392b', hair: 'short', hc: '#a8a8a8', facial: 'stache', trim: '#8a6d3b', shoes: '#5a4632'},
@@ -142,6 +142,10 @@ const Hat: React.FC<{k: Look['hat']; top: number; skin: string; col?: string}> =
     case 'bicorne': return (<g {...OL}><path d={`M-88 ${top + 10} Q-60 ${top - 38} 0 ${top - 34} Q60 ${top - 38} 88 ${top + 10} Q44 ${top + 26} 0 ${top + 16} Q-44 ${top + 26} -88 ${top + 10}Z`} fill="#1f1f27" /><circle cx={34} cy={top - 14} r={7} fill="#c0392b" /><path d={`M-88 ${top + 10} Q0 ${top - 10} 88 ${top + 10}`} fill="none" stroke={col ?? '#e2b84a'} strokeWidth={4} /></g>);
     case 'phrygian': return (<g {...OL}><path d={`M-52 ${top + 16} Q-56 ${top - 30} -4 ${top - 42} Q44 ${top - 50} 70 ${top - 22} Q52 ${top - 14} 52 ${top + 16}Z`} fill="#c0392b" /><circle cx={22} cy={top - 2} r={9} fill="#f4f1e6" /><circle cx={22} cy={top - 2} r={4.5} fill="#2b5fb4" stroke="none" /></g>);
     case 'plume': return (<g {...OL}>{Array.from({length: 9}, (_, i) => { const a = -80 + i * 20, px = Math.sin(rad(a)) * 58, py = top + 8 - Math.cos(rad(a)) * 58; return <ellipse key={i} cx={px} cy={py} rx={11} ry={38} fill={i % 2 ? '#2f9e9e' : col ?? '#2f9e5a'} transform={`rotate(${a} ${px} ${py})`} />; })}<rect x={-52} y={top - 2} width={104} height={16} rx={6} fill="#e2b84a" /></g>);
+    case 'ushanka': return (<g {...OL}><path d={`M-52 ${top + 20} Q-56 ${top - 34} 0 ${top - 36} Q56 ${top - 34} 52 ${top + 20}Z`} fill={col ?? '#6b5a4a'} /><path d={`M-52 ${top + 14} Q-70 ${top + 40} -56 ${top + 62} Q-44 ${top + 50} -48 ${top + 20}Z M52 ${top + 14} Q70 ${top + 40} 56 ${top + 62} Q44 ${top + 50} 48 ${top + 20}Z`} fill={col ?? '#6b5a4a'} /><rect x={-9} y={top - 22} width={18} height={18} rx={3} fill="#c0392b" /></g>);
+    case 'boyar': return (<g {...OL}><path d={`M-44 ${top + 14} L-52 ${top - 78} H52 L44 ${top + 14}Z`} fill={col ?? '#7a4a2a'} /><path d={`M-48 ${top + 6} Q0 ${top + 20} 48 ${top + 6}`} fill="none" stroke="#e2b84a" strokeWidth={6} /><path d={`M-52 ${top - 78} Q0 ${top - 96} 52 ${top - 78}`} fill="#9a6a3a" /></g>);
+    case 'mongol': return (<g {...OL}><path d={`M-50 ${top + 16} Q-52 ${top - 20} -8 ${top - 50} L0 ${top - 74} L8 ${top - 50} Q52 ${top - 20} 50 ${top + 16}Z`} fill={col ?? '#2f6f9a'} /><path d={`M-54 ${top + 6} Q0 ${top + 22} 54 ${top + 6} L50 ${top + 26} Q0 ${top + 38} -50 ${top + 26}Z`} fill="#5a3a22" /><path d={`M-14 ${top - 54} Q-46 ${top - 30} -52 ${top - 12}`} fill="none" stroke="#c0392b" strokeWidth={5} /></g>);
+    case 'peaked': return (<g {...OL}><path d={`M-52 ${top + 16} Q-54 ${top - 26} 0 ${top - 28} Q54 ${top - 26} 52 ${top + 16}Z`} fill={col ?? '#4a5a3a'} /><path d={`M-50 ${top + 4} Q0 ${top + 14} 50 ${top + 4}`} fill="none" stroke="#c0392b" strokeWidth={8} /><path d={`M8 ${top + 12} L70 ${top + 16} Q64 ${top + 26} 8 ${top + 22}Z`} fill="#1f1f27" /><path d={`M0 ${top - 8} l5 12 h-10z`} fill="#e2b84a" /></g>);
     case 'shako': return (<g {...OL}><path d={`M-44 ${top + 14} L-40 ${top - 76} L-54 ${top - 92} H54 L40 ${top - 76} L44 ${top + 14}Z`} fill="#26262f" /><path d={`M-43 ${top - 4} H43`} fill="none" stroke="#e2b84a" strokeWidth={6} /><path d={`M-40 ${top - 76} H40`} fill="none" stroke="#e2b84a" strokeWidth={4} /><rect x={-15} y={top - 56} width={30} height={24} rx={5} fill="#e2b84a" /><path d={`M4 ${top - 92} Q-4 ${top - 130} 8 ${top - 152}`} fill="none" stroke={col ?? '#c0392b'} strokeWidth={13} /></g>);
     case 'bearskin': return (<g {...OL}><path d={`M-50 ${top + 16} Q-64 ${top - 66} -36 ${top - 118} Q0 ${top - 136} 36 ${top - 118} Q64 ${top - 66} 50 ${top + 16}Z`} fill="#2a211c" />{[-30, -10, 12, 30].map((x, i) => <path key={i} d={`M${x} ${top - 108 + (i % 2) * 8} Q${x + 4} ${top - 70} ${x - 2} ${top - 30}`} fill="none" stroke="#4a3a30" strokeWidth={3.5} />)}<ellipse cx={0} cy={top - 28} rx={15} ry={19} fill="#e2b84a" /><path d={`M26 ${top - 112} Q44 ${top - 162} 26 ${top - 176} Q18 ${top - 140} 12 ${top - 114}Z`} fill={col ?? '#c0392b'} /></g>);
     case 'busby': return (<g {...OL}><path d={`M-48 ${top + 14} Q-56 ${top - 58} 0 ${top - 64} Q56 ${top - 58} 48 ${top + 14}Z`} fill="#3a2a22" /><path d={`M16 ${top - 60} Q72 ${top - 56} 62 ${top - 4} Q46 ${top - 26} 18 ${top - 36}Z`} fill={col ?? '#a8242c'} /><path d={`M-18 ${top - 62} Q-24 ${top - 104} -10 ${top - 120}`} fill="none" stroke="#f4f1e6" strokeWidth={11} /><path d={`M-48 ${top - 2} Q0 ${top + 8} 48 ${top - 2}`} fill="none" stroke="#e2b84a" strokeWidth={5} /></g>);
@@ -177,7 +181,7 @@ const HeldArt: React.FC<{k: Held; f: number}> = ({k, f}) => {
   }
 };
 
-const HAIRLESS: Look['hat'][] = ['peruke', 'mitre', 'biretta', 'helmet', 'crest', 'hood', 'bun', 'greathelm', 'turban', 'nemes', 'jackal', 'falcon', 'linen', 'bearskin', 'shako', 'busby', 'czapka', 'casque'];
+const HAIRLESS: Look['hat'][] = ['peruke', 'mitre', 'biretta', 'helmet', 'crest', 'hood', 'bun', 'greathelm', 'turban', 'nemes', 'jackal', 'falcon', 'linen', 'bearskin', 'shako', 'busby', 'czapka', 'casque', 'ushanka', 'boyar', 'mongol'];
 const outfitOf = (l: Look): Outfit => l.outfit ?? (l.armor ? 'armor' : l.toga ? 'toga' : 'tunic');
 
 // hair that sits behind the head (long styles) and in front of it (fringe), both drawn from the head centre
@@ -406,7 +410,7 @@ export const Actor: React.FC<{a: ActorT; words?: WordT[]; seed?: string}> = ({a,
 };
 
 // ===================== PROPS =====================
-export type PropKind = 'house' | 'tudor' | 'church' | 'cactus' | 'tree' | 'skyscraper' | 'factory' | 'mountain' | 'ship' | 'wall' | 'flag' | 'coins' | 'crown' | 'bank' | 'fire' | 'smoke' | 'sun' | 'moon' | 'cloud' | 'sign' | 'banner' | 'crowd' | 'crate' | 'road' | 'waves' | 'column' | 'temple' | 'arch' | 'colosseum' | 'wolf' | 'elephant' | 'standard' | 'tent' | 'torch' | 'throne' | 'basket' | 'shieldwall' | 'river' | 'birds' | 'galley' | 'tower' | 'stonewall' | 'hill' | 'balcony' | 'rubble' | 'cabbage' | 'legion' | 'troop' | 'horse' | 'catapult' | 'ram' | 'siegetower' | 'ballista' | 'gate' | 'longship' | 'fleet' | 'photo' | 'pyramid' | 'sphinx' | 'obelisk' | 'palm' | 'reeds' | 'nileboat' | 'chariot' | 'sarcophagus' | 'pylon' | 'glyphs' | 'goldmask' | 'scales' | 'rosetta' | 'lighthouse' | 'mudbrick' | 'shaduf' | 'camel' | 'mosque' | 'minaret' | 'bombard' | 'cage' | 'cauldron' | 'tulips' | 'cup' | 'silkcord' | 'crescent' | 'tug' | 'trench' | 'steamship' | 'bazaar' | 'serail' | 'chain' | 'scroll' | 'press' | 'caravel' | 'galleon' | 'teocalli' | 'cannon' | 'book' | 'telescope' | 'orrery' | 'globe' | 'guillotine' | 'bastille' | 'versailles' | 'mirror' | 'door' | 'wagon' | 'crop' | 'constantinople' | 'duomo' | 'potosi' | 'scaffold' | 'bed' | 'ceiling' | 'castlewin' | 'bridge' | 'kremlin' | 'gunline' | 'rocket';
+export type PropKind = 'house' | 'tudor' | 'church' | 'cactus' | 'tree' | 'skyscraper' | 'factory' | 'mountain' | 'ship' | 'wall' | 'flag' | 'coins' | 'crown' | 'bank' | 'fire' | 'smoke' | 'sun' | 'moon' | 'cloud' | 'sign' | 'banner' | 'crowd' | 'crate' | 'road' | 'waves' | 'column' | 'temple' | 'arch' | 'colosseum' | 'wolf' | 'elephant' | 'standard' | 'tent' | 'torch' | 'throne' | 'basket' | 'shieldwall' | 'river' | 'birds' | 'galley' | 'tower' | 'stonewall' | 'hill' | 'balcony' | 'rubble' | 'cabbage' | 'legion' | 'troop' | 'horse' | 'catapult' | 'ram' | 'siegetower' | 'ballista' | 'gate' | 'longship' | 'fleet' | 'photo' | 'pyramid' | 'sphinx' | 'obelisk' | 'palm' | 'reeds' | 'nileboat' | 'chariot' | 'sarcophagus' | 'pylon' | 'glyphs' | 'goldmask' | 'scales' | 'rosetta' | 'lighthouse' | 'mudbrick' | 'shaduf' | 'camel' | 'mosque' | 'minaret' | 'bombard' | 'cage' | 'cauldron' | 'tulips' | 'cup' | 'silkcord' | 'crescent' | 'tug' | 'trench' | 'steamship' | 'bazaar' | 'serail' | 'chain' | 'scroll' | 'press' | 'caravel' | 'galleon' | 'teocalli' | 'cannon' | 'book' | 'telescope' | 'orrery' | 'globe' | 'guillotine' | 'bastille' | 'versailles' | 'mirror' | 'door' | 'wagon' | 'crop' | 'constantinople' | 'duomo' | 'potosi' | 'scaffold' | 'bed' | 'ceiling' | 'castlewin' | 'bridge' | 'kremlin' | 'gunline' | 'rocket' | 'stbasil' | 'izba' | 'perun' | 'tank' | 'train' | 'sputnik' | 'sub' | 'reactor' | 'winterpalace' | 'emblem' | 'console' | 'watchtower' | 'yurt' | 'icehole' | 'bell';
 export type PropT = {k: PropKind; x: number; y: number; s?: number; d?: number; c?: string; t?: string; n?: number; at?: number; flip?: boolean; kind?: TroopKind; form?: 'block' | 'line' | 'wedge' | 'scatter' | 'square'; fight?: boolean; march?: boolean; c2?: string; rider?: string; rider2?: string; fac?: string; held?: Held; src?: string; w?: number; h?: number; ship?: 'galley' | 'longship' | 'ship'};
 
 const Shadow: React.FC<{w: number}> = ({w}) => <ellipse cx={0} cy={4} rx={w} ry={w / 12} fill="#000" opacity={0.16} />;
@@ -424,6 +428,10 @@ const bands = (k: string, u: number): [number, number, string][] => {
     if (u < 0.4) out.push([0, 0.54, '#3c3b6e']);
     return out;
   }
+  if (k === 'ru') return [[0, 0.333, '#f4f4f4'], [0.333, 0.667, '#1c57a5'], [0.667, 1, '#d52b1e']];
+  if (k === 'ukr') return [[0, 0.5, '#0057b7'], [0.5, 1, '#ffd700']];
+  if (k === 'ussr') return u > 0.07 && u < 0.3 ? [[0, 1, '#c0392b'], [0.1, 0.4, '#f2c230']] : [[0, 1, '#c0392b']];
+  if (k === 'imp') return [[0, 0.333, '#1f1f27'], [0.333, 0.667, '#e2b84a'], [0.667, 1, '#f4f4f4']];
   if (k === 'mx') return [[0, 1, u < 0.33 ? '#006847' : u < 0.66 ? '#f4f4f4' : '#ce1126']];
   if (k === 'es') return [[0, 0.25, '#aa151b'], [0.25, 0.75, '#f1bf00'], [0.75, 1, '#aa151b']];
   if (k === 'fr') return [[0, 1, u < 0.33 ? '#0055a4' : u < 0.66 ? '#fff' : '#ef4135']];
@@ -662,6 +670,79 @@ const Glyphs: React.FC<{x: number; y: number; n: number; rows: number; c?: strin
   <g transform={`translate(${x} ${y})`} opacity={0.75}>{Array.from({length: rows}, (_, r) => Array.from({length: n}, (_, i) => <g key={`${r}-${i}`} transform={`translate(${(i - (n - 1) / 2) * 62} ${(r - (rows - 1) / 2) * 62}) scale(0.8)`}><GlyphIcon k={r * 3 + i * 2 + r} c={c} /></g>))}</g>
 );
 
+
+// ---------- PHOTO STYLE (permanent): the photo is NEVER cropped or zoomed. It sits whole inside a postage-stamp frame that takes the
+// photo's own shape (wide or tall). Used by the full-screen photo scene (kit.tsx) and by the stage prop {k:'photo'}.
+const DIMS = new Map<string, {w: number; h: number}>();
+export const usePhotoDims = (src: string) => {
+  const [d, setD] = React.useState<{w: number; h: number} | null>(() => DIMS.get(src) ?? null);
+  const [handle] = React.useState<number | null>(() => (DIMS.has(src) || !src ? null : delayRender(`photo size ${src}`)));
+  React.useEffect(() => {
+    if (handle === null) return;
+    const im = new window.Image();
+    const done = (w: number, h: number) => { DIMS.set(src, {w, h}); setD({w, h}); continueRender(handle); };
+    im.onload = () => done(im.naturalWidth || 16, im.naturalHeight || 10);
+    im.onerror = () => done(16, 10);
+    im.src = staticFile(src);
+  }, [src, handle]);
+  return d;
+};
+let CREDITS: Record<string, any> | null = null;
+/** "commons.wikimedia.org" for a photo whose credit is in public/photos/credits.json (written by photos.py), else null */
+export const usePhotoCredit = (src: string): string | null => {
+  const [c, setC] = React.useState<Record<string, any> | null>(CREDITS);
+  const [handle] = React.useState<number | null>(() => (CREDITS ? null : delayRender('photo credits')));
+  React.useEffect(() => {
+    if (handle === null) return;
+    fetch(staticFile('photos/credits.json')).then((r) => (r.ok ? r.json() : {})).catch(() => ({})).then((j) => { CREDITS = j; setC(j); continueRender(handle); });
+  }, [handle]);
+  const id = src.replace(/^.*\//, '').replace(/\.[a-z0-9]+$/i, '');
+  const e = c?.[id];
+  if (!e) return null;
+  try { return new URL(e.page).hostname.replace(/^www\./, ''); } catch { return e.artist && e.artist !== 'unknown' ? String(e.artist) : null; }
+};
+/** largest size with the photo's own aspect that fits the box (small photos are scaled up, never cropped) */
+export const photoFit = (d: {w: number; h: number} | null, boxW: number, boxH: number) => {
+  const k = d ? Math.min(boxW / d.w, boxH / d.h) : Math.min(boxW / 16, boxH / 10);
+  return d ? {w: d.w * k, h: d.h * k} : {w: 16 * k, h: 10 * k};
+};
+/** SVG group centred on (0,0). Frame = photo + border, perforated like a stamp. */
+export const StampPhoto: React.FC<{src: string; boxW: number; boxH: number; border?: number; r?: number; pitch?: number; shadow?: boolean}> = ({src, boxW, boxH, border = 22, r = 10.5, pitch = 44, shadow = true}) => {
+  const d = usePhotoDims(src);
+  const {w, h} = photoFit(d, boxW, boxH);
+  const W = w + 2 * border, H = h + 2 * border;
+  const id = 'stamp' + React.useId().replace(/[^a-zA-Z0-9]/g, '');
+  const nx = Math.max(3, Math.round(W / pitch)), ny = Math.max(3, Math.round(H / pitch));
+  const holes: React.ReactNode[] = [];
+  for (let i = 0; i < nx; i++) { const x = -W / 2 + ((i + 0.5) * W) / nx; holes.push(<circle key={`t${i}`} cx={x} cy={-H / 2} r={r} fill="#000" />, <circle key={`b${i}`} cx={x} cy={H / 2} r={r} fill="#000" />); }
+  for (let j = 0; j < ny; j++) { const y = -H / 2 + ((j + 0.5) * H) / ny; holes.push(<circle key={`l${j}`} cx={-W / 2} cy={y} r={r} fill="#000" />, <circle key={`r${j}`} cx={W / 2} cy={y} r={r} fill="#000" />); }
+  return (
+    <g style={{filter: shadow ? 'drop-shadow(0 16px 26px rgba(0,0,0,.45))' : undefined}}>
+      <mask id={id} maskUnits="userSpaceOnUse" x={-W / 2 - r} y={-H / 2 - r} width={W + 2 * r} height={H + 2 * r}>
+        <rect x={-W / 2 - r} y={-H / 2 - r} width={W + 2 * r} height={H + 2 * r} fill="#fff" />
+        {holes}
+      </mask>
+      <rect x={-W / 2} y={-H / 2} width={W} height={H} fill="#fbfaf4" mask={`url(#${id})`} />
+      <image href={staticFile(src)} x={-w / 2} y={-h / 2} width={w} height={h} preserveAspectRatio="xMidYMid slice" />
+      <rect x={-w / 2} y={-h / 2} width={w} height={h} fill="none" stroke="rgba(0,0,0,.16)" strokeWidth={2} />
+    </g>
+  );
+};
+const PhotoProp: React.FC<{p: PropT}> = ({p}) => {
+  const bw = p.w ?? 360, bh = p.h ?? 460, src = p.src ?? '';
+  const d = usePhotoDims(src);
+  const {h} = photoFit(d, bw, bh);
+  const H = h + 2 * 14, top = -92 - H;
+  return (
+    <g {...OL}><Shadow w={bw / 2 + 30} />
+      <path d={`M${-bw / 4} ${top + H} L${-bw / 3} 0 M${bw / 4} ${top + H} L${bw / 3} 0`} stroke="#6b4a2a" strokeWidth={10} fill="none" />
+      {src ? <g transform={`translate(0 ${top + H / 2})`} stroke="none"><StampPhoto src={src} boxW={bw} boxH={bh} border={14} r={7} pitch={30} shadow={false} /></g>
+        : <text y={-bh / 2 - 80} textAnchor="middle" fontFamily={HAND} fontSize={40} fill="#6b5a45" stroke="none">photo</text>}
+      {p.t && <g><rect x={-bw / 2 - 6} y={-86} width={bw + 12} height={46} rx={10} fill="#fffaf0" /><text y={-52} textAnchor="middle" fontFamily={HAND} fontSize={32} fill={INK} stroke="none">{p.t}</text></g>}
+    </g>
+  );
+};
+
 const PropArt: React.FC<{p: PropT; f: number; seed: string}> = ({p, f, seed}) => {
   const c = p.c;
   switch (p.k) {
@@ -848,19 +929,7 @@ const PropArt: React.FC<{p: PropT; f: number; seed: string}> = ({p, f, seed}) =>
       const n = Math.min(p.n ?? 4, 8);
       return (<g>{Array.from({length: n}, (_, i) => { const k = 1 - (i / Math.max(1, n)) * 0.45; return (<g key={i} transform={`translate(${(i - (n - 1) / 2) * 250 * (p.flip ? -1 : 1)} ${-i * 22}) scale(${k})`}><PropArt p={{k: p.ship ?? 'galley', x: i * 37, y: 0, c: p.c}} f={f + i * 9} seed={`${seed}f${i}`} /></g>); }).reverse()}</g>);
     }
-    case 'photo': {
-      const w = p.w ?? 360, h = p.h ?? 460, fc = p.c ?? '#c9a84a';
-      return (
-        <g {...OL}><Shadow w={w / 2 + 30} />
-          <path d={`M${-w / 4} ${-h - 80} L${-w / 3} 0 M${w / 4} ${-h - 80} L${w / 3} 0`} stroke="#6b4a2a" strokeWidth={10} fill="none" />
-          <rect x={-w / 2 - 16} y={-h - 96} width={w + 32} height={h + 32} rx={8} fill={fc} />
-          <rect x={-w / 2} y={-h - 80} width={w} height={h} fill="#cfc8b6" />
-          {p.src ? <image href={staticFile(p.src)} x={-w / 2} y={-h - 80} width={w} height={h} preserveAspectRatio="xMidYMid slice" /> : <text y={-h / 2 - 80} textAnchor="middle" fontFamily={HAND} fontSize={40} fill="#6b5a45" stroke="none">photo</text>}
-          <rect x={-w / 2} y={-h - 80} width={w} height={h} fill="none" stroke={INK} strokeWidth={4} />
-          {p.t && <g><rect x={-w / 2 - 6} y={-86} width={w + 12} height={46} rx={10} fill="#fffaf0" /><text y={-52} textAnchor="middle" fontFamily={HAND} fontSize={32} fill={INK} stroke="none">{p.t}</text></g>}
-        </g>
-      );
-    }
+    case 'photo': return <PhotoProp p={p} />;
     case 'pyramid': {
       const step = p.t === 'step', col = p.c ?? '#e3c88b', W = 300, H = step ? 300 : 330;
       return (
@@ -932,6 +1001,26 @@ const PropArt: React.FC<{p: PropT; f: number; seed: string}> = ({p, f, seed}) =>
       return (<g {...OL} transform={`translate(0 ${bob}) rotate(${ro})`}>{mast(-110, 330, 70)}{mast(20, 380, 80)}{mast(140, 320, 66)}<path d="M-196 -12 L-214 -66 L-214 -198 L-122 -198 L-112 -92 L196 -86 L262 -142 L242 -62 L176 -8Z" fill="#6e4325" /><path d="M-214 -120 L-112 -112 L196 -86 L242 -96 L238 -78 L196 -70 L-112 -94 L-214 -100Z" fill="#e2b84a" />{[-80, -30, 20, 70, 120].map((x, i) => <rect key={i} x={x} y={-56} width={18} height={14} fill="#1b1410" />)}<rect x={-214} y={-198} width={102} height={12} fill="#a8693a" /><path d="M262 -142 L320 -170" stroke={INK} strokeWidth={7} /></g>);
     }
     case 'teocalli': return (<g {...OL}><Shadow w={260} />{[0, 1, 2, 3].map((i) => { const w = 240 - i * 44; return <rect key={i} x={-w} y={-(i + 1) * 52} width={w * 2} height={52} fill={i % 2 ? '#d9c9a6' : '#cdbd96'} />; })}<path d="M-34 0 L-20 -208 L20 -208 L34 0Z" fill="#b8a77f" />{[0, 1, 2, 3].map((i) => <path key={i} d={`M${-30 + i * 3} ${-i * 52 - 26} H${30 - i * 3}`} strokeWidth={2.5} opacity={0.5} />)}<rect x={-86} y={-290} width={60} height={82} fill="#2b5fb4" /><rect x={26} y={-290} width={60} height={82} fill="#c0392b" /><path d="M-96 -290 L-56 -318 L-16 -290Z M16 -290 L56 -318 L96 -290Z" fill="#8a5a33" /></g>);
+    case 'stbasil': {
+      const dm = (x: number, h: number, w: number, c: string, c2: string) => (<g key={x}><rect x={x - w / 2} y={-h} width={w} height={h} fill="#c4513a" /><path d={`M${x - w / 2 - 6} ${-h} Q${x - w * 0.95} ${-h - w * 0.9} ${x} ${-h - w * 1.5} Q${x + w * 0.95} ${-h - w * 0.9} ${x + w / 2 + 6} ${-h}Z`} fill={c} />{[-1, 0, 1].map((i) => <path key={i} d={`M${x + i * w * 0.2} ${-h - 4} Q${x + i * w * 0.34} ${-h - w * 0.75} ${x} ${-h - w * 1.45}`} fill="none" stroke={c2} strokeWidth={4} />)}<path d={`M${x} ${-h - w * 1.5} V${-h - w * 1.5 - 28}`} stroke="#e2b84a" strokeWidth={5} /></g>);
+      return (<g {...OL}><Shadow w={320} /><rect x={-300} y={-120} width={600} height={120} fill="#b94a35" />{[-250, -150, -50, 50, 150, 250].map((x, i) => <rect key={i} x={x - 16} y={-90} width={32} height={50} rx={16} fill="#3a2a22" />)}
+        {dm(-230, 180, 62, '#2f7f6a', '#e2b84a')}{dm(230, 190, 62, '#2b5fb4', '#f4f1e6')}{dm(-120, 240, 66, '#e2b84a', '#c0392b')}{dm(120, 240, 66, '#b3202a', '#f2c230')}
+        <rect x={-34} y={-400} width={68} height={290} fill="#d9c9aa" /><path d="M-44 -400 L0 -540 L44 -400Z" fill="#2f7f6a" /><path d="M0 -540 V-578" stroke="#e2b84a" strokeWidth={5} />{p.t === 'night' && <rect x={-340} y={-600} width={680} height={600} fill="#0b1020" opacity={0.25} stroke="none" />}</g>);
+    }
+    case 'izba': return (<g {...OL}><Shadow w={170} /><rect x={-150} y={-120} width={300} height={120} fill="#8a5a33" />{[-100, -80, -60, -40, -20, 0, 20, 40, 60, 80, 100].map((y, i) => <path key={i} d={`M-150 ${y} H150`} strokeWidth={1.5} opacity={0.5} />).slice(0, 6)}<path d="M-180 -118 L0 -230 L180 -118Z" fill="#e9eef4" /><path d="M-180 -118 L0 -230 L180 -118" fill="none" /><rect x={-110} y={-96} width={54} height={50} fill={p.t === 'lit' ? '#ffd86b' : '#3b5a7a'} /><rect x={-110} y={-96} width={54} height={50} fill="none" stroke="#c0392b" strokeWidth={6} /><rect x={50} y={-90} width={46} height={90} fill="#5a3a22" /><rect x={96} y={-196} width={30} height={60} fill="#7a6a5a" /><Smoke x={111} y={-210} f={f} /></g>);
+    case 'perun': return (<g {...OL}><Shadow w={70} /><rect x={-34} y={-300} width={68} height={300} rx={14} fill="#9a6a3a" /><circle cx={0} cy={-290} r={44} fill="#a8793f" /><circle cx={-14} cy={-298} r={5} fill="#241c17" /><circle cx={14} cy={-298} r={5} fill="#241c17" /><path d="M-30 -272 Q0 -250 30 -272 L24 -240 Q0 -226 -24 -240Z" fill="#e2b84a" /><path d="M-40 -330 L-30 -360 L-10 -338 L0 -366 L10 -338 L30 -360 L40 -330Z" fill="#e2b84a" /><path d="M-30 -170 H30 M-30 -120 H30" strokeWidth={5} stroke="#c0392b" /><path d="M20 -230 L36 -200 L26 -200 L38 -170" fill="none" stroke="#f2c230" strokeWidth={6} /></g>);
+    case 'tank': { const fire = p.t === 'fire', rec = fire ? Math.max(0, 1 - (f % 40) / 12) * 14 : 0, jig = Math.sin(f / 2) * 1.5; return (<g {...OL}><Shadow w={190} /><g transform={`translate(0 ${jig})`}><rect x={-170} y={-52} width={340} height={52} rx={26} fill="#3a3f36" />{Array.from({length: 6}, (_, i) => <circle key={i} cx={-130 + i * 52} cy={-26} r={17} fill="#59604f" />)}<path d="M-120 -52 L-90 -112 H70 L120 -52Z" fill="#6a7358" /><path d="M-40 -112 L-24 -150 H44 L58 -112Z" fill="#6a7358" /><rect x={58 - rec} y={-136} width={170} height={12} fill="#4a5140" /><circle cx={0} cy={-132} r={7} fill="#c0392b" stroke="none" />{fire && (f % 40) < 8 && <path d={`M${228 - rec} -130 l40 -14 l-8 14 l8 14z`} fill="#fbb02d" stroke="none" />}</g></g>); }
+    case 'train': { const roy = p.t === 'royal'; const sealed = p.t === 'sealed'; const sm = (f % 60) / 60; return (<g {...OL}><Shadow w={330} /><path d="M-360 4 H360" strokeWidth={5} /><g><rect x={-60} y={-110} width={300} height={90} fill={roy ? '#2b4a8a' : sealed ? '#4a4a4a' : '#7a2a2a'} />{[-30, 40, 110, 180].map((x, i) => <rect key={i} x={x} y={-88} width={44} height={36} fill={sealed ? '#2a2a2a' : '#ffd86b'} />)}<rect x={-300} y={-100} width={230} height={80} rx={10} fill="#2a2d33" /><rect x={-300} y={-150} width={80} height={50} fill="#2a2d33" /><rect x={-190} y={-150} width={26} height={50} fill="#2a2d33" /><circle cx={-290} cy={-60} r={0} />{[-250, -190, -130, 20, 190].map((x, i) => <circle key={i} cx={x} cy={-14} r={22} fill="#5a5f66" />)}<Smoke x={-177} y={-160 - sm * 20} f={f} col="#cfcfcf" /></g></g>); }
+    case 'sputnik': { const a = f / 18; return (<g {...OL}><g transform={`rotate(${Math.sin(a) * 6})`}><circle cx={0} cy={-60} r={34} fill="#cfd6de" />{[[-1, -1], [-1, 1], [1, -1], [1, 1]].map(([sx, sy], i) => <path key={i} d={`M${sx * 20} ${-60 + sy * 10} L${sx * 150} ${-60 + sy * 78}`} strokeWidth={4} />)}<path d="M-20 -86 Q0 -96 20 -86" fill="none" stroke="#fff" strokeWidth={4} opacity={0.7} />{f % 30 < 15 && <circle cx={-84} cy={-60} r={0} />}</g></g>); }
+    case 'sub': { const bob = Math.sin(f / 22) * 4; return (<g {...OL} transform={`translate(0 ${bob})`}><ellipse cx={0} cy={-40} rx={240} ry={38} fill="#3a4a3a" /><rect x={-30} y={-100} width={74} height={50} rx={8} fill="#3a4a3a" /><rect x={20} y={-124} width={6} height={30} /><path d="M-240 -40 L-280 -76 L-264 -40 L-280 -4Z" fill="#2f3b2f" /><circle cx={-110} cy={-40} r={9} fill="#ffd86b" /><circle cx={-70} cy={-40} r={9} fill="#ffd86b" /><circle cx={150} cy={-44} r={6} fill="#c0392b" stroke="none" /></g>); }
+    case 'reactor': { const blast = p.t === 'blast'; return (<g {...OL}><Shadow w={230} /><rect x={-210} y={-150} width={420} height={150} fill="#b8b2a4" /><rect x={-130} y={-290} width={260} height={140} fill="#cdc7b8" />{blast ? <path d="M-130 -290 L-100 -330 L-60 -300 L-20 -350 L20 -310 L70 -340 L110 -300 L130 -290Z" fill="#8a8478" /> : <rect x={-100} y={-310} width={200} height={20} fill="#9a9488" />}<rect x={170} y={-380} width={44} height={230} fill="#c0392b" /><rect x={170} y={-300} width={44} height={40} fill="#f4f1e6" />{blast && (<g><g transform="translate(0 -300)"><Flame f={f} k={0} w={110} h={260} /></g><Smoke x={0} y={-360} f={f} col="#6a6560" /></g>)}<g transform="translate(-170 -60)"><path d="M0 0 m0 -30 l26 46 h-52z" fill="#ffd24a" /><circle r={5} cy={6} fill="#241c17" stroke="none" /></g></g>); }
+    case 'winterpalace': { const w = 560; return (<g {...OL}><Shadow w={w} /><rect x={-w} y={-200} width={2 * w} height={200} fill="#4f9a86" />{Array.from({length: 22}, (_, i) => <rect key={i} x={-w + 24 + i * 50} y={-170} width={26} height={44} fill="#f2e9c9" />)}{Array.from({length: 22}, (_, i) => <rect key={i} x={-w + 24 + i * 50} y={-96} width={26} height={44} fill="#f2e9c9" />)}{Array.from({length: 23}, (_, i) => <rect key={i} x={-w + 10 + i * 50} y={-206} width={10} height={206} fill="#f4f1e6" opacity={0.7} stroke="none" />)}<rect x={-w} y={-216} width={2 * w} height={16} fill="#f4f1e6" /><path d="M-90 -200 L0 -290 L90 -200Z" fill="#f4f1e6" />{[-w + 8, w - 8].map((x, i) => <rect key={i} x={x - 8} y={-232} width={16} height={32} fill="#e2b84a" />)}</g>); }
+    case 'emblem': { const t = p.t ?? 'eagle'; return (<g {...OL}>{t === 'sickle' ? (<g><circle cx={0} cy={-100} r={86} fill="#c0392b" /><path d="M-40 -60 Q-70 -150 10 -170 Q-40 -140 -22 -66Z" fill="#f2c230" /><path d="M10 -170 L40 -60" strokeWidth={12} stroke="#f2c230" /><path d="M-34 -150 h70 l-12 22 h-46z" fill="#f2c230" stroke="none" /></g>) : t === 'star' ? <path d="M0 -190 L30 -118 L108 -112 L48 -62 L66 14 L0 -26 L-66 14 L-48 -62 L-108 -112 L-30 -118Z" fill="#c0392b" /> : (<g><path d="M0 -40 Q-130 -60 -110 -190 Q-60 -150 -30 -170 Q-20 -230 0 -240 Q20 -230 30 -170 Q60 -150 110 -190 Q130 -60 0 -40Z" fill="#2a2a30" /><circle cx={-24} cy={-206} r={22} fill="#2a2a30" /><circle cx={24} cy={-206} r={22} fill="#2a2a30" /><path d="M-24 -226 L-40 -218 L-24 -210Z M24 -226 L40 -218 L24 -210Z" fill="#e2b84a" /><path d="M-50 -250 h100 l-12 20 h-76z" fill="#e2b84a" /><rect x={-26} y={-150} width={52} height={64} rx={10} fill="#a8242c" /></g>)}</g>); }
+    case 'console': { const al = p.t === 'alert'; const on = al && Math.floor(f / 8) % 2 === 0; return (<g {...OL}><Shadow w={190} /><rect x={-180} y={-150} width={360} height={150} fill="#3a4048" /><rect x={-150} y={-136} width={300} height={74} fill={on ? '#a8242c' : '#0f2a1f'} />{al ? <path d="M-110 -100 H110" stroke={on ? '#ffd2d2' : '#7f2a2a'} strokeWidth={8} /> : [-100, -60, -20, 20, 60, 100].map((x, i) => <path key={i} d={`M${x - 14} ${-84 - (i % 3) * 14} h28`} stroke="#7fe3a8" strokeWidth={5} />)}{[-120, -70, 70, 120].map((x, i) => <circle key={i} cx={x} cy={-30} r={9} fill={i % 2 ? '#e2b84a' : '#4a6a9a'} />)}<circle cx={0} cy={-30} r={20} fill={al ? '#d52b1e' : '#7a2a2a'} /></g>); }
+    case 'watchtower': return (<g {...OL}><Shadow w={120} />{[-50, 50].map((x, i) => <path key={i} d={`M${x} 0 L${x * 0.7} -240`} strokeWidth={9} stroke="#5a4a3a" />)}<path d="M-30 -120 H30 M-40 -60 H40" strokeWidth={6} stroke="#5a4a3a" /><rect x={-66} y={-300} width={132} height={64} fill="#6a5a48" /><path d="M-80 -300 L0 -350 L80 -300Z" fill="#4a3a2e" /><path d={`M-14 -276 L${-14 + 130} ${-236 + Math.sin(f / 20) * 30} L${-14 + 130} ${-256 + Math.sin(f / 20) * 30}Z`} fill="#fff2a8" opacity={0.35} stroke="none" /></g>);
+    case 'yurt': return (<g {...OL}><Shadow w={150} /><path d="M-130 0 V-90 Q0 -210 130 -90 V0Z" fill="#efe7d3" /><path d="M-130 -90 Q0 -130 130 -90" fill="none" /><rect x={-26} y={-76} width={52} height={76} rx={6} fill="#a8242c" /><path d="M0 -176 V-204" strokeWidth={4} /><path d="M0 -204 l40 -8 l-8 18z" fill="#c0392b" /></g>);
+    case 'icehole': return (<g {...OL}><ellipse cx={0} cy={0} rx={220} ry={34} fill="#cfe6f2" /><ellipse cx={0} cy={2} rx={120} ry={18} fill="#1d3a55" />{[-170, 150].map((x, i) => <path key={i} d={`M${x} 0 l${i ? 40 : -40} 8`} strokeWidth={2} opacity={0.5} />)}<path d="M-60 -2 Q0 12 60 -2" fill="none" stroke="#6fb0d6" strokeWidth={3} /></g>);
+    case 'bell': { const sw = Math.sin(f / 10) * 8; return (<g {...OL}><rect x={-70} y={-330} width={140} height={20} fill="#6a4a2a" /><g transform={`rotate(${sw} 0 -320)`}><path d="M-14 -320 V-300 M14 -320 V-300" strokeWidth={5} /><path d="M-70 -120 Q-80 -220 -40 -290 Q0 -310 40 -290 Q80 -220 70 -120 Q0 -100 -70 -120Z" fill="#c4a24a" /><circle cx={0} cy={-104} r={12} fill="#6a4a2a" /></g></g>); }
     case 'bridge': {
       const w = (p.n ?? 640) / 2, pont = p.t === 'pontoon', burn = p.t === 'burning', na = Math.max(2, Math.round(w / 110));
       return (<g {...OL}><Shadow w={w} />

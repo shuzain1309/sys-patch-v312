@@ -1,0 +1,408 @@
+{
+ "_doc": "Russia photo catalog. Run the fetch-photos workflow once (default catalog = this file): each entry is searched on Wikimedia Commons, licence-checked (public domain, CC0, CC BY) and stored in photo-cache/. Entries that print MISS: run List photo candidates, pick a file, pin it here as {\"id\":..,\"file\":\"File:Exact Title.jpg\"} and fetch again. \"must\" = the title has to contain one of these words; \"alt\" = the caption card used if no image can be found.",
+ "photos": [
+  {
+   "id": "alaska_treaty",
+   "q": "Signing of the Alaska treaty Leutze painting",
+   "alt": "Alaska treaty, 1867",
+   "must": [
+    "alaska",
+    "treaty"
+   ]
+  },
+  {
+   "id": "varangians_vasnetsov",
+   "q": "Vasnetsov Invitation of the Varangians painting",
+   "alt": "Invitation of the Varangians",
+   "must": [
+    "varang",
+    "vasnetsov",
+    "rurik"
+   ]
+  },
+  {
+   "id": "olga_revenge",
+   "q": "Olga Kiev revenge Drevlians Radziwill Chronicle miniature",
+   "alt": "Princess Olga, chronicle",
+   "must": [
+    "olga",
+    "radziwill",
+    "drevl"
+   ]
+  },
+  {
+   "id": "baptism_kiev",
+   "q": "Baptism of Kievans Lebedev painting",
+   "alt": "Baptism of Kiev, 988",
+   "must": [
+    "baptism",
+    "kiev",
+    "vladimir"
+   ]
+  },
+  {
+   "id": "kalka_battle",
+   "q": "Battle of the Kalka River miniature chronicle",
+   "alt": "Battle of the Kalka, 1223",
+   "must": [
+    "kalka"
+   ]
+  },
+  {
+   "id": "mongols_ryazan",
+   "q": "Mongol siege of Ryazan miniature chronicle 1237",
+   "alt": "Mongols at Ryazan, 1237",
+   "must": [
+    "ryazan",
+    "mongol",
+    "batu"
+   ]
+  },
+  {
+   "id": "nevsky_ice",
+   "q": "Alexander Nevsky Battle on the Ice painting",
+   "alt": "Alexander Nevsky",
+   "must": [
+    "nevsky",
+    "ice"
+   ]
+  },
+  {
+   "id": "ugra_standing",
+   "q": "Standing on the Ugra River 1480 miniature",
+   "alt": "Standing on the Ugra, 1480",
+   "must": [
+    "ugra"
+   ]
+  },
+  {
+   "id": "ivan_terrible",
+   "q": "Ivan the Terrible Vasnetsov portrait tsar",
+   "alt": "Ivan the Terrible",
+   "must": [
+    "ivan",
+    "terrible",
+    "vasnetsov"
+   ]
+  },
+  {
+   "id": "repin_ivan_son",
+   "q": "Repin Ivan the Terrible and His Son Ivan painting",
+   "alt": "Ivan and his son, 1581",
+   "must": [
+    "repin",
+    "ivan"
+   ]
+  },
+  {
+   "id": "st_basil",
+   "q": "Saint Basil Cathedral Red Square Moscow",
+   "alt": "Saint Basil Cathedral",
+   "must": [
+    "basil"
+   ]
+  },
+  {
+   "id": "yermak_siberia",
+   "q": "Yermak conquest of Siberia Surikov painting",
+   "alt": "Yermak and Siberia",
+   "must": [
+    "yermak",
+    "surikov"
+   ]
+  },
+  {
+   "id": "minin_pozharsky",
+   "q": "Minin and Pozharsky Lissner painting",
+   "alt": "Minin and Pozharsky, 1612",
+   "must": [
+    "minin",
+    "pozharsky"
+   ]
+  },
+  {
+   "id": "peter_portrait",
+   "q": "Peter the Great Delaroche portrait",
+   "alt": "Peter the Great",
+   "must": [
+    "peter"
+   ]
+  },
+  {
+   "id": "peter_carpenter",
+   "q": "Peter the Great Zaandam carpenter painting",
+   "alt": "Peter at Zaandam, 1697",
+   "must": [
+    "peter",
+    "zaandam",
+    "carpenter"
+   ]
+  },
+  {
+   "id": "poltava_battle",
+   "q": "Battle of Poltava Martens painting",
+   "alt": "Battle of Poltava, 1709",
+   "must": [
+    "poltava"
+   ]
+  },
+  {
+   "id": "stpete_peterhof",
+   "q": "Peter and Paul Fortress Saint Petersburg old print",
+   "alt": "Saint Petersburg, early years",
+   "must": [
+    "petersburg",
+    "peter and paul"
+   ]
+  },
+  {
+   "id": "catherine_coup",
+   "q": "Catherine the Great Eriksen horseback 1762 portrait",
+   "alt": "Catherine, 1762",
+   "must": [
+    "catherine"
+   ]
+  },
+  {
+   "id": "pugachev_cage",
+   "q": "Pugachev captured Perov painting trial",
+   "alt": "Pugachev in custody",
+   "must": [
+    "pugachev"
+   ]
+  },
+  {
+   "id": "borodino_battle",
+   "q": "Battle of Borodino Lejeune painting",
+   "alt": "Battle of Borodino, 1812",
+   "must": [
+    "borodino"
+   ]
+  },
+  {
+   "id": "napoleon_retreat",
+   "q": "Napoleon retreat from Moscow Northen painting",
+   "alt": "Retreat from Moscow, 1812",
+   "must": [
+    "retreat",
+    "moscow",
+    "napoleon",
+    "northen"
+   ]
+  },
+  {
+   "id": "moscow_fire",
+   "q": "Fire of Moscow 1812 painting",
+   "alt": "Moscow burns, 1812",
+   "must": [
+    "moscow",
+    "fire"
+   ]
+  },
+  {
+   "id": "decembrist_square",
+   "q": "Decembrist revolt Senate Square painting 1825",
+   "alt": "Senate Square, 1825",
+   "must": [
+    "decembrist",
+    "senate"
+   ]
+  },
+  {
+   "id": "alexander2_bomb",
+   "q": "Assassination of Alexander II 1881 illustration",
+   "alt": "Alexander II, 1881",
+   "must": [
+    "alexander",
+    "assassination"
+   ]
+  },
+  {
+   "id": "tsushima_fleet",
+   "q": "Battle of Tsushima 1905 painting Russian fleet",
+   "alt": "Tsushima, 1905",
+   "must": [
+    "tsushima"
+   ]
+  },
+  {
+   "id": "bloody_sunday",
+   "q": "Bloody Sunday 1905 Saint Petersburg painting Makovsky",
+   "alt": "Bloody Sunday, 1905",
+   "must": [
+    "bloody sunday",
+    "1905"
+   ]
+  },
+  {
+   "id": "nicholas_family",
+   "q": "Nicholas II family portrait Romanov 1913",
+   "alt": "The last Romanovs",
+   "must": [
+    "romanov",
+    "nicholas"
+   ]
+  },
+  {
+   "id": "rasputin_photo",
+   "q": "Grigori Rasputin photograph",
+   "alt": "Grigori Rasputin",
+   "must": [
+    "rasputin"
+   ]
+  },
+  {
+   "id": "lenin_speech",
+   "q": "Lenin speaking Sverdlov Square 1920 Trotsky Kamenev",
+   "alt": "Lenin, 1920",
+   "must": [
+    "lenin"
+   ]
+  },
+  {
+   "id": "winter_palace_1917",
+   "q": "Storming of the Winter Palace 1917",
+   "alt": "Winter Palace, 1917",
+   "must": [
+    "winter palace"
+   ]
+  },
+  {
+   "id": "stalin_yezhov",
+   "q": "Stalin Yezhov Moscow Volga canal photograph retouched",
+   "alt": "Stalin and the vanished man",
+   "must": [
+    "yezhov",
+    "ezhov",
+    "stalin"
+   ]
+  },
+  {
+   "id": "holodomor_famine",
+   "q": "Famine 1933 Kharkiv Soviet Ukraine photograph",
+   "alt": "Famine, 1933",
+   "must": [
+    "famine",
+    "1933",
+    "kharkiv",
+    "holodomor"
+   ]
+  },
+  {
+   "id": "leningrad_siege",
+   "q": "Siege of Leningrad 1942 Soviet photograph",
+   "alt": "Leningrad under siege",
+   "must": [
+    "leningrad",
+    "siege"
+   ]
+  },
+  {
+   "id": "stalingrad_ruins",
+   "q": "Stalingrad 1942 ruins Soviet soldiers photograph",
+   "alt": "Stalingrad, 1942",
+   "must": [
+    "stalingrad"
+   ]
+  },
+  {
+   "id": "reichstag_flag",
+   "q": "Soviet flag over Reichstag 1945",
+   "alt": "Berlin, May 1945",
+   "must": [
+    "reichstag",
+    "berlin"
+   ]
+  },
+  {
+   "id": "sputnik_1",
+   "q": "Sputnik 1 satellite replica",
+   "alt": "Sputnik 1, 1957",
+   "must": [
+    "sputnik"
+   ]
+  },
+  {
+   "id": "gagarin_portrait",
+   "q": "Yuri Gagarin portrait 1961",
+   "alt": "Yuri Gagarin, 1961",
+   "must": [
+    "gagarin"
+   ]
+  },
+  {
+   "id": "cuba_missile_site",
+   "q": "Cuban Missile Crisis reconnaissance photograph San Cristobal missile site",
+   "alt": "Missile site in Cuba, 1962",
+   "must": [
+    "cuba",
+    "missile",
+    "san cristobal"
+   ]
+  },
+  {
+   "id": "b59_surfaced",
+   "q": "Soviet submarine B-59 surfaced 1962 Cuban Missile Crisis",
+   "alt": "Submarine B-59, 1962",
+   "must": [
+    "b-59",
+    "submarine",
+    "foxtrot"
+   ]
+  },
+  {
+   "id": "chernobyl_reactor4",
+   "q": "Chernobyl reactor 4 damaged 1986",
+   "alt": "Chernobyl, 1986",
+   "must": [
+    "chernobyl"
+   ]
+  },
+  {
+   "id": "gorbachev_reagan",
+   "q": "Reagan Gorbachev Geneva summit 1985",
+   "alt": "Geneva summit, 1985",
+   "must": [
+    "reagan",
+    "gorbachev"
+   ]
+  },
+  {
+   "id": "yeltsin_1991",
+   "q": "Boris Yeltsin August 1991 coup Moscow White House",
+   "alt": "Moscow, August 1991",
+   "must": [
+    "yeltsin",
+    "1991"
+   ]
+  },
+  {
+   "id": "flag_lowered",
+   "q": "Soviet flag lowered Kremlin 25 December 1991",
+   "alt": "The red flag comes down",
+   "must": [
+    "flag",
+    "kremlin",
+    "1991"
+   ]
+  },
+  {
+   "id": "putin_portrait",
+   "q": "Vladimir Putin official portrait kremlin.ru",
+   "alt": "Vladimir Putin",
+   "must": [
+    "putin"
+   ]
+  },
+  {
+   "id": "kyiv_2022",
+   "q": "Ukrainian flag Kyiv Maidan Independence Square",
+   "alt": "Kyiv",
+   "must": [
+    "kyiv",
+    "kiev",
+    "maidan"
+   ]
+  }
+ ]
+}

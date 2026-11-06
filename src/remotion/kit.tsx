@@ -12,7 +12,7 @@ import {loadFont as loadInter} from '@remotion/google-fonts/Inter';
 import {loadFont as loadAnton} from '@remotion/google-fonts/Anton';
 import {BrandLayers} from './brand';
 import {fit, measure, avoidRects, SAFE} from './textfit';
-import {Stage, shotSpans, NarratorOverlay, Paper, Icon, Weather, HAND, INK, StageT, PropT, ActorT, PoseName, Face, WeatherKind} from './world';
+import {StampPhoto, usePhotoCredit, Stage, shotSpans, NarratorOverlay, Paper, Icon, Weather, HAND, INK, StageT, PropT, ActorT, PoseName, Face, WeatherKind} from './world';
 import {GeoMap, GeoT} from './geo';
 import audioManifest from '../../public/audio/manifest.json'; // written by CI (audio_real.py build): which real recordings exist + mix levels from audio-mix.json
 
@@ -134,17 +134,29 @@ const Stat: React.FC<S<'stat'>> = ({s, T}) => {
   );
 };
 
+// PHOTO STYLE (permanent, do not change per video): grey-blurred copy of the same photo as background; the photo itself is shown WHOLE
+// (never cropped, never zoomed to fill) inside a postage-stamp frame that follows its own wide/tall shape; caption bottom-left; credit bottom-right.
 const Photo: React.FC<S<'photo'>> = ({s, T}) => {
-  const {f, d} = useP();
+  const {f, fps, d} = useP();
   const t = interpolate(f, [0, d], [0, 1], C);
   const m = s.move ?? 'in';
+  const k = m === 'out' ? 1.035 - 0.035 * t : m === 'in' ? 1 + 0.035 * t : 1;
+  const dx = m === 'left' ? -26 * t : m === 'right' ? 26 * t : 0;
+  const pop = 0.94 + 0.06 * Math.min(1, sp(f, fps, 2));
+  const credit = usePhotoCredit(s.src);
+  const long = (s.title ?? '').length > 30;
   return (
-    <AbsoluteFill style={{overflow: 'hidden', backgroundColor: '#000'}}>
-      <Img src={staticFile(s.src)} style={{width: '100%', height: '100%', objectFit: 'cover', scale: String(m === 'out' ? 1.28 - 0.2 * t : 1.06 + 0.2 * t), translate: `${m === 'left' ? -70 * t : m === 'right' ? 70 * t : 0}px 0`}} />
-      <AbsoluteFill style={{background: 'radial-gradient(circle, transparent 45%, rgba(0,0,0,.7) 100%)'}} />
+    <AbsoluteFill style={{overflow: 'hidden', backgroundColor: '#5d5b52'}}>
+      <Img src={staticFile(s.src)} style={{width: '100%', height: '100%', objectFit: 'cover', filter: 'blur(13px) grayscale(0.5) brightness(0.98)', scale: String(1.14 + 0.05 * t)}} />
+      <AbsoluteFill style={{background: 'rgba(122,120,106,.5)'}} />
+      <AbsoluteFill style={{background: 'radial-gradient(circle, transparent 55%, rgba(0,0,0,.22) 100%)'}} />
+      <svg width={1920} height={1080} viewBox="0 0 1920 1080" style={{position: 'absolute', left: 0, top: 0, opacity: op(interpolate(f, [0, 12], [0, 1], C))}}>
+        <g transform={`translate(${960 + dx} 448) scale(${k * pop})`}><StampPhoto src={s.src} boxW={1155} boxH={660} /></g>
+      </svg>
       {s.title && (
-        <div style={{position: 'absolute', left: 120, bottom: 190, fontFamily: HEAD, fontSize: 84, textTransform: 'uppercase', borderLeft: `10px solid ${T.accent}`, paddingLeft: 28, color: T.fg, ...rise(f, 10)}}>{s.title}</div>
+        <div style={{position: 'absolute', left: 150, bottom: 84, maxWidth: 1500, fontFamily: BODY, fontWeight: 800, fontSize: long ? 58 : 80, lineHeight: 1.08, textWrap: 'balance', textTransform: 'uppercase', borderLeft: `9px solid ${T.accent}`, paddingLeft: 40, color: '#fff', textShadow: '0 3px 14px rgba(0,0,0,.45)', ...rise(f, 10)}}>{s.title}</div>
       )}
+      {credit && <div style={{position: 'absolute', right: 60, bottom: 38, fontFamily: BODY, fontWeight: 700, fontSize: 28, color: 'rgba(255,255,255,.8)', textShadow: '0 2px 8px rgba(0,0,0,.7)', ...rise(f, 24, 10)}}>Credits: {credit}</div>}
     </AbsoluteFill>
   );
 };

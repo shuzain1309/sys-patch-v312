@@ -109,7 +109,34 @@
   "neigh": "horse neigh",
   "explosion": "explosion distant",
   "ice_crack": "ice cracking",
-  "water_wade": "wading through water splash"
+  "water_wade": "wading through water splash",
+  "bomb_blast": "explosion distant boom",
+  "train_loop": {
+   "q": "steam train passing",
+   "max": 60
+  },
+  "geiger_loop": {
+   "q": "geiger counter clicks",
+   "max": 60
+  },
+  "alarm_loop": {
+   "q": "siren alarm",
+   "max": 60
+  },
+  "typewriter": "typewriter typing",
+  "sled_bells": "sleigh bells",
+  "church_bells": "church bells ringing russian",
+  "gun_volley": "musket volley",
+  "cannon_shot": "cannon shot",
+  "sub_ping": "sonar ping submarine",
+  "rocket_launch": "rocket launch rumble",
+  "snow_wind_loop": {
+   "q": "blizzard wind",
+   "max": 60
+  },
+  "crowd_roar": "crowd roar protest",
+  "door_knock": "door knock",
+  "glass_break": "glass break"
  },
  "drop": [
   "baby_cry",

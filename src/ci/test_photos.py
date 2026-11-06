@@ -35,10 +35,13 @@ d = json.load(open('out/seo.json'))['description']
 assert 'Image credits:' in d and 'E.jpg by Jane Doe (CC BY 4.0)' in d, d       # attribution appended automatically
 assert 'E.jpg' in open('out/photos-credits.txt').read() and open('out/description.txt').read() == d
 
-# a photo with only bad licences must fail the run (before any render minutes are spent)
+# a photo with only bad licences never reaches the video: strict mode stops, default mode draws a caption card
 P.get_json = lambda u: {'query': {'pages': {'1': page(1, 'Z.jpg', 'CC BY-NC 2.0')}}}
 json.dump([{'id': 'bad', 'q': 'x'}], open('photos.json', 'w'))
-assert P.run() == 1
+P.STRICT = True
+assert P.run() == 1          # strict mode (PHOTO_STRICT=1) stops the run
+P.STRICT = False
+assert P.run() == 0 and (tmp / 'public/photos/bad.jpg').stat().st_size > 2000   # default: a caption card replaces it, render continues
 # audition mode prints licence-safe candidates only
 P.get_json = fake_json
 json.dump({'photos': [{'id': 'forum', 'q': 'Roman Forum'}]}, open('cat.json', 'w'))

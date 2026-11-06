@@ -41,7 +41,6 @@ jobs:
             seo.json
             meta.json
             photos.json
-            thumb.json
           retention-days: 1
 
   # 2. speech is synthesised in 6 parallel shards (every 6th scene each)
@@ -107,12 +106,17 @@ jobs:
         run: |
           sudo apt-get update -y
           sudo apt-get install -y ffmpeg libsndfile1
-          pip install numpy soundfile
+          pip install numpy soundfile pillow
       - name: 6 Merge speech, make captions and SEO
         run: python src/tts/generate_voice.py merge
-      - name: 6b Real sound effects and music (normalised, nothing synthesised)
+      - name: 6b Real sound effects and music (normalised; missing files are skipped, never fatal)
+        continue-on-error: true
         run: python src/tts/audio_real.py build public/audio out/credits.txt
-      - name: 6c Real photos and maps (licence checked; stops here if one is unusable)
+      - name: 6b2 Safety net - an empty but valid audio manifest if the audio build failed (render then uses narration only)
+        run: |
+          mkdir -p public/audio/sfx public/audio/music
+          [ -f public/audio/manifest.json ] || python3 -c "import json;m=json.load(open('audio-mix.json'));json.dump({'sfx':{},'music':{},'levels':{k:v for k,v in m.items() if not k.startswith('_')}},open('public/audio/manifest.json','w'))"
+      - name: 6c Real photos (from photo-cache/, else live; a missing one becomes a caption card)
         run: python src/ci/photos.py
       - name: 7 Plan render chunks
         id: plan
@@ -127,46 +131,6 @@ jobs:
         with: {name: photos, path: public/photos, retention-days: 1, include-hidden-files: true}
       - uses: actions/upload-artifact@v4
         with: {name: meta, path: out, retention-days: 1}
-
-  # 3b. thumbnails (soft: every step continues on error, so a thumbnail problem can never stop the video)
-  thumb:
-    needs: [check, merge]
-    runs-on: ubuntu-24.04
-    timeout-minutes: 25
-    steps:
-      - uses: actions/checkout@v4
-        continue-on-error: true
-      - uses: actions/download-artifact@v4
-        continue-on-error: true
-        with: {name: scriptmeta, path: .}
-      - uses: actions/download-artifact@v4
-        continue-on-error: true
-        with: {name: photos, path: public/photos}
-      - uses: actions/setup-node@v4
-        continue-on-error: true
-        with: {node-version: 20}
-      - uses: actions/cache@v4
-        continue-on-error: true
-        with:
-          path: node_modules
-          key: nm-${{ hashFiles('package.json') }}-${{ vars.DEPS_VERSION || '1' }}
-      - name: Install
-        continue-on-error: true
-        run: |
-          [ -d node_modules/remotion ] || npm install --no-audit --no-fund
-          sudo apt-get update -y
-          sudo apt-get install -y ffmpeg libnss3 libdbus-1-3 libatk1.0-0t64 libasound2t64 libxrandr2 libxkbcommon-dev libxfixes3 libxcomposite1 libxdamage1 libgbm-dev libatk-bridge2.0-0t64 libpango-1.0-0 libcairo2 libcups2t64
-          npx remotion browser ensure
-          pip install --quiet rembg onnxruntime pillow numpy scipy
-      - name: Make thumbnails (uploaded portrait, else fetched photo, else stickman)
-        continue-on-error: true
-        env:
-          SCRIPT_KEY: ${{ secrets.SCRIPT_KEY }}
-        run: |
-          if [ -f thumb.json ]; then node src/ci/thumb.js thumb.json out/thumbs; else echo "no THUMB block in the script"; fi
-      - uses: actions/upload-artifact@v4
-        continue-on-error: true
-        with: {name: thumbs, path: out/thumbs, retention-days: 1, if-no-files-found: ignore}
 
   # 4. one job per frame range: picture AND sound for that range
   render:
@@ -237,7 +201,7 @@ jobs:
 
   # 5. join, mux, publish (light work only)
   finish:
-    needs: [check, merge, render, thumb]
+    needs: [check, merge, render]
     runs-on: ubuntu-24.04
     timeout-minutes: 120
     permissions:
@@ -262,9 +226,6 @@ jobs:
           pattern: chunk-*
           path: chunks
           merge-multiple: true
-      - uses: actions/download-artifact@v4
-        continue-on-error: true
-        with: {name: thumbs, path: thumbs}
       - uses: actions/download-artifact@v4
         continue-on-error: true
         with:
@@ -302,7 +263,6 @@ jobs:
           D="gdrive:${DRIVE_DIR}/${{ needs.check.outputs.slug }}"
           rclone copyto final.mp4 "$D/${{ needs.check.outputs.slug }}.mp4" --drive-chunk-size 128M
           rclone copy out "$D" --include "captions.*" --include "seo.json" --include "description.txt" --include "chapters.txt" --include "credits.txt" --include "mix-qa.json"
-          if [ -d thumbs ]; then rclone copy thumbs "$D" --include "thumb-?.jpg"; fi
           # folder id -> a link only the Drive owner can open (no public sharing is created)
           ID=$(rclone lsjson "gdrive:${DRIVE_DIR}" --dirs-only | python3 -c "import sys,json;print(next((d['ID'] for d in json.load(sys.stdin) if d['Name']=='${SLUG}'),''))")
           echo "DRIVE_FOLDER_ID=$ID" >> "$GITHUB_ENV"
@@ -318,10 +278,3 @@ jobs:
         run: |
           pip install --quiet google-api-python-client google-auth
           python src/ci/youtube_upload.py final.mp4 out/seo.json out/captions.srt
-      - name: Set YouTube thumbnail (variant A; B and C stay in Drive for the Studio A/B test)
-        if: env.YT_REFRESH_TOKEN != ''
-        continue-on-error: true
-        run: |
-          [ -f thumbs/thumb-A.jpg ] || { echo "no thumbnail was built"; exit 0; }
-          pip install --quiet google-api-python-client google-auth
-          python src/ci/thumb_set.py thumbs/thumb-A.jpg out/seo.json

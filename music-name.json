@@ -29,7 +29,19 @@
   "revolution_drama": "dramatic revolution orchestral drums",
   "napoleonic_march": "napoleonic military march fife and drum orchestral",
   "retreat_winter": "cold bleak winter strings ambient",
-  "waterloo_dread": "dramatic dread orchestral percussion building"
+  "waterloo_dread": "dramatic dread orchestral percussion building",
+  "rus_folk_calm": "calm slavic folk ambient balalaika",
+  "orthodox_choir": "orthodox choir chant slow",
+  "mongol_steppe": "mongolian throat singing ambient steppe",
+  "rus_epic": "epic russian orchestral drums",
+  "imperial_march": "imperial court march strings",
+  "revolution_tension": "revolution tension drums orchestral",
+  "soviet_brass": "soviet brass march anthem style instrumental",
+  "cold_war_tension": "cold war tension pulse ambient",
+  "eerie_reactor": "eerie geiger counter ambient drone",
+  "winter_wind_pad": "winter wind cold ambient pad",
+  "dark_war_drone": "dark war drone strings",
+  "hope_piano": "soft hopeful piano ambient"
  },
  "_doc": "Music library. key -> Freesound search text (CC0 only), a Freesound id (number) to pin a track you listened to, or {q, id, min, max}. Run the fetch-music workflow; use mode=candidates first to audition matches by id. Use the key in the script's MUSIC block. Never synthesised: files are real CC0 recordings only."
 }
