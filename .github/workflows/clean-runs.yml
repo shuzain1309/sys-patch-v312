@@ -1,0 +1,22 @@
+name: clean-runs
+# Public repo: finished runs and their logs are visible to everyone. Delete the ones older than N days (default 2). Never touches a run in progress.
+on:
+  schedule: [{cron: '17 3 * * *'}]
+  workflow_dispatch:
+    inputs:
+      days: {description: "delete finished runs older than this many days", default: "2"}
+permissions:
+  actions: write
+  contents: read
+jobs:
+  clean:
+    runs-on: ubuntu-latest
+    steps:
+      - env:
+          GH_TOKEN: ${{ github.token }}
+          DAYS: ${{ inputs.days || '2' }}
+        run: |
+          cut=$(date -u -d "-${DAYS} days" +%Y-%m-%dT%H:%M:%SZ)
+          gh api --paginate "repos/$GITHUB_REPOSITORY/actions/runs?per_page=100" \
+            --jq ".workflow_runs[] | select(.status==\"completed\" and .created_at < \"$cut\") | .id" \
+            | xargs -r -P4 -I{} gh api -X DELETE "repos/$GITHUB_REPOSITORY/actions/runs/{}"

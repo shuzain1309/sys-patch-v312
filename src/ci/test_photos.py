@@ -38,10 +38,17 @@ assert 'E.jpg' in open('out/photos-credits.txt').read() and open('out/descriptio
 # a photo with only bad licences never reaches the video: strict mode stops, default mode draws a caption card
 P.get_json = lambda u: {'query': {'pages': {'1': page(1, 'Z.jpg', 'CC BY-NC 2.0')}}}
 json.dump([{'id': 'bad', 'q': 'x'}], open('photos.json', 'w'))
-P.STRICT = True
-assert P.run() == 1          # strict mode (PHOTO_STRICT=1) stops the run
+assert P.STRICT is True and P.run() == 1     # default: a missing photo stops the run before the render
 P.STRICT = False
-assert P.run() == 0 and (tmp / 'public/photos/bad.jpg').stat().st_size > 2000   # default: a caption card replaces it, render continues
+assert P.run() == 0 and (tmp / 'public/photos/bad.jpg').stat().st_size > 2000   # PHOTO_ALLOW_PLACEHOLDER=1: caption card, test renders only
+P.STRICT = True
+# a jpg pushed by hand (no .json) counts as cached; fetch lists real misses in _missing.json and clears them once cached
+P.CACHE = tmp / 'pc'; P.CACHE.mkdir(); (P.CACHE / 'mine.jpg').write_bytes(RAW)
+assert P.cached('mine')['manual'] and P.cached('nope') is None
+json.dump([{'id': 'mine', 'q': 'x'}, {'id': 'gone', 'q': 'x'}], open('cat2.json', 'w')); P.fetch('cat2.json')
+assert list(json.load(open(P.CACHE / '_missing.json'))) == ['gone']
+(P.CACHE / 'gone.jpg').write_bytes(RAW); P.fetch('cat2.json')
+assert json.load(open(P.CACHE / '_missing.json')) == {}
 # audition mode prints licence-safe candidates only
 P.get_json = fake_json
 json.dump({'photos': [{'id': 'forum', 'q': 'Roman Forum'}]}, open('cat.json', 'w'))

@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 """photos.py : real photos, paintings, maps and portraits for a script. Fetched at BUILD time (merge job), never at render time.
 Cache: fetch-photos downloads a catalog once into photo-cache/<id>.jpg + <id>.json (credit); every render copies from there, so a render never depends on Commons being up.
-Entry extras: "must": ["word"] (title must contain one), "alt": "caption for the placeholder card", "small_ok": true. A photo that cannot be found gives a caption card and a warning (PHOTO_STRICT=1 stops instead).
+Entry extras: "must": ["word"] (title must contain one), "alt": "caption for the placeholder card", "small_ok": true.
+A photo that cannot be found STOPS the run before the render (no empty placeholder cards in a finished video). Set PHOTO_ALLOW_PLACEHOLDER=1 only for a throwaway test render.
+Missing ones: the dashboard lists them (Photos card); save each as photo-cache/<id>.jpg (a jpg with no .json beside it counts as a user-supplied photo) and push.
 Script block (strict JSON between the markers; CI reads it):
   export const PHOTOS = /*PHOTOS*/ [
     {"id": "caesar_bust", "file": "File:Gaius Iulius Caesar (Vatican Museum).jpg"},      exact Wikimedia Commons file (preferred: you verified it)
@@ -109,7 +111,7 @@ def credit_line(pid, c):
 
 
 def patch_seo(credits, seo_path='out/seo.json', desc_path='out/description.txt'):
-    block = 'Image credits:\n' + '\n'.join(f'{c["title"]} by {c["artist"]} ({c["license"]}) {c["page"]}' for c in credits.values())
+    block = 'Image credits:\n' + '\n'.join(f'{c["title"]} by {c["artist"]} ({c["license"]}) {c["page"]}' for c in credits.values() if not c.get('manual'))
     need = any(c['attribution'] for c in credits.values())
     sp, dp = pathlib.Path(seo_path), pathlib.Path(desc_path)
     if not sp.exists():
@@ -123,7 +125,7 @@ def patch_seo(credits, seo_path='out/seo.json', desc_path='out/description.txt')
 
 
 CACHE = pathlib.Path(os.environ.get('PHOTO_CACHE', 'photo-cache'))  # committed to the repo by the fetch-photos workflow; reused by every render
-STRICT = os.environ.get('PHOTO_STRICT', '') == '1'  # 1 = a missing photo stops the run (old behaviour); default = placeholder card + warning
+STRICT = os.environ.get('PHOTO_ALLOW_PLACEHOLDER', '') != '1'  # default: a missing photo stops the run BEFORE the render; =1 draws a caption card instead (test renders only)
 
 
 def find(it):
@@ -154,12 +156,14 @@ def download(it, dst):
 
 def cached(pid):
     j, c = CACHE / f'{pid}.jpg', CACHE / f'{pid}.json'
-    if j.exists() and j.stat().st_size > 2000 and c.exists():
-        try:
-            return json.loads(c.read_text(encoding='utf-8'))
-        except Exception:
-            return None
-    return None
+    if not (j.exists() and j.stat().st_size > 2000):
+        return None
+    if not c.exists():  # a jpg the user pushed by hand: no on-screen credit line, not listed in the description
+        return {'title': pid, 'artist': 'unknown', 'license': 'user supplied', 'attribution': False, 'page': '', 'manual': True}
+    try:
+        return json.loads(c.read_text(encoding='utf-8'))
+    except Exception:
+        return None
 
 
 def placeholder(it, dst):
@@ -232,19 +236,22 @@ def fetch(catalog, force=False):
     items = data.get('photos', data) if isinstance(data, dict) else data
     CACHE.mkdir(parents=True, exist_ok=True)
     ok = bad = skipped = 0
+    mp = CACHE / '_missing.json'  # id -> why; the dashboard reads it to list what you must add by hand
+    miss = json.loads(mp.read_text()) if mp.exists() else {}
     for it in items:
         pid = it['id']
         if cached(pid) and not force:
-            skipped += 1; continue
+            skipped += 1; miss.pop(pid, None); continue
         try:
             c = download(it, CACHE / f'{pid}.jpg')
             c['id'], c['query'] = pid, it.get('file') or it.get('q')
             (CACHE / f'{pid}.json').write_text(json.dumps(c, ensure_ascii=False, indent=1), encoding='utf-8')
-            ok += 1
+            ok += 1; miss.pop(pid, None)
             print(f'OK   {pid:<24} {c["license"]:<12} {c["title"][:60]}  {c["page"]}')
         except Exception as e:
-            bad += 1
+            bad += 1; miss[pid] = str(e)[:300]
             print(f'MISS {pid:<24} {e}')
+    mp.write_text(json.dumps(miss, ensure_ascii=False, indent=1), encoding='utf-8')
     print(f'\nphoto-cache: {ok} new, {skipped} already cached, {bad} missing. For misses: audition (List photo candidates), pin {{"file": "File:..."}} in the catalog, run again.')
     return 0
 
