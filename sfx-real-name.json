@@ -139,7 +139,12 @@
   "glass_break": "glass break",
   "hammer_stone": "hammer chisel stone",
   "jet": "jet fly by",
-  "siren": "air raid siren"
+  "siren": "air raid siren",
+  "army_shout_loop": {
+   "q": "distant army shouting battle cry crowd",
+   "max": 60
+  },
+  "firework_pop": "firework explosion distant"
  },
  "drop": [
   "baby_cry",

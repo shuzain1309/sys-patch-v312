@@ -1,4 +1,6 @@
-
+// Vidfactory geo kit v2: satellite-style maps drawn in code (no image files).
+// Projection is computed ONCE per scene; zoom/pan are SVG transforms, so textures stay glued to the land and frames render fast.
+// Deps: npm i d3-geo topojson-client world-atlas
 import React from 'react';
 import {Easing, interpolate, random, spring, useCurrentFrame, useVideoConfig} from 'remotion';
 import {geoOrthographic, geoMercator, geoPath, geoGraticule10, geoInterpolate, geoDistance, geoTransform, geoCentroid, geoArea} from 'd3-geo';
@@ -8,7 +10,7 @@ import geoLib from '../../library/geo.json'; // prebuilt places, historical regi
 import {feature, mesh} from 'topojson-client';
 import w110 from 'world-atlas/countries-110m.json';
 import w50 from 'world-atlas/countries-50m.json';
-import {HAND, INK} from './world';
+import {HAND, INK, MapClash} from './world';
 
 const C = {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'} as const;
 const feats = (w: any): any[] => (feature(w, w.objects.countries) as any).features;
@@ -36,6 +38,7 @@ export type GeoT = Omit<GeoStrict, 'from' | 'to' | 'pins' | 'labels' | 'regions'
   names?: boolean | string[]; // true = name every highlighted country; or a list of country names to label (neighbours, no fill needed)
   lines?: {ref?: string; name?: string; pts?: [number, number][]; color?: string; width?: number; at?: number}[]; // rivers and borders: lon/lat polyline or {ref:'nile'}
   regions?: {ref?: string; name?: string; pts?: [number, number][]; color?: string; sub?: string; at?: number}[]; // historical polities: lon/lat outline or {ref:'new_kingdom_empire'}, filled and named
+  clash?: {lon?: number; lat?: number; place?: string; a?: string; b?: string; at?: number; s?: number}[]; // army clash art (small armies, swords, fire) at map points; a/b = the two sides' colours; at = fraction of the scene
 };
 
 // ---------- procedural satellite textures (tileable value noise, generated once per browser tab) ----------
@@ -205,6 +208,14 @@ export const GeoMap: React.FC<{g: GeoT; seed: string}> = ({g: gRaw, seed}) => {
   const regionPaths = (g.regions ?? []).map((r) => { try { const ring = closeRing(r.pts); const big = geoArea({type: 'Polygon', coordinates: [ring]} as any) > 2 * Math.PI; return (geoPath(geo.proj) as any)({type: 'Polygon', coordinates: [big ? ring.slice().reverse() : ring]}) as string; } catch (e) { return ''; } });
   const rp = (coords: any) => { const pp = geoPath(geo.proj) as any; return (pp({type: 'LineString', coordinates: coords}) ?? '') as string; };
   const R = geo.R * m;
+  // army clashes: read from the raw script object (resolveGeo is not touched); {place} or {lon,lat}; hidden when off-screen or on the far side of the globe
+  const clashItems = ((gRaw as any).clash ?? []).flatMap((c: any) => {
+    const ll = (c.place ? (geoLib as any).places?.[c.place] : c.lon !== undefined ? [c.lon, c.lat] : null) as [number, number] | null;
+    const xy = ll ? geo.proj(ll) : null;
+    if (!ll || !xy || !geo.visible(ll)) return [];
+    const q = sc(xy);
+    return [{x: q[0], y: q[1], a: c.a, b: c.b, at: c.at, s: c.s}];
+  });
 
   return (
     <svg viewBox="0 0 1920 1080" width={1920} height={1080} style={{position: 'absolute', inset: 0}}>
@@ -292,6 +303,7 @@ export const GeoMap: React.FC<{g: GeoT; seed: string}> = ({g: gRaw, seed}) => {
           </g>
         );
       })}
+      {clashItems.length > 0 && <MapClash f={f} d={d} items={clashItems} />}
       {(g.labels ?? []).map((lb, i) => {
         const xy = geo.proj([lb.lon, lb.lat]);
         if (!xy || !geo.visible([lb.lon, lb.lat])) return null;

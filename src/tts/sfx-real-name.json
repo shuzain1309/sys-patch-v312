@@ -1,0 +1,129 @@
+{
+ "_doc": "keys: script key -> Freesound search text (CC0 only), a Freesound id (number) to pin a sound, or {q,id,max}. Keys ending _loop are ambience beds (need max, e.g. 60). Real recordings only; nothing is synthesised. 'drop' is no longer used.",
+ "max_seconds": 8,
+ "keys": {
+  "sword": "sword hit metal",
+  "slash": "sword slash swish",
+  "stab": "knife stab",
+  "hit": "punch hit body",
+  "slap": "slap",
+  "body_fall": "body fall thud",
+  "march_hit": "heavy footstep thud",
+  "shield_hit": "shield hit wood",
+  "bonk": "wood knock",
+  "crack": "wood crack snap",
+  "boom": "deep boom impact",
+  "bell": "bell strike single",
+  "page": "page turn paper",
+  "creak": "wood creak",
+  "coin": "coins clink",
+  "thud": "thud",
+  "impact": "cinematic impact",
+  "thunder": "thunder",
+  "cheer": "crowd cheer",
+  "horn": "war horn",
+  "howl": "wolf howl",
+  "trumpet": "elephant trumpet",
+  "whoosh": "whoosh transition swoosh",
+  "riser": "cinematic riser tension",
+  "rain_loop": {
+   "q": "rain loop",
+   "max": 60
+  },
+  "wind_loop": {
+   "q": "wind loop outdoors",
+   "max": 60
+  },
+  "fire_loop": {
+   "q": "fire crackling loop",
+   "max": 60
+  },
+  "waves_loop": {
+   "q": "sea waves loop",
+   "max": 60
+  },
+  "crowd_loop": {
+   "q": "crowd murmur ambience loop",
+   "max": 60
+  },
+  "battle_loop": {
+   "q": "distant battle ambience",
+   "max": 60
+  },
+  "march_loop": {
+   "q": "soldiers marching loop",
+   "max": 40
+  },
+  "hooves_loop": {
+   "q": "horse gallop loop",
+   "max": 30
+  },
+  "sand_wind_loop": {
+   "q": "desert wind sand loop",
+   "max": 60
+  },
+  "nile_water_loop": {
+   "q": "river water flowing gentle loop",
+   "max": 60
+  },
+  "crowd_ancient_loop": {
+   "q": "market crowd murmur ancient",
+   "max": 60
+  },
+  "torch_loop": {
+   "q": "torch fire crackle loop",
+   "max": 40
+  },
+  "chariot_loop": {
+   "q": "galloping horses chariot loop",
+   "max": 30
+  },
+  "stone_slide": "heavy stone door sliding",
+  "sistrum": "sistrum rattle",
+  "arrow_volley": "arrow volley whoosh",
+  "bow_shot": "bow arrow release",
+  "whip": "whip crack",
+  "gong": "large gong hit",
+  "drums_war": "war drums distant",
+  "chant_low": "low choir chant ritual",
+  "scribble": "writing quill papyrus",
+  "sword_clash": "sword clash metal",
+  "camel": "camel grunt",
+  "blade_drop": "metal blade drop slice",
+  "bomb_blast": "explosion distant boom",
+  "train_loop": {
+   "q": "steam train passing",
+   "max": 60
+  },
+  "geiger_loop": {
+   "q": "geiger counter clicks",
+   "max": 60
+  },
+  "alarm_loop": {
+   "q": "siren alarm",
+   "max": 60
+  },
+  "typewriter": "typewriter typing",
+  "sled_bells": "sleigh bells",
+  "church_bells": "church bells ringing russian",
+  "gun_volley": "musket volley",
+  "cannon_shot": "cannon shot",
+  "sub_ping": "sonar ping submarine",
+  "rocket_launch": "rocket launch rumble",
+  "snow_wind_loop": {
+   "q": "blizzard wind",
+   "max": 60
+  },
+  "crowd_roar": "crowd roar protest",
+  "door_knock": "door knock",
+  "glass_break": "glass break",
+  "hammer_stone": "hammer chisel stone",
+  "jet": "jet fly by",
+  "siren": "air raid siren",
+  "army_shout_loop": {
+   "q": "distant army shouting battle cry crowd",
+   "max": 60
+  },
+  "firework_pop": "firework explosion distant"
+ }
+}

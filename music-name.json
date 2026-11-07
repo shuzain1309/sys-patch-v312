@@ -43,7 +43,9 @@
   "dark_war_drone": "dark war drone strings",
   "hope_piano": "soft hopeful piano ambient",
   "levant_oud": "oud ambient middle eastern slow",
-  "klezmer_longing": "klezmer clarinet slow sad"
+  "klezmer_longing": "klezmer clarinet slow sad",
+  "china_guzheng": "chinese guzheng ambient calm",
+  "china_court": "chinese imperial court ambient"
  },
  "_doc": "Music library. key -> Freesound search text (CC0 only), a Freesound id (number) to pin a track you listened to, or {q, id, min, max}. Run the fetch-music workflow; use mode=candidates first to audition matches by id. Use the key in the script's MUSIC block. Never synthesised: files are real CC0 recordings only."
 }
