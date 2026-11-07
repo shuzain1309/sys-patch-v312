@@ -1,6 +1,4 @@
-// Vidfactory geo kit v2: satellite-style maps drawn in code (no image files).
-// Projection is computed ONCE per scene; zoom/pan are SVG transforms, so textures stay glued to the land and frames render fast.
-// Deps: npm i d3-geo topojson-client world-atlas
+
 import React from 'react';
 import {Easing, interpolate, random, spring, useCurrentFrame, useVideoConfig} from 'remotion';
 import {geoOrthographic, geoMercator, geoPath, geoGraticule10, geoInterpolate, geoDistance, geoTransform, geoCentroid, geoArea} from 'd3-geo';
