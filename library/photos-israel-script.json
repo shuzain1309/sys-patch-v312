@@ -1,0 +1,318 @@
+[
+ {
+  "id": "caesarea_harbour",
+  "q": "Caesarea Maritima harbour ruins aerial",
+  "must": [
+   "caesarea"
+  ],
+  "alt": "Caesarea, Herod's harbour"
+ },
+ {
+  "id": "roberts_siege",
+  "q": "David Roberts Siege and Destruction of Jerusalem by the Romans",
+  "must": [
+   "roberts",
+   "siege",
+   "jerusalem"
+  ],
+  "alt": "Siege of Jerusalem, 70"
+ },
+ {
+  "id": "titus_arch",
+  "q": "Arch of Titus menorah relief",
+  "must": [
+   "titus",
+   "arch"
+  ],
+  "alt": "Arch of Titus, Rome"
+ },
+ {
+  "id": "josephus_print",
+  "q": "Flavius Josephus portrait engraving",
+  "must": [
+   "josephus"
+  ],
+  "alt": "Josephus"
+ },
+ {
+  "id": "masada_aerial",
+  "q": "Masada aerial view",
+  "must": [
+   "masada"
+  ],
+  "alt": "Masada"
+ },
+ {
+  "id": "masada_ramp",
+  "q": "Masada Roman siege ramp",
+  "must": [
+   "masada"
+  ],
+  "alt": "The Roman ramp at Masada"
+ },
+ {
+  "id": "isaiah_scroll",
+  "q": "Great Isaiah Scroll Dead Sea Scrolls",
+  "must": [
+   "isaiah",
+   "scroll",
+   "dead"
+  ],
+  "alt": "Dead Sea Scrolls"
+ },
+ {
+  "id": "qumran_caves",
+  "q": "Qumran caves Dead Sea",
+  "must": [
+   "qumran"
+  ],
+  "alt": "Qumran caves"
+ },
+ {
+  "id": "bar_kokhba_coin",
+  "q": "Bar Kokhba revolt coin",
+  "must": [
+   "kokhba",
+   "coin"
+  ],
+  "alt": "Bar Kokhba coin"
+ },
+ {
+  "id": "hadrian_bust",
+  "q": "Hadrian bust museum",
+  "must": [
+   "hadrian"
+  ],
+  "alt": "Emperor Hadrian"
+ },
+ {
+  "id": "helena_cima",
+  "q": "Saint Helena Cima da Conegliano",
+  "must": [
+   "helena",
+   "helen"
+  ],
+  "alt": "Saint Helena"
+ },
+ {
+  "id": "sepulchre_church",
+  "q": "Church of the Holy Sepulchre Jerusalem facade",
+  "must": [
+   "sepulchre",
+   "sepulcher"
+  ],
+  "alt": "Church of the Holy Sepulchre"
+ },
+ {
+  "id": "dome_rock",
+  "q": "Dome of the Rock Jerusalem",
+  "must": [
+   "dome"
+  ],
+  "alt": "Dome of the Rock"
+ },
+ {
+  "id": "clermont_miniature",
+  "q": "Council of Clermont Urban II miniature",
+  "must": [
+   "clermont",
+   "urban"
+  ],
+  "alt": "Council of Clermont, 1095"
+ },
+ {
+  "id": "siege_1099",
+  "q": "Siege of Jerusalem 1099 crusaders painting",
+  "must": [
+   "jerusalem",
+   "1099",
+   "crusad"
+  ],
+  "alt": "Crusaders take Jerusalem, 1099"
+ },
+ {
+  "id": "saladin_portrait",
+  "q": "Saladin portrait Cristofano dell'Altissimo",
+  "must": [
+   "saladin"
+  ],
+  "alt": "Saladin"
+ },
+ {
+  "id": "richard_effigy",
+  "q": "Richard the Lionheart effigy Fontevraud",
+  "must": [
+   "richard"
+  ],
+  "alt": "Richard the Lionheart"
+ },
+ {
+  "id": "jerusalem_walls",
+  "q": "Walls of Jerusalem Damascus Gate Ottoman",
+  "must": [
+   "jerusalem",
+   "damascus",
+   "wall"
+  ],
+  "alt": "Walls of Jerusalem"
+ },
+ {
+  "id": "suleiman_portrait",
+  "q": "Suleiman the Magnificent portrait",
+  "must": [
+   "suleiman"
+  ],
+  "alt": "Suleiman the Magnificent"
+ },
+ {
+  "id": "herzl_portrait",
+  "q": "Theodor Herzl portrait",
+  "must": [
+   "herzl"
+  ],
+  "alt": "Theodor Herzl"
+ },
+ {
+  "id": "judenstaat_cover",
+  "q": "Der Judenstaat 1896 title page",
+  "must": [
+   "judenstaat"
+  ],
+  "alt": "Der Judenstaat, 1896"
+ },
+ {
+  "id": "zionist_congress",
+  "q": "First Zionist Congress Basel 1897",
+  "must": [
+   "zionist",
+   "basel"
+  ],
+  "alt": "First Zionist Congress, 1897"
+ },
+ {
+  "id": "degania_early",
+  "q": "Degania kibbutz early photograph",
+  "must": [
+   "degania"
+  ],
+  "alt": "Degania, early kibbutz"
+ },
+ {
+  "id": "tel_aviv_lottery",
+  "q": "Tel Aviv 1909 lottery shells Ahuzat Bayit",
+  "must": [
+   "tel",
+   "aviv",
+   "ahuzat",
+   "1909"
+  ],
+  "alt": "Tel Aviv lottery, 1909"
+ },
+ {
+  "id": "allenby_jaffa_gate",
+  "q": "Allenby entering Jerusalem 1917 Jaffa Gate",
+  "must": [
+   "allenby",
+   "jerusalem"
+  ],
+  "alt": "Allenby enters Jerusalem, 1917"
+ },
+ {
+  "id": "lawrence_arabia",
+  "q": "T. E. Lawrence in Arab dress 1918",
+  "must": [
+   "lawrence"
+  ],
+  "alt": "T. E. Lawrence"
+ },
+ {
+  "id": "balfour_letter",
+  "q": "Balfour Declaration letter 1917",
+  "must": [
+   "balfour"
+  ],
+  "alt": "The Balfour Declaration"
+ },
+ {
+  "id": "un_plan_map",
+  "q": "UN Partition Plan 1947 map",
+  "must": [
+   "partition",
+   "plan"
+  ],
+  "alt": "UN Partition Plan, 1947"
+ },
+ {
+  "id": "declaration_1948",
+  "q": "Ben-Gurion declaring independence 14 May 1948 Tel Aviv museum",
+  "must": [
+   "independence",
+   "declaration",
+   "ben"
+  ],
+  "alt": "Declaration of independence, 1948"
+ },
+ {
+  "id": "refugees_1948",
+  "q": "Palestinian refugees 1948",
+  "must": [
+   "refugee"
+  ],
+  "alt": "Palestinian refugees, 1948"
+ },
+ {
+  "id": "key_return",
+  "q": "Palestinian key of return refugee camp",
+  "must": [
+   "key"
+  ],
+  "alt": "A key of return"
+ },
+ {
+  "id": "camp_david",
+  "q": "Camp David Accords 1978 Carter Sadat Begin",
+  "must": [
+   "camp",
+   "david",
+   "sadat"
+  ],
+  "alt": "Camp David, 1978"
+ },
+ {
+  "id": "tel_aviv_skyline",
+  "q": "Tel Aviv skyline",
+  "must": [
+   "tel",
+   "aviv"
+  ],
+  "alt": "Tel Aviv today"
+ },
+ {
+  "id": "old_city_aerial",
+  "q": "Old City Jerusalem aerial view",
+  "must": [
+   "jerusalem"
+  ],
+  "alt": "Jerusalem's Old City"
+ },
+ {
+  "id": "western_wall_1967",
+  "q": "Western Wall 1967 Six-Day War",
+  "must": [
+   "wall",
+   "1967"
+  ],
+  "alt": "The Western Wall, 1967"
+ },
+ {
+  "id": "maabara_camp",
+  "q": "Ma'abara immigrant transit camp 1950s Israel",
+  "must": [
+   "maabara",
+   "transit",
+   "immigrant",
+   "camp"
+  ],
+  "alt": "Immigrant transit camp"
+ }
+]
