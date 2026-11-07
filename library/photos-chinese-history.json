@@ -1,0 +1,194 @@
+[
+ {
+  "id": "oracle_bone",
+  "q": "Oracle bone Shang dynasty inscription",
+  "must": [
+   "oracle",
+   "bone"
+  ],
+  "alt": "Oracle bone, Shang dynasty"
+ },
+ {
+  "id": "confucius",
+  "q": "Confucius portrait painting",
+  "must": [
+   "confucius",
+   "kongzi"
+  ],
+  "alt": "Confucius"
+ },
+ {
+  "id": "terracotta_army",
+  "q": "Terracotta Army Xian pit",
+  "must": [
+   "terracotta"
+  ],
+  "alt": "The Terracotta Army"
+ },
+ {
+  "id": "han_silk_banner",
+  "q": "Mawangdui silk banner Han dynasty",
+  "must": [
+   "mawangdui",
+   "banner",
+   "silk"
+  ],
+  "alt": "Han silk painting"
+ },
+ {
+  "id": "zhang_qian_mogao",
+  "q": "Zhang Qian Mogao Cave 323 mural",
+  "must": [
+   "zhang",
+   "mogao",
+   "323"
+  ],
+  "alt": "Zhang Qian, Mogao caves"
+ },
+ {
+  "id": "wu_zetian_portrait",
+  "q": "Wu Zetian portrait",
+  "must": [
+   "wu",
+   "zetian",
+   "empress"
+  ],
+  "alt": "Wu Zetian"
+ },
+ {
+  "id": "qingming_scroll",
+  "q": "Along the River During the Qingming Festival Zhang Zeduan",
+  "must": [
+   "qingming",
+   "river"
+  ],
+  "alt": "A Song city scroll"
+ },
+ {
+  "id": "song_banknote",
+  "q": "Song dynasty jiaozi huizi paper money banknote",
+  "must": [
+   "jiaozi",
+   "huizi",
+   "banknote",
+   "paper",
+   "money"
+  ],
+  "alt": "Song paper money"
+ },
+ {
+  "id": "diamond_sutra",
+  "q": "Diamond Sutra 868 British Library",
+  "must": [
+   "diamond"
+  ],
+  "alt": "The Diamond Sutra, 868"
+ },
+ {
+  "id": "kublai_portrait",
+  "q": "Kublai Khan portrait Anige",
+  "must": [
+   "kublai"
+  ],
+  "alt": "Kublai Khan"
+ },
+ {
+  "id": "forbidden_city",
+  "q": "Forbidden City Beijing Hall of Supreme Harmony",
+  "must": [
+   "forbidden"
+  ],
+  "alt": "The Forbidden City"
+ },
+ {
+  "id": "hongwu_portrait",
+  "q": "Hongwu Emperor portrait Zhu Yuanzhang",
+  "must": [
+   "hongwu",
+   "zhu"
+  ],
+  "alt": "The Hongwu emperor"
+ },
+ {
+  "id": "zheng_he_chart",
+  "q": "Mao Kun map Zheng He navigation chart",
+  "must": [
+   "mao",
+   "zheng",
+   "map"
+  ],
+  "alt": "Ming navigation chart"
+ },
+ {
+  "id": "macartney_gillray",
+  "q": "Gillray Reception of the Diplomatique and his suite Macartney",
+  "must": [
+   "gillray",
+   "diplomatique",
+   "macartney"
+  ],
+  "alt": "The Macartney embassy cartoon"
+ },
+ {
+  "id": "qianlong_portrait",
+  "q": "Qianlong Emperor portrait",
+  "must": [
+   "qianlong"
+  ],
+  "alt": "The Qianlong emperor"
+ },
+ {
+  "id": "lin_zexu",
+  "q": "Lin Zexu portrait",
+  "must": [
+   "lin"
+  ],
+  "alt": "Lin Zexu"
+ },
+ {
+  "id": "opium_war_junks",
+  "q": "Destroying Chinese war junks at Anson's Bay Duncan",
+  "must": [
+   "junks",
+   "anson",
+   "opium"
+  ],
+  "alt": "British steamships destroy junks"
+ },
+ {
+  "id": "treaty_nanking",
+  "q": "Signing of the Treaty of Nanking 1842 painting",
+  "must": [
+   "nanking",
+   "nanjing",
+   "treaty"
+  ],
+  "alt": "The Treaty of Nanking"
+ },
+ {
+  "id": "hong_xiuquan",
+  "q": "Hong Xiuquan Taiping engraving portrait",
+  "must": [
+   "hong",
+   "taiping"
+  ],
+  "alt": "Hong Xiuquan"
+ },
+ {
+  "id": "puyi_child",
+  "q": "Puyi child emperor 1908",
+  "must": [
+   "puyi"
+  ],
+  "alt": "Puyi as a child"
+ },
+ {
+  "id": "deng_carter",
+  "q": "Deng Xiaoping Jimmy Carter 1979 White House",
+  "must": [
+   "deng",
+   "carter"
+  ],
+  "alt": "Deng and Carter, 1979"
+ }
+]
