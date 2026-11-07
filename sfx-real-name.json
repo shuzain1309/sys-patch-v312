@@ -136,7 +136,10 @@
   },
   "crowd_roar": "crowd roar protest",
   "door_knock": "door knock",
-  "glass_break": "glass break"
+  "glass_break": "glass break",
+  "hammer_stone": "hammer chisel stone",
+  "jet": "jet fly by",
+  "siren": "air raid siren"
  },
  "drop": [
   "baby_cry",
