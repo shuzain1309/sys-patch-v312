@@ -370,5 +370,11 @@
   "name": "horn 02",
   "username": "Kostrava",
   "license": "http://creativecommons.org/publicdomain/zero/1.0/"
+ },
+ "firework_pop": {
+  "id": 109738,
+  "name": "hilow multi hits.aiff",
+  "username": "SoundCollectah",
+  "license": "http://creativecommons.org/publicdomain/zero/1.0/"
  }
 }
