@@ -33,5 +33,11 @@
  "macartney_gillray": "download failed: HTTP Error 429: Too many requests - please contact noc@wikimedia.org to discuss a less disruptive approach or instead use thumbnail images in sizes listed on https://w.wiki/GHai. (0c640b1)",
  "treaty_nanking": "download failed: HTTP Error 429: Too many requests - please contact noc@wikimedia.org to discuss a less disruptive approach or instead use thumbnail images in sizes listed on https://w.wiki/GHai. (0c640b1)",
  "hong_xiuquan": "no usable image. ",
- "puyi_child": "no usable image. "
+ "puyi_child": "no usable image. ",
+ "omphalos_delphi": "no usable image. File:Omphallos.jpg: licence \"CeCILL\" not allowed",
+ "gilgamesh_flood": "no usable image. File:The Flood Tablet or Tablet XI of the Epic of Gilgamesh, currently housed in the British Museum in London.jpg: licence \"CC BY-SA 4.0\" not allowed; File:Tablet XI or the Flood Tablet of the Epic of Gilgamesh, currently housed in the British Museum in London.jpg: licence \"CC BY-SA",
+ "eurystheus_jar": "no usable image. ",
+ "priam_achilles": "no usable image. ",
+ "sophia_jewels": "no usable image. ",
+ "zeus_olympia": "no usable image. File:Le Jupiter Olympien ou l'art de la sculpture antique.jpg: only 684 px wide; Le Jupiter Olympien ou l'art de la sculpture antique 1: does not contain ['zeus']"
 }
