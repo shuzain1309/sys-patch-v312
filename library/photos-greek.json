@@ -1,0 +1,157 @@
+{
+ "_doc": "Greek mythology photo catalog for fetch-photos. Each entry is searched on Wikimedia Commons, licence-checked (public domain, CC0, CC BY) and stored in photo-cache/. 'must' = title must contain one of these words; 'alt' = caption if nothing is found. Entries that print MISS: run List photo candidates, pin {id, file:'File:Exact Title.jpg'} and fetch again.",
+ "photos": [
+  {
+   "id": "hesiod_muse",
+   "q": "Hesiod and the Muse Gustave Moreau painting",
+   "must": [
+    "hesiod"
+   ],
+   "alt": "Hesiod and the Muse, painted by Gustave Moreau"
+  },
+  {
+   "id": "omphalos_delphi",
+   "q": "Omphalos Delphi Archaeological Museum stone",
+   "must": [
+    "omphalos"
+   ],
+   "alt": "The omphalos stone at Delphi"
+  },
+  {
+   "id": "venus_mars_net",
+   "q": "Mars and Venus Surprised by Vulcan Tintoretto",
+   "must": [
+    "tintoretto"
+   ],
+   "alt": "Mars and Venus caught in Hephaestus' net, by Tintoretto"
+  },
+  {
+   "id": "prometheus_rubens",
+   "q": "Prometheus Bound Rubens painting",
+   "must": [
+    "prometheus"
+   ],
+   "alt": "Prometheus Bound, by Rubens"
+  },
+  {
+   "id": "gilgamesh_flood",
+   "q": "Gilgamesh flood tablet British Museum Tablet XI",
+   "must": [
+    "gilgamesh"
+   ],
+   "alt": "The flood tablet of the Epic of Gilgamesh"
+  },
+  {
+   "id": "eleusis_relief",
+   "q": "Great Eleusinian Relief Demeter Persephone Triptolemos",
+   "must": [
+    "eleusi"
+   ],
+   "alt": "Demeter, Persephone and Triptolemos, relief from Eleusis"
+  },
+  {
+   "id": "medusa_caravaggio",
+   "q": "Medusa Caravaggio Uffizi painting",
+   "must": [
+    "medusa"
+   ],
+   "alt": "Medusa, by Caravaggio"
+  },
+  {
+   "id": "knossos_palace",
+   "q": "Palace of Knossos Crete reconstructed",
+   "must": [
+    "knossos"
+   ],
+   "alt": "The palace of Knossos, Crete"
+  },
+  {
+   "id": "bull_leaping",
+   "q": "Bull-leaping fresco Knossos Heraklion Archaeological Museum",
+   "must": [
+    "bull"
+   ],
+   "alt": "Bull-leaping fresco from Knossos"
+  },
+  {
+   "id": "eurystheus_jar",
+   "q": "Heracles Eurystheus pithos black-figure Louvre",
+   "must": [
+    "eurystheus"
+   ],
+   "alt": "Eurystheus hiding in a jar, Greek vase"
+  },
+  {
+   "id": "priam_achilles",
+   "q": "Priam pleading with Achilles Alexander Ivanov",
+   "must": [
+    "priam"
+   ],
+   "alt": "Priam begs Achilles for Hector's body, by Alexander Ivanov"
+  },
+  {
+   "id": "sophia_jewels",
+   "q": "Sophia Schliemann wearing the Jewels of Helen",
+   "must": [
+    "sophia"
+   ],
+   "alt": "Sophia Schliemann wearing the so-called Jewels of Helen"
+  },
+  {
+   "id": "linear_b",
+   "q": "Linear B tablet Pylos clay",
+   "must": [
+    "linear"
+   ],
+   "alt": "A Linear B clay tablet"
+  },
+  {
+   "id": "odysseus_sirens",
+   "q": "Odysseus and the Sirens Attic stamnos British Museum",
+   "must": [
+    "siren"
+   ],
+   "alt": "Odysseus and the Sirens, Greek vase"
+  },
+  {
+   "id": "zeus_olympia",
+   "q": "Statue of Zeus at Olympia Quatremere de Quincy reconstruction",
+   "must": [
+    "zeus"
+   ],
+   "alt": "The statue of Zeus at Olympia, in an old reconstruction"
+  },
+  {
+   "id": "salamis_kaulbach",
+   "q": "Naval Battle of Salamis Kaulbach painting",
+   "must": [
+    "salamis"
+   ],
+   "alt": "The Battle of Salamis, by Wilhelm von Kaulbach"
+  },
+  {
+   "id": "socrates_david",
+   "q": "The Death of Socrates Jacques-Louis David",
+   "must": [
+    "socrates"
+   ],
+   "alt": "The Death of Socrates, by Jacques-Louis David"
+  },
+  {
+   "id": "birth_venus",
+   "q": "Birth of Venus Botticelli Uffizi",
+   "must": [
+    "venus"
+   ],
+   "alt": "The Birth of Venus, by Botticelli"
+  },
+  {
+   "id": "oedipus_sphinx",
+   "q": "Oedipus and the Sphinx Ingres Louvre",
+   "must": [
+    "oedipus"
+   ],
+   "alt": "Oedipus and the Sphinx, by Ingres"
+  }
+ ]
+}

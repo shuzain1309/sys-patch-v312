@@ -144,7 +144,12 @@
    "q": "distant army shouting battle cry crowd",
    "max": 60
   },
-  "firework_pop": "firework explosion distant"
+  "firework_pop": "firework explosion distant",
+  "crowd_laugh": "crowd laughing group laughter",
+  "dog_growl": "large dog growl",
+  "eagle_cry": "eagle screech cry",
+  "snake_hiss": "snake hiss",
+  "splash": "large water splash"
  },
  "drop": [
   "baby_cry",
