@@ -1,0 +1,160 @@
+{
+ "_doc": "Germany history photo catalog for fetch-photos. Each entry is searched on Wikimedia Commons, licence-checked (public domain, CC0, CC BY) and stored in photo-cache/. 'must' = title must contain one of these words; 'alt' = caption if nothing is found. Entries that print MISS: run List photo candidates, pin {id, file:'File:Exact Title.jpg'} and fetch again.",
+ "photos": [
+  {
+   "id": "hermann_monument",
+   "q": "Hermannsdenkmal Detmold monument",
+   "must": [
+    "hermann"
+   ],
+   "alt": "The Hermann Monument, Detmold"
+  },
+  {
+   "id": "kalkriese_mask",
+   "q": "Kalkriese Roman cavalry helmet mask",
+   "must": [
+    "kalkriese",
+    "mask"
+   ],
+   "alt": "Roman face mask found at Kalkriese"
+  },
+  {
+   "id": "gutenberg_bible",
+   "q": "Gutenberg Bible page",
+   "must": [
+    "gutenberg",
+    "bible"
+   ],
+   "alt": "A page of the Gutenberg Bible"
+  },
+  {
+   "id": "wartburg",
+   "q": "Wartburg castle Eisenach",
+   "must": [
+    "wartburg"
+   ],
+   "alt": "The Wartburg"
+  },
+  {
+   "id": "magdeburg_1631",
+   "q": "Sack of Magdeburg 1631 engraving",
+   "must": [
+    "magdeburg"
+   ],
+   "alt": "The sack of Magdeburg, 1631"
+  },
+  {
+   "id": "frankfurt_parliament",
+   "q": "Paulskirche Frankfurt Parliament 1848",
+   "must": [
+    "paulskirche",
+    "frankfurt"
+   ],
+   "alt": "The Frankfurt Parliament, 1848"
+  },
+  {
+   "id": "kaiser_proclamation",
+   "q": "Proclamation of the German Empire Anton von Werner",
+   "must": [
+    "proklamation",
+    "proclamation",
+    "kaiser"
+   ],
+   "alt": "The proclamation of the German Empire, 1871"
+  },
+  {
+   "id": "wilhelm_ii",
+   "q": "Kaiser Wilhelm II portrait",
+   "must": [
+    "wilhelm"
+   ],
+   "alt": "Kaiser Wilhelm II"
+  },
+  {
+   "id": "zimmermann_telegram",
+   "q": "Zimmermann Telegram",
+   "must": [
+    "zimmermann"
+   ],
+   "alt": "The Zimmermann Telegram, 1917"
+  },
+  {
+   "id": "versailles_signing",
+   "q": "Signing of the Treaty of Versailles Orpen",
+   "must": [
+    "versailles",
+    "orpen"
+   ],
+   "alt": "Signing the Treaty of Versailles, 1919"
+  },
+  {
+   "id": "reichstag_fire",
+   "q": "Reichstag fire 1933",
+   "must": [
+    "reichstag"
+   ],
+   "alt": "The Reichstag fire, 1933"
+  },
+  {
+   "id": "berlin_ruins_1945",
+   "q": "Berlin ruins 1945",
+   "must": [
+    "berlin",
+    "ruins"
+   ],
+   "alt": "Berlin in ruins, 1945"
+  },
+  {
+   "id": "candy_bomber",
+   "q": "Berlin Airlift Halvorsen candy bomber",
+   "must": [
+    "airlift",
+    "halvorsen",
+    "berlin"
+   ],
+   "alt": "The Berlin Airlift"
+  },
+  {
+   "id": "wall_1961",
+   "q": "Berlin Wall construction August 1961",
+   "must": [
+    "wall"
+   ],
+   "alt": "Building the Berlin Wall, 1961"
+  },
+  {
+   "id": "brandenburg_1989",
+   "q": "Brandenburg Gate Berlin Wall November 1989",
+   "must": [
+    "wall",
+    "brandenburg"
+   ],
+   "alt": "The Wall falls, 1989"
+  },
+  {
+   "id": "merkel",
+   "q": "Angela Merkel portrait",
+   "must": [
+    "merkel"
+   ],
+   "alt": "Angela Merkel"
+  },
+  {
+   "id": "bundestag",
+   "q": "Bundestag plenary hall Reichstag building",
+   "must": [
+    "bundestag",
+    "reichstag"
+   ],
+   "alt": "The Bundestag"
+  },
+  {
+   "id": "sikorski",
+   "q": "Radoslaw Sikorski portrait",
+   "must": [
+    "sikorski"
+   ],
+   "alt": "Radoslaw Sikorski"
+  }
+ ]
+}

@@ -6,7 +6,7 @@ import libLooks from '../../library/looks.json'; // reusable looks added over ti
 import {Easing, continueRender, delayRender, interpolate, random, Sequence, spring, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
 import {loadFont as loadHand} from '@remotion/google-fonts/PatrickHand';
 import {fit, measure, placeBox, SAFE, Rect} from './textfit';
-import {GreekProp, GreekHeld, GreekFar, GodAura} from './greek'; // Greek pack: props, held items, olympus + underworld backdrops
+import {FocusOverlay, FocusT, GermanyProp, isGermanyProp, GermanyBg, isGermanyBg, GERMANY_GROUND} from './germany_pack';
 
 export const HAND = typeof window === 'undefined' ? 'sans-serif' : loadHand('normal', {weights: ['400'], subsets: ['latin']}).fontFamily;
 export const INK = '#241c17';
@@ -56,8 +56,8 @@ const LEAN: Partial<Record<PoseName, number>> = {walk: 2, run: 12, attack: 10, c
 
 export type Hair = 'none' | 'short' | 'long' | 'topknot' | 'curly' | 'wild' | 'parted' | 'bald' | 'bob' | 'queue';
 export type Outfit = 'tunic' | 'robe' | 'coat' | 'dress' | 'armor' | 'toga' | 'kilt' | 'sheath';
-export type Look = {hat: 'none' | 'explorer' | 'top' | 'crown' | 'cap' | 'helmet' | 'straw' | 'bowler' | 'tricorn' | 'bun' | 'laurel' | 'crest' | 'hood' | 'dome' | 'greathelm' | 'morion' | 'turban' | 'nemes' | 'whitecrown' | 'redcrown' | 'pschent' | 'khepresh' | 'linen' | 'jackal' | 'falcon' | 'diadem' | 'fez' | 'bork' | 'mitre' | 'biretta' | 'beret' | 'cavalier' | 'peruke' | 'bicorne' | 'phrygian' | 'plume' | 'bearskin' | 'shako' | 'busby' | 'czapka' | 'casque' | 'ushanka' | 'boyar' | 'mongol' | 'peaked' | 'guan' | 'mianliu' | 'qing'; shirt: string; pants: string; skin: string; extra?: 'scarf' | 'beard' | 'apron'; ec?: string; cape?: string; toga?: string; armor?: boolean;
-  trim?: string; outfit?: Outfit; hair?: Hair; hc?: string; facial?: 'full' | 'goatee' | 'stache' | 'long' | 'ceremonial'; sleeve?: string; bare?: boolean; shoes?: string; fc?: string; glasses?: boolean; era?: string; kohl?: boolean};
+export type Look = {hat: 'none' | 'explorer' | 'top' | 'crown' | 'cap' | 'helmet' | 'straw' | 'bowler' | 'tricorn' | 'bun' | 'laurel' | 'crest' | 'hood' | 'dome' | 'greathelm' | 'morion' | 'turban' | 'nemes' | 'whitecrown' | 'redcrown' | 'pschent' | 'khepresh' | 'linen' | 'jackal' | 'falcon' | 'diadem' | 'fez' | 'bork' | 'mitre' | 'biretta' | 'beret' | 'cavalier' | 'peruke' | 'bicorne' | 'phrygian' | 'plume' | 'bearskin' | 'shako' | 'busby' | 'czapka' | 'casque' | 'ushanka' | 'boyar' | 'mongol' | 'peaked' | 'guan' | 'mianliu' | 'qing' | 'conical' | 'pickelhaube' | 'stahlhelm'; shirt: string; pants: string; skin: string; extra?: 'scarf' | 'beard' | 'apron'; ec?: string; cape?: string; toga?: string; armor?: boolean;
+  trim?: string; outfit?: Outfit; hair?: Hair; hc?: string; facial?: 'full' | 'goatee' | 'stache' | 'long' | 'ceremonial'; sleeve?: string; bare?: boolean; shoes?: string; fc?: string; glasses?: boolean; era?: string; kohl?: boolean; g?: 'm' | 'f'};
 export const LOOKS: Record<string, Look> = {
   narrator: {hat: 'explorer', shirt: '#d9c79a', pants: '#6b5a45', skin: '#f3dcc6', extra: 'scarf', ec: '#c0392b', hair: 'short', hc: '#a8a8a8', facial: 'stache', trim: '#8a6d3b', shoes: '#5a4632'},
   merchant: {hat: 'top', shirt: '#2b2d42', pants: '#2b2d42', skin: '#efd3b8', outfit: 'coat', trim: '#c9a84a', hair: 'short', hc: '#3b2a20', facial: 'stache'},
@@ -104,7 +104,7 @@ export type Faction = {c: string; c2?: string; kind?: TroopKind};
 export const FACTIONS: Record<string, Faction> = {};
 export const registerFactions = (o: Record<string, Faction> | undefined) => { if (o) Object.assign(FACTIONS, o); };
 
-export type Held = 'sword' | 'spear' | 'torch' | 'scroll' | 'dagger' | 'goblet' | 'standard' | 'lyre' | 'coin' | 'magnifier' | 'khopesh' | 'ankh' | 'bow' | 'crook' | 'musket' | 'saber' | 'lance' | 'eagle' | 'baton' | 'spyglass' | 'sickle' | 'trident' | 'bolt' | 'apple' | 'caduceus' | 'club' | 'axe' | 'bident' | 'hammer' | 'scepter' | 'wheat';
+export type Held = 'sword' | 'spear' | 'torch' | 'scroll' | 'dagger' | 'goblet' | 'standard' | 'lyre' | 'coin' | 'magnifier' | 'khopesh' | 'ankh' | 'bow' | 'crook' | 'musket' | 'saber' | 'lance' | 'eagle' | 'baton' | 'spyglass';
 export type ActorT = {who?: string; x: number | [number, number]; y?: number; s?: number; pose?: PoseName; face?: Face; flip?: boolean; say?: string; at?: number; talk?: boolean; look?: string | Look; raw?: boolean; held?: Held; shield?: boolean; fa?: number; hide?: number; ghost?: number; ns?: boolean; z?: number};
 
 const Hat: React.FC<{k: Look['hat']; top: number; skin: string; col?: string}> = ({k, top, skin, col}) => {
@@ -114,6 +114,9 @@ const Hat: React.FC<{k: Look['hat']; top: number; skin: string; col?: string}> =
     case 'crown': return (<g {...OL}><path d={`M-40 ${top + 10} L-46 ${top - 38} L-22 ${top - 14} L0 ${top - 48} L22 ${top - 14} L46 ${top - 38} L40 ${top + 10}Z`} fill="#f2c230" /><circle cx={0} cy={top - 6} r={7} fill="#d63b3b" /><circle cx={-24} cy={top - 2} r={5} fill="#3b82d6" /><circle cx={24} cy={top - 2} r={5} fill="#3b82d6" /></g>);
     case 'cap': return (<g {...OL}><path d={`M-50 ${top + 14} Q-48 ${top - 30} 0 ${top - 30} Q48 ${top - 30} 50 ${top + 14}Z`} fill="#4b5d73" /><path d={`M10 ${top + 10} L74 ${top + 14} Q70 ${top + 24} 10 ${top + 20}Z`} fill="#3a4859" /></g>);
     case 'helmet': return (<g {...OL}><path d={`M-52 ${top + 18} Q-54 ${top - 36} 0 ${top - 38} Q54 ${top - 36} 52 ${top + 18}Z`} fill="#b9c0c9" /><path d={`M0 ${top - 38} Q-10 ${top - 74} 22 ${top - 70} Q8 ${top - 56} 12 ${top - 36}Z`} fill="#c0392b" /><rect x={-5} y={top - 10} width={10} height={34} fill="#8f98a3" /></g>);
+    case 'conical': return (<g {...OL}><path d={`M-84 ${top + 16} L0 ${top - 74} L84 ${top + 16} Q0 ${top + 30} -84 ${top + 16}Z`} fill="#e8cf86" /><path d={`M-40 ${top - 20} Q0 ${top - 8} 40 ${top - 20}`} fill="none" stroke="#b9953f" strokeWidth={3} /><path d={`M0 ${top - 74} q10 -14 6 -28 M0 ${top - 74} q-8 -10 -4 -26`} fill="none" stroke="#c0392b" strokeWidth={6} /></g>);
+    case 'pickelhaube': return (<g {...OL}><path d={`M-50 ${top + 18} Q-52 ${top - 34} 0 ${top - 36} Q52 ${top - 34} 50 ${top + 18}Z`} fill="#2b2f3a" /><path d={`M-4 ${top - 36} L0 ${top - 84} L4 ${top - 36}Z`} fill="#d8b24a" /><path d={`M-18 ${top - 4} L0 ${top - 30} L18 ${top - 4}Z`} fill="#d8b24a" /><path d={`M-56 ${top + 14} Q0 ${top + 26} 56 ${top + 14}`} fill="none" stroke="#d8b24a" strokeWidth={6} /><path d={`M10 ${top + 14} L68 ${top + 20} Q62 ${top + 30} 10 ${top + 26}Z`} fill="#1f1f27" /></g>);
+    case 'stahlhelm': return (<g {...OL}><path d={`M-58 ${top + 20} Q-60 ${top - 34} 0 ${top - 38} Q60 ${top - 34} 58 ${top + 20} Q0 ${top + 34} -58 ${top + 20}Z`} fill="#6b7260" /><path d={`M-58 ${top + 20} Q0 ${top + 34} 58 ${top + 20} Q0 ${top + 12} -58 ${top + 20}Z`} fill="#555c4b" /></g>);
     case 'straw': return (<g {...OL}><ellipse cx={0} cy={top + 12} rx={86} ry={15} fill="#e4c673" /><path d={`M-46 ${top + 10} Q-44 ${top - 34} 0 ${top - 34} Q44 ${top - 34} 46 ${top + 10}Z`} fill="#edd58a" /><path d={`M-46 ${top - 2} Q0 ${top + 8} 46 ${top - 2}`} fill="none" stroke="#a5532e" strokeWidth={8} /></g>);
     case 'bowler': return (<g {...OL}><ellipse cx={0} cy={top + 12} rx={64} ry={11} fill="#2a2a2f" /><path d={`M-44 ${top + 12} Q-44 ${top - 40} 0 ${top - 40} Q44 ${top - 40} 44 ${top + 12}Z`} fill="#35353c" /></g>);
     case 'tricorn': return (<g {...OL}><path d={`M-78 ${top + 14} L0 ${top - 42} L78 ${top + 14} Q0 ${top + 30} -78 ${top + 14}Z`} fill="#2b2d42" /><path d={`M-78 ${top + 14} Q0 ${top + 30} 78 ${top + 14}`} fill="none" stroke="#d9b24a" strokeWidth={5} /></g>);
@@ -182,7 +185,6 @@ const HeldArt: React.FC<{k: Held; f: number}> = ({k, f}) => {
     case 'baton': return (<g {...OL}><rect x={-7} y={-76} width={14} height={82} rx={3} fill="#2b4a8a" />{[-60, -42, -24].map((y, i) => <circle key={i} cx={0} cy={y} r={3.4} fill="#e2b84a" stroke="none" />)}<rect x={-9} y={-80} width={18} height={8} fill="#e2b84a" /><rect x={-9} y={2} width={18} height={8} fill="#e2b84a" /></g>);
     case 'spyglass': return (<g {...OL}><g transform="rotate(28 0 0)"><rect x={-6} y={-110} width={12} height={96} rx={3} fill="#a8793f" /><rect x={-9} y={-132} width={18} height={26} rx={3} fill="#c4a24a" /><rect x={-7} y={-18} width={14} height={14} rx={3} fill="#6b3a2a" /></g></g>);
     case 'coin': return (<g {...OL}><circle cx={0} cy={-24} r={26} fill="#f6cf4a" /><circle cx={0} cy={-24} r={17} fill="none" stroke="#b8860b" strokeWidth={3} /></g>);
-    default: return <GreekHeld k={k} f={f} />;
   }
 };
 
@@ -272,10 +274,9 @@ export const Actor: React.FC<{a: ActorT; words?: WordT[]; seed?: string}> = ({a,
   const face: Face = a.face ?? 'smile';
   const bob = pose === 'walk' || pose === 'run' ? -Math.abs(Math.sin(w)) * (pose === 'run' ? 12 : 7) : pose === 'cheer' ? -Math.abs(Math.sin(f / 4)) * 14 : Math.sin(f / 14 + ph) * 1.6;
   const dy = pose === 'sit' ? 74 : pose === 'kneel' ? 64 : 0; // body drops; legs fold
-  const hover = (look as any).god && a.ghost === undefined && !['sit', 'kneel', 'fall', 'walk', 'run'].includes(pose) ? -58 + Math.sin(f / 20 + ph) * 9 : 0; // gods levitate
   const lean = LEAN[pose] ?? 0;
   const hipY = -150 + dy, shY = -268 + dy, headY = -340 + dy + bob * 0.4, HR = 58;
-  const SHX = (look as any).god || (look as any).buff ? 33 : 26; // half shoulder width (wider for gods and heroes)
+  const SHX = 26; // half shoulder width
   const shL: [number, number] = [-SHX + 2, shY + 10 + bob * 0.5], shR: [number, number] = [SHX - 2, shY + 10 + bob * 0.5];
   const arm = (sh: [number, number], ang: Ang) => {
     const el = P(sh[0], sh[1], 62, ang[0]);
@@ -290,10 +291,8 @@ export const Actor: React.FC<{a: ActorT; words?: WordT[]; seed?: string}> = ({a,
   };
   const lL = leg(-11, LL), lR = leg(11, RL);
   const e = a.at !== undefined ? pop(f, fps, a.at * d) : {o: 1, k: 1};
-  const s = (a.s ?? 1) * (a.raw ? 1 : CHAR) * ((look as any).god ? 1.08 : (look as any).buff ? 1.04 : 1);
+  const s = (a.s ?? 1) * (a.raw ? 1 : CHAR);
   const out = outfitOf(look);
-  const god = !!(look as any).god, buff = god || !!(look as any).buff;
-  const heldItem = a.held ?? (look as any).weapon;
   const hair: Hair = look.hair ?? (HAIRLESS.includes(look.hat) ? 'none' : 'short');
   const hc = look.hc ?? '#4a3426';
   const facial = look.facial ?? (look.extra === 'beard' ? 'full' : undefined);
@@ -305,7 +304,7 @@ export const Actor: React.FC<{a: ActorT; words?: WordT[]; seed?: string}> = ({a,
   const ls = (p: [number, number][], w2: number, col: string) => <polyline points={p.map((q) => q.join(',')).join(' ')} fill="none" stroke={col} strokeWidth={w2} strokeLinecap="round" strokeLinejoin="round" />;
   const limb = (p: [number, number][], w2: number, col: string) => (<g>{ls(p, w2 + 6, INK)}{ls(p, w2, col)}</g>);
   const sleeved = (sh: [number, number], ar: {el: [number, number]; hd: [number, number]}) => (
-    <g>{limb([sh, ar.el], buff ? 29 : 19, sleeve)}{limb([ar.el, ar.hd], out === 'robe' || out === 'coat' ? (buff ? 25 : 17) : bareArms ? (buff ? 23 : 15) : (buff ? 25 : 17), out === 'robe' || out === 'coat' ? sleeve : bareArms ? look.skin : sleeve)}
+    <g>{limb([sh, ar.el], 19, sleeve)}{limb([ar.el, ar.hd], out === 'robe' || out === 'coat' ? 17 : bareArms ? 15 : 17, out === 'robe' || out === 'coat' ? sleeve : bareArms ? look.skin : sleeve)}
       {(out === 'coat' || out === 'robe') && <circle cx={ar.hd[0]} cy={ar.hd[1]} r={11} fill={trim} stroke={INK} strokeWidth={3} />}</g>);
   const hand = (p: [number, number]) => <g><circle cx={p[0]} cy={p[1]} r={10} fill={look.skin} stroke={INK} strokeWidth={3} /></g>;
   const shoe = (ft: [number, number], dir: number) => <path d={`M${ft[0] - 12 * dir} ${ft[1] - 12} Q${ft[0] - 12 * dir} ${ft[1] - 20} ${ft[0] - 2 * dir} ${ft[1] - 19} L${ft[0] + 10 * dir} ${ft[1] - 14} Q${ft[0] + 30 * dir} ${ft[1] - 12} ${ft[0] + 28 * dir} ${ft[1] + 1} L${ft[0] - 12 * dir} ${ft[1] + 1}Z`} fill={shoes} stroke={INK} strokeWidth={3} strokeLinejoin="round" />;
@@ -316,14 +315,13 @@ export const Actor: React.FC<{a: ActorT; words?: WordT[]; seed?: string}> = ({a,
   const hem = longGarment ? -16 + dy * 0.2 : 0;
   const legCol = (out === 'armor' && look.bare) || out === 'kilt' ? look.skin : look.pants;
   return (
-    <g transform={`translate(${x} ${(a.y ?? 940) + hover}) scale(${(a.flip ? -1 : 1) * s * e.k} ${s * e.k})`} opacity={e.o * gone * (a.ghost ?? 1) * (a.ghost !== undefined ? 0.92 + Math.sin(f / 9 + ph) * 0.08 : 1)}>
+    <g transform={`translate(${x} ${a.y ?? 940}) scale(${(a.flip ? -1 : 1) * s * e.k} ${s * e.k})`} opacity={e.o * gone * (a.ghost ?? 1) * (a.ghost !== undefined ? 0.92 + Math.sin(f / 9 + ph) * 0.08 : 1)}>
       {a.ghost !== undefined && <g fill="#9fd8ff"><ellipse cx={0} cy={-200} rx={170} ry={280} opacity={0.08} /><ellipse cx={0} cy={-200} rx={135} ry={245} opacity={0.1} /><ellipse cx={0} cy={-200} rx={100} ry={210} opacity={0.12} /></g>}
-      {a.ghost === undefined && !a.ns && <ellipse cx={0} cy={4 - hover} rx={86 - Math.abs(hover) * 0.3} ry={13} fill="#000" opacity={hover ? 0.12 : 0.18} />}
-      {god && a.ghost === undefined && <GodAura f={f} ph={ph} dy={dy} hover={hover} glow={(look as any).glow} />}
+      {a.ghost === undefined && !a.ns && <ellipse cx={0} cy={4} rx={86} ry={13} fill="#000" opacity={0.18} />}
       <g transform={`rotate(${-fr * 88})`}>
       {look.cape && <path d={`M-18 ${shY + 4} Q${-64 - sway} ${hipY - 20} ${-40 - sway * 1.6} ${hipY + 96} L22 ${hipY + 50} L18 ${shY + 4}Z`} fill={look.cape} stroke={INK} strokeWidth={3} strokeLinejoin="round" />}
       {/* legs */}
-      {!longGarment && <g>{limb([[-11, hipY + 4], lL.kn, lL.ft], buff ? 27 : 20, legCol)}{limb([[11, hipY + 4], lR.kn, lR.ft], buff ? 27 : 20, legCol)}</g>}
+      {!longGarment && <g>{limb([[-11, hipY + 4], lL.kn, lL.ft], 20, legCol)}{limb([[11, hipY + 4], lR.kn, lR.ft], 20, legCol)}</g>}
       {longGarment && <g>{limb([[-11, hipY + 4], lL.kn, lL.ft], 18, look.pants)}{limb([[11, hipY + 4], lR.kn, lR.ft], 18, look.pants)}</g>}
       {longGarment && (() => {
         const wide = out === 'dress' ? 30 : out === 'sheath' ? 8 : 20, flare = out === 'sheath' ? 2 : 14, top = out === 'dress' || out === 'sheath' ? hipY - 2 : hipY + 26;
@@ -364,8 +362,8 @@ export const Actor: React.FC<{a: ActorT; words?: WordT[]; seed?: string}> = ({a,
       {look.extra === 'scarf' && <g fill={look.ec} stroke={INK} strokeWidth={3} strokeLinejoin="round"><ellipse cx={0} cy={shY - 4} rx={26} ry={10} /><path d={`M8 ${shY} L${28 + sway * 0.4} ${shY + 70} L10 ${shY + 60} L0 ${shY + 8}Z`} /></g>}
       {sleeved(shR, aR)}
       {hand(aL.hd)}{hand(aR.hd)}
-      {heldItem && <g transform={`translate(${aR.hd[0]} ${aR.hd[1]}) rotate(${pose === 'attack' ? Math.sin(f / 3.2) * 70 + 20 : pose === 'point' || pose === 'salute' ? 78 : pose === 'cheer' ? 12 : -8})`}><HeldArt k={heldItem} f={f} /></g>}
-      {(a.shield ?? (look as any).shield) && <g transform={`translate(${aL.hd[0] - 6} ${aL.hd[1] - 8})`}><rect x={-34} y={-58} width={68} height={112} rx={14} fill={(look as any).shieldc ?? '#b3202a'} stroke={INK} strokeWidth={4} /><rect x={-34} y={-58} width={68} height={112} rx={14} fill="none" stroke="#e2b84a" strokeWidth={5} /><circle cx={0} cy={-2} r={13} fill="#e2b84a" stroke={INK} strokeWidth={3} /></g>}
+      {a.held && <g transform={`translate(${aR.hd[0]} ${aR.hd[1]}) rotate(${pose === 'attack' ? Math.sin(f / 3.2) * 70 + 20 : pose === 'point' || pose === 'salute' ? 78 : pose === 'cheer' ? 12 : -8})`}><HeldArt k={a.held} f={f} /></g>}
+      {a.shield && <g transform={`translate(${aL.hd[0] - 6} ${aL.hd[1] - 8})`}><rect x={-34} y={-58} width={68} height={112} rx={14} fill="#b3202a" stroke={INK} strokeWidth={4} /><rect x={-34} y={-58} width={68} height={112} rx={14} fill="none" stroke="#e2b84a" strokeWidth={5} /><circle cx={0} cy={-2} r={13} fill="#e2b84a" stroke={INK} strokeWidth={3} /></g>}
       {/* neck + head */}
       <path d={`M0 ${shY - 10} L0 ${headY + HR - 8}`} stroke={INK} strokeWidth={20} strokeLinecap="round" />
       <path d={`M0 ${shY - 10} L0 ${headY + HR - 8}`} stroke={look.skin} strokeWidth={14} strokeLinecap="round" />
@@ -420,11 +418,11 @@ export const Actor: React.FC<{a: ActorT; words?: WordT[]; seed?: string}> = ({a,
 };
 
 // ===================== PROPS =====================
-export type PropKind = 'house' | 'tudor' | 'church' | 'cactus' | 'tree' | 'skyscraper' | 'factory' | 'mountain' | 'ship' | 'wall' | 'flag' | 'coins' | 'crown' | 'bank' | 'fire' | 'smoke' | 'sun' | 'moon' | 'cloud' | 'sign' | 'banner' | 'crowd' | 'crate' | 'road' | 'waves' | 'column' | 'temple' | 'arch' | 'colosseum' | 'wolf' | 'elephant' | 'standard' | 'tent' | 'torch' | 'throne' | 'basket' | 'shieldwall' | 'river' | 'birds' | 'galley' | 'tower' | 'stonewall' | 'hill' | 'balcony' | 'rubble' | 'cabbage' | 'legion' | 'troop' | 'horse' | 'catapult' | 'ram' | 'siegetower' | 'ballista' | 'gate' | 'longship' | 'fleet' | 'photo' | 'pyramid' | 'sphinx' | 'obelisk' | 'palm' | 'reeds' | 'nileboat' | 'chariot' | 'sarcophagus' | 'pylon' | 'glyphs' | 'goldmask' | 'scales' | 'rosetta' | 'lighthouse' | 'mudbrick' | 'shaduf' | 'camel' | 'mosque' | 'minaret' | 'bombard' | 'cage' | 'cauldron' | 'tulips' | 'cup' | 'silkcord' | 'crescent' | 'tug' | 'trench' | 'steamship' | 'bazaar' | 'serail' | 'chain' | 'scroll' | 'press' | 'caravel' | 'galleon' | 'teocalli' | 'cannon' | 'book' | 'telescope' | 'orrery' | 'globe' | 'guillotine' | 'bastille' | 'versailles' | 'mirror' | 'door' | 'wagon' | 'crop' | 'constantinople' | 'duomo' | 'potosi' | 'scaffold' | 'bed' | 'ceiling' | 'castlewin' | 'bridge' | 'kremlin' | 'gunline' | 'rocket' | 'stbasil' | 'izba' | 'perun' | 'tank' | 'train' | 'sputnik' | 'sub' | 'reactor' | 'winterpalace' | 'emblem' | 'console' | 'watchtower' | 'yurt' | 'icehole' | 'bell' | 'dome' | 'masada' | 'jtemple' | 'sepulchre' | 'menorah' | 'truecross' | 'jar' | 'key' | 'shells' | 'jet' | 'desk' | 'watertower' | 'podium' | 'crossflag' | 'seder' | 'oracle' | 'terracotta' | 'junk' | 'pagoda' | 'greatwall' | 'firework' | 'furnace' | 'lantern' | 'compass' | 'types' | 'forbidden' | 'dragonthrone' | 'ding' | 'silkroll' | 'clash' | 'olympus' | 'omphalos' | 'boulder' | 'cave' | 'loom' | 'tripod' | 'fleece' | 'wings' | 'labyrinth' | 'trojanhorse' | 'minotaur' | 'cerberus' | 'hydra' | 'pegasus' | 'rock' | 'bigeagle' | 'net' | 'apple' | 'pomegranate' | 'symplegades' | 'lion' | 'amphora' | 'tellmound' | 'tablet' | 'cow' | 'sheep' | 'pig' | 'cradle' | 'whirlpool' | 'scylla' | 'cornucopia' | 'ox' | 'siren' | 'sickle' | 'trident' | 'bolt' | 'argoship' | 'goat' | 'host' | 'divinelight';
-export type PropT = {k: PropKind; x: number; y: number; s?: number; d?: number; c?: string; t?: string; n?: number; at?: number; flip?: boolean; kind?: TroopKind; form?: 'block' | 'line' | 'wedge' | 'scatter' | 'square'; fight?: boolean; march?: boolean; c2?: string; rider?: string; rider2?: string; fac?: string; held?: Held; src?: string; w?: number; h?: number; ship?: 'galley' | 'longship' | 'ship'; z?: number; clash?: {a?: string; b?: string; n?: number}};
+export type PropKind = 'house' | 'tudor' | 'church' | 'cactus' | 'tree' | 'skyscraper' | 'factory' | 'mountain' | 'ship' | 'wall' | 'flag' | 'coins' | 'crown' | 'bank' | 'fire' | 'smoke' | 'sun' | 'moon' | 'cloud' | 'sign' | 'banner' | 'crowd' | 'crate' | 'road' | 'waves' | 'column' | 'temple' | 'arch' | 'colosseum' | 'wolf' | 'elephant' | 'standard' | 'tent' | 'torch' | 'throne' | 'basket' | 'shieldwall' | 'river' | 'birds' | 'galley' | 'tower' | 'stonewall' | 'hill' | 'balcony' | 'rubble' | 'cabbage' | 'legion' | 'troop' | 'horse' | 'catapult' | 'ram' | 'siegetower' | 'ballista' | 'gate' | 'longship' | 'fleet' | 'photo' | 'pyramid' | 'sphinx' | 'obelisk' | 'palm' | 'reeds' | 'nileboat' | 'chariot' | 'sarcophagus' | 'pylon' | 'glyphs' | 'goldmask' | 'scales' | 'rosetta' | 'lighthouse' | 'mudbrick' | 'shaduf' | 'camel' | 'mosque' | 'minaret' | 'bombard' | 'cage' | 'cauldron' | 'tulips' | 'cup' | 'silkcord' | 'crescent' | 'tug' | 'trench' | 'steamship' | 'bazaar' | 'serail' | 'chain' | 'scroll' | 'press' | 'caravel' | 'galleon' | 'teocalli' | 'cannon' | 'book' | 'telescope' | 'orrery' | 'globe' | 'guillotine' | 'bastille' | 'versailles' | 'mirror' | 'door' | 'wagon' | 'crop' | 'constantinople' | 'duomo' | 'potosi' | 'scaffold' | 'bed' | 'ceiling' | 'castlewin' | 'bridge' | 'kremlin' | 'gunline' | 'rocket' | 'stbasil' | 'izba' | 'perun' | 'tank' | 'train' | 'sputnik' | 'sub' | 'reactor' | 'winterpalace' | 'emblem' | 'console' | 'watchtower' | 'yurt' | 'icehole' | 'bell' | 'dome' | 'masada' | 'jtemple' | 'sepulchre' | 'menorah' | 'truecross' | 'jar' | 'key' | 'shells' | 'jet' | 'desk' | 'watertower' | 'podium' | 'crossflag' | 'seder' | 'oracle' | 'terracotta' | 'junk' | 'pagoda' | 'greatwall' | 'firework' | 'furnace' | 'lantern' | 'compass' | 'types' | 'forbidden' | 'dragonthrone' | 'ding' | 'silkroll' | 'clash' | 'cake' | 'seesaw' | 'country' | 'folder' | 'stamp' | 'paper' | 'newspaper' | 'wheelbarrow' | 'banknotes' | 'balloon' | 'plane' | 'beetle' | 'brandenburg' | 'wallseg' | 'bulb' | 'ballotbox' | 'medal' | 'eyes' | 'barrel' | 'inkwell' | 'inkstain' | 'sausage' | 'coaster' | 'tablet' | 'briefcase' | 'gavel' | 'tvset';
+export type PropT = {k: PropKind; x: number; y: number; s?: number; d?: number; c?: string; t?: string; n?: number; at?: number; flip?: boolean; kind?: TroopKind; form?: 'block' | 'line' | 'wedge' | 'scatter' | 'square'; fight?: boolean; march?: boolean; c2?: string; rider?: string; rider2?: string; fac?: string; held?: Held; src?: string; w?: number; h?: number; ship?: 'galley' | 'longship' | 'ship'; z?: number; clash?: {a?: string; b?: string; n?: number}; m?: string; tx?: string; ts?: number};
 
 // z-order bias (px of baseline). BACK kinds always sit behind an actor standing within 90px of their baseline; FRONT kinds in front of one.
-export const LAYER_Z: Partial<Record<PropKind, number>> = {throne: -90, dragonthrone: -90, bed: -90, ding: -40, door: -60, mirror: -60, compass: 0, podium: 90, sign: 90, desk: 90, console: 90, cage: 90, scaffold: 90, seder: 90, lantern: 0};
+export const LAYER_Z: Partial<Record<PropKind, number>> = {throne: -90, dragonthrone: -90, bed: -90, ding: -40, door: -60, mirror: -60, compass: 0, podium: 90, sign: 90, desk: 90, console: 90, cage: 90, scaffold: 90, seder: 90, lantern: 0, wallseg: 0, brandenburg: -40};
 const Shadow: React.FC<{w: number}> = ({w}) => <ellipse cx={0} cy={4} rx={w} ry={w / 12} fill="#000" opacity={0.16} />;
 const Smoke: React.FC<{x: number; y: number; f: number; col?: string}> = ({x, y, f, col = '#f2f2f2'}) => (
   <g>
@@ -441,6 +439,14 @@ const bands = (k: string, u: number): [number, number, string][] => {
     return out;
   }
   if (k === 'ru') return [[0, 0.333, '#f4f4f4'], [0.333, 0.667, '#1c57a5'], [0.667, 1, '#d52b1e']];
+  if (k === 'de') return [[0, 0.333, '#1f1f27'], [0.333, 0.667, '#c0392b'], [0.667, 1, '#f2c230']];
+  if (k === 'dei') return [[0, 0.333, '#1f1f27'], [0.333, 0.667, '#f4f4f4'], [0.667, 1, '#c0392b']];
+  if (k === 'pru') return [[0, 0.5, '#f4f4f4'], [0.5, 1, '#1f1f27']];
+  if (k === 'pl') return [[0, 0.5, '#f4f4f4'], [0.5, 1, '#d52b1e']];
+  if (k === 'at') return [[0, 0.333, '#c8102e'], [0.333, 0.667, '#f4f4f4'], [0.667, 1, '#c8102e']];
+  if (k === 'nl') return [[0, 0.333, '#ae1c28'], [0.333, 0.667, '#f4f4f4'], [0.667, 1, '#21468b']];
+  if (k === 'se') return [[0, 1, '#006aa7'], [0.4, 0.6, '#fecc00']];
+  if (k === 'eu') return [[0, 1, '#003399']];
   if (k === 'ukr') return [[0, 0.5, '#0057b7'], [0.5, 1, '#ffd700']];
   if (k === 'ussr') return u > 0.07 && u < 0.3 ? [[0, 1, '#c0392b'], [0.1, 0.4, '#f2c230']] : [[0, 1, '#c0392b']];
   if (k === 'imp') return [[0, 0.333, '#1f1f27'], [0.333, 0.667, '#e2b84a'], [0.667, 1, '#f4f4f4']];
@@ -756,6 +762,7 @@ const PhotoProp: React.FC<{p: PropT}> = ({p}) => {
 };
 
 const PropArt: React.FC<{p: PropT; f: number; seed: string}> = ({p, f, seed}) => {
+  if (isGermanyProp(p.k)) return <GermanyProp p={p} f={f} seed={seed} />;
   const c = p.c;
   switch (p.k) {
     case 'house': {
@@ -1205,7 +1212,7 @@ const PropArt: React.FC<{p: PropT; f: number; seed: string}> = ({p, f, seed}) =>
     case 'podium': return (<g {...OL}><Shadow w={60} /><path d="M-56 0 L-44 -150 H44 L56 0Z" fill="#7a5233" /><path d="M-62 -150 H62 L52 -176 H-52Z" fill="#8a5a33" /><path d="M0 -176 v-40" strokeWidth={5} /><circle cx={0} cy={-224} r={9} fill="#2b2d33" /></g>);
     case 'crossflag': { const sw = Math.sin(f / 12) * 4; return (<g {...OL}><rect x={-3} y={-380} width={7} height={380} fill="#8a5a33" /><path d={`M4 -372 Q70 ${-384 + sw} 140 -372 L140 -270 Q70 ${-282 - sw} 4 -270Z`} fill="#fbfaf4" /><path d="M72 -368 V-274 M30 -322 H116" stroke="#c0392b" strokeWidth={20} /></g>); }
     case 'seder': return (<g {...OL}><Shadow w={150} /><rect x={-170} y={-96} width={340} height={14} fill="#8a5a33" /><path d="M-150 -82 V0 M150 -82 V0" strokeWidth={10} /><path d="M-170 -96 H170 L150 -60 H-150Z" fill="#fffaf0" /><ellipse cx={-70} cy={-104} rx={52} ry={10} fill="#e9f1fa" /><ellipse cx={70} cy={-104} rx={40} ry={8} fill="#e9f1fa" /><path d="M118 -104 l10 -40 h28 l10 40Z" fill="#a8242c" />{[-8, 24].map((x, i) => <g key={i}><rect x={x} y={-150} width={10} height={46} fill="#fffaf0" /><ellipse cx={x + 5} cy={-162} rx={6} ry={12 + Math.sin(f / 5 + i) * 2} fill="#ffcf4a" stroke="none" /></g>)}</g>);
-    default: return <GreekProp p={p} f={f} />;
+    default: return null;
   }
 };
 
@@ -1268,10 +1275,10 @@ export const Weather: React.FC<{k: WeatherKind | WeatherKind[]; seed?: string}> 
 };
 
 // ===================== BACKDROPS + STAGE =====================
-export type BgKind = 'desert' | 'grass' | 'sea' | 'street' | 'interior' | 'steppe' | 'snow' | 'mountains' | 'forest' | 'battlefield' | 'harbor' | 'castle' | 'palace' | 'nile' | 'pyramids' | 'temple' | 'tomb' | 'cathedral' | 'workshop' | 'salon' | 'jerusalem' | 'judean' | 'coast' | 'hall' | 'yellowriver' | 'karst' | 'olympus' | 'underworld' | 'heaven';
+export type BgKind = 'desert' | 'grass' | 'sea' | 'street' | 'interior' | 'steppe' | 'snow' | 'mountains' | 'forest' | 'battlefield' | 'harbor' | 'castle' | 'palace' | 'nile' | 'pyramids' | 'temple' | 'tomb' | 'cathedral' | 'workshop' | 'salon' | 'jerusalem' | 'judean' | 'coast' | 'hall' | 'yellowriver' | 'karst' | 'plain' | 'town' | 'stadium' | 'wallnight' | 'office' | 'ruins' | 'bunker';
 export type Tod = 'day' | 'dusk' | 'night' | 'fire';
 export type TextT = {t: string; x: number; y: number; at?: number; size?: number; color?: string};
-export type StageT = {shake?: {at: number; amp?: number}; flash?: {at: number; c?: string}; bars?: boolean; spot?: {x: number; y: number; r?: number}; bg: BgKind; tod?: Tod; props?: PropT[]; actors?: ActorT[]; texts?: TextT[]; fx?: WeatherKind | WeatherKind[]; cam?: {x?: [number, number]; z?: [number, number]; at?: [number, number]}; shots?: ShotT[]; labels?: LabelT[]};
+export type StageT = {shake?: {at: number; amp?: number}; flash?: {at: number; c?: string}; bars?: boolean; focus?: FocusT | FocusT[]; spot?: {x: number; y: number; r?: number}; bg: BgKind; tod?: Tod; props?: PropT[]; actors?: ActorT[]; texts?: TextT[]; fx?: WeatherKind | WeatherKind[]; cam?: {x?: [number, number]; z?: [number, number]; at?: [number, number]}; shots?: ShotT[]; labels?: LabelT[]};
 // Screen-space labels that follow the camera: name (anchored to an actor), faction pill, place, date chip, fact-check badge
 export type LabelT = {k: 'name' | 'faction' | 'place' | 'date' | 'fact'; t: string; fac?: string; sub?: string; actor?: number; x?: number; y?: number; c?: string; at?: number; until?: number; below?: boolean};
 // camera helpers: `cam: bust(actor)` frames head and shoulders of that actor, `cam: pushIn(actor)` a slow push toward the face
@@ -1285,7 +1292,7 @@ export const shotSpans = (st: StageT): {st: StageT; a0: number; a1: number}[] =>
   return st.shots.map((sh, i) => { const a1 = i === st.shots!.length - 1 ? 1 : Math.min(1, Math.max(a0, sh.until)); const o = {st: {...st, ...sh.st, shots: undefined} as StageT, a0, a1}; a0 = a1; return o; });
 };
 const SKY: Record<Tod, [string, string]> = {day: ['#69bff0', '#e8f7ff'], dusk: ['#323c7c', '#f7ab6c'], night: ['#050919', '#1c2a58'], fire: ['#2a0a0a', '#ff8a3a']};
-const GROUND: Record<BgKind, string> = {desert: '#dcae72', grass: '#86bb5f', sea: '#2f86c4', street: '#9096a0', interior: '#a06f44', steppe: '#cdb26a', snow: '#eef3f8', mountains: '#8a9a6a', forest: '#4f7f3f', battlefield: '#7a6244', harbor: '#9a7b52', castle: '#8f8a7a', palace: '#d9d2c1', nile: '#9fb35a', pyramids: '#e0c48a', temple: '#cdbf9a', tomb: '#6b5440', cathedral: '#8c8578', workshop: '#8a6a44', salon: '#c9b690', jerusalem: '#d6c19b', judean: '#d3bd92', coast: '#ecd9a8', hall: '#6b3a24', yellowriver: '#c9a15a', karst: '#7fa56a', olympus: '#f1f5fb', underworld: '#3a3238', heaven: '#f6e3a6'};
+const GROUND: Record<BgKind, string> = {desert: '#dcae72', grass: '#86bb5f', sea: '#2f86c4', street: '#9096a0', interior: '#a06f44', steppe: '#cdb26a', snow: '#eef3f8', mountains: '#8a9a6a', forest: '#4f7f3f', battlefield: '#7a6244', harbor: '#9a7b52', castle: '#8f8a7a', palace: '#d9d2c1', nile: '#9fb35a', pyramids: '#e0c48a', temple: '#cdbf9a', tomb: '#6b5440', cathedral: '#8c8578', workshop: '#8a6a44', salon: '#c9b690', jerusalem: '#d6c19b', judean: '#d3bd92', coast: '#ecd9a8', hall: '#6b3a24', yellowriver: '#c9a15a', karst: '#7fa56a', ...GERMANY_GROUND};
 const HZ = 700;
 
 const Hills: React.FC<{seed: string; base: number; amp: number; col: string; dx: number}> = ({seed, base, amp, col, dx}) => {
@@ -1299,7 +1306,6 @@ const Hills: React.FC<{seed: string; base: number; amp: number; col: string; dx:
 // ---------- extra backgrounds: a far layer (behind the ground line) and a near layer (on the ground) ----------
 const FarExtra: React.FC<{bg: BgKind; seed: string; cx: number; f: number}> = ({bg, seed, cx, f}) => {
   const S = {stroke: INK, strokeWidth: 3, strokeLinejoin: 'round'} as const;
-  if (bg === 'olympus' || bg === 'underworld' || bg === 'heaven') return <GreekFar bg={bg} f={f} cx={cx} />;
 
   if (bg === 'hall') {
     return (<g stroke={INK} strokeWidth={3} strokeLinejoin="round"><rect width={1920} height={HZ + 10} fill="#7a1f1f" stroke="none" /><rect y={0} width={1920} height={120} fill="#2e8a6a" /><path d={`M0 120 H1920 V150 H0Z`} fill="#e2b84a" />{Array.from({length: 24}, (_, i) => <path key={i} d={`M${i * 84 + 20} 0 v120`} opacity={0.35} />)}
@@ -1404,6 +1410,7 @@ const Backdrop: React.FC<{bg: BgKind; tod: Tod; f: number; cx: number; seed: str
   const [t1, t2] = SKY[tod];
   const gc = GROUND[bg];
   const night = tod === 'night' || tod === 'fire';
+  if (isGermanyBg(bg)) return <GermanyBg bg={bg as any} f={f} cx={cx} seed={seed} />;
   if (bg === 'temple') {
     return (
       <g stroke={INK} strokeWidth={3}>
@@ -1603,6 +1610,7 @@ const StageOne: React.FC<{st: StageT; words?: WordT[]; seed: string; avoid?: Rec
           })}</g>);
         });
       })()}
+      {st.focus && <FocusOverlay focus={st.focus} f={f} d={d} seed={seed} />}
     </svg>
   );
 };

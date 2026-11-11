@@ -11,6 +11,7 @@ import {feature, mesh} from 'topojson-client';
 import w110 from 'world-atlas/countries-110m.json';
 import w50 from 'world-atlas/countries-50m.json';
 import {HAND, INK, MapClash} from './world';
+import {FocusOverlay, FocusT} from './germany_pack';
 
 const C = {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'} as const;
 const feats = (w: any): any[] => (feature(w, w.objects.countries) as any).features;
@@ -38,6 +39,7 @@ export type GeoT = Omit<GeoStrict, 'from' | 'to' | 'pins' | 'labels' | 'regions'
   names?: boolean | string[]; // true = name every highlighted country; or a list of country names to label (neighbours, no fill needed)
   lines?: {ref?: string; name?: string; pts?: [number, number][]; color?: string; width?: number; at?: number}[]; // rivers and borders: lon/lat polyline or {ref:'nile'}
   regions?: {ref?: string; name?: string; pts?: [number, number][]; color?: string; sub?: string; at?: number}[]; // historical polities: lon/lat outline or {ref:'new_kingdom_empire'}, filled and named
+  focus?: FocusT | FocusT[]; // grey scrim with a circular void on the year badge (default) or at x,y,r; `at`/`to` = fractions of the scene
   clash?: {lon?: number; lat?: number; place?: string; a?: string; b?: string; at?: number; s?: number}[]; // army clash art (small armies, swords, fire) at map points; a/b = the two sides' colours; at = fraction of the scene
 };
 
@@ -322,6 +324,7 @@ export const GeoMap: React.FC<{g: GeoT; seed: string}> = ({g: gRaw, seed}) => {
           </g>
         );
       })}
+      {(gRaw as any).focus && <FocusOverlay focus={(gRaw as any).focus} f={f} d={d} seed={seed} />}
     </svg>
   );
 };
