@@ -376,5 +376,29 @@
   "name": "hilow multi hits.aiff",
   "username": "SoundCollectah",
   "license": "http://creativecommons.org/publicdomain/zero/1.0/"
+ },
+ "crowd_laugh": {
+  "id": 371562,
+  "name": "Sitcom Laughter with Applause, Small Audience",
+  "username": "Kinoton",
+  "license": "http://creativecommons.org/publicdomain/zero/1.0/"
+ },
+ "dog_growl": {
+  "id": 351876,
+  "name": "Small dog.wav",
+  "username": "ScouseMouseJB",
+  "license": "http://creativecommons.org/publicdomain/zero/1.0/"
+ },
+ "snake_hiss": {
+  "id": 553374,
+  "name": "Snake Hiss",
+  "username": "xoiziox",
+  "license": "http://creativecommons.org/publicdomain/zero/1.0/"
+ },
+ "splash": {
+  "id": 524216,
+  "name": "Drip 2 (dry) [plippy]",
+  "username": "magnuswaker",
+  "license": "http://creativecommons.org/publicdomain/zero/1.0/"
  }
 }
