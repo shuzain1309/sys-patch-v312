@@ -96,6 +96,11 @@ for sid, body in scenes:
         if n not in G['regions'] and n not in G['lines']: bad.append(f'{sid}: unknown geo ref {n}')
     if 'clash:[' in body and 'army_shout_loop' not in body: bad.append(f'{sid}: clash scene without army_shout_loop sfx')
     if "type:'geo'" in body and 'geo:G(' not in body: bad.append(f'{sid}: geo scene must use geo:G({{...}})')
+# ---- BIBLE ENUM LINT (mirrors the CI): facial must be one of these or omitted; never "none"
+for nm, lk in BIBLE['looks'].items():
+    if 'facial' in lk and lk['facial'] not in ('full', 'goatee', 'stache', 'long', 'ceremonial'): bad.append(f'BIBLE look {nm}: facial {lk["facial"]!r} invalid (omit the field for none)')
+    if lk.get('hair') and lk['hair'] not in ('none', 'short', 'long', 'topknot', 'curly', 'wild', 'parted', 'bald', 'bob', 'queue'): bad.append(f'BIBLE look {nm}: hair {lk["hair"]!r} invalid')
+    if lk.get('outfit') not in ('tunic', 'robe', 'coat', 'dress', 'armor', 'toga', 'kilt', 'sheath'): bad.append(f'BIBLE look {nm}: outfit {lk.get("outfit")!r} invalid')
 # ---- VOICE / GENDER LINT: every [v:tag] must match the talking actor's gender; every talking actor needs a tag
 for sid, body in scenes:
     tag = re.match(r'^\[v:(\w+)\]', lines[sid])
