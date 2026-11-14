@@ -1,0 +1,75 @@
+# render-short.yml — Zeus Shorts lane (vidfactory-shorts). NEW workflow; the
+# longform workflow (render.yml) is untouched and never referenced here.
+# Renders a vertical short from the standalone shorts entry
+# (src/shorts/shorts_entry.ts) and uploads the mp4 as an artifact.
+# Pilot scope: no Drive/YouTube upload (longform's finish job does that for
+# longform only). See README_PUSH.md in the bundle for every assumption.
+name: render-short
+
+on:
+  workflow_dispatch:
+    inputs:
+      script:
+        description: 'Shorts script file (repo-relative)'
+        required: true
+        default: 'src/shorts/alaska_short.tsx'
+      composition:
+        description: 'Composition id registered in src/shorts/shorts_root.tsx'
+        required: true
+        default: 'AlaskaShort'
+      output_name:
+        description: 'Output mp4 file name'
+        required: true
+        default: 'alaska.mp4'
+
+jobs:
+  render-short:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies (existing package.json — nothing added)
+        run: |
+          if [ -f package-lock.json ]; then npm ci; else npm install; fi
+
+      - name: Extract lines, cues and timing from the shorts script
+        run: node src/shorts/shorts_extract.mjs "${{ inputs.script }}" out
+
+      # Voice: the pilot ships PRE-GENERATED narration inside the bundle
+      # (src/shorts/audio/narration/*.mp3, one file per line, timed from
+      # measured durations — see README_PUSH.md). There is NO live-TTS step:
+      # wiring the house TTS for arbitrary shorts is a post-pilot decision.
+      # This step only verifies the bundled audio is present.
+      - name: Verify bundled audio (narration + SFX + music ship in the bundle)
+        run: |
+          ls -la src/shorts/audio/narration/ src/shorts/audio/sfx/ src/shorts/audio/music/
+          ls -la out/ || true
+
+      - name: Render the short (video only)
+        run: >
+          npx remotion render src/shorts/shorts_entry.ts
+          "${{ inputs.composition }}" out/short-video.mp4 --codec=h264
+
+      - name: Mux the bundled audio (missing files prune to silence)
+        run: >
+          node src/shorts/shorts_mux.mjs --video out/short-video.mp4
+          --timing out/shorts-timing.json --cues out/shorts-cues.json
+          --narrationdir src/shorts/audio/narration
+          --sfxdir src/shorts/audio/sfx --musicdir src/shorts/audio/music
+          --out "out/${{ inputs.output_name }}"
+
+      - name: Upload the short
+        uses: actions/upload-artifact@v4
+        with:
+          name: shorts-render
+          path: |
+            out/${{ inputs.output_name }}
+            out/shorts-timing.json
+            out/shorts-lines.json
+          retention-days: 7
