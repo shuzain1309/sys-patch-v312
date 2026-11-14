@@ -1,0 +1,290 @@
+[
+ {
+  "alt": "Chogha Zanbil — the great Elamite ziggurat, still standing after 3,200 years",
+  "id": "chogha_zanbil",
+  "must": [
+   "chogha",
+   "zanbil",
+   "ziggurat"
+  ],
+  "q": "Chogha Zanbil ziggurat Elam"
+ },
+ {
+  "alt": "The Cyrus Cylinder (British Museum) [GATE RISK FLAG: FLAGGED: museum photography licences vary — likely MISS or CC BY-NC. Fallback in script: cylinder_ir stage scene.]",
+  "id": "cyrus_cylinder",
+  "must": [
+   "cyrus",
+   "cylinder"
+  ],
+  "q": "Cyrus Cylinder British Museum"
+ },
+ {
+  "alt": "The Apadana reliefs at Persepolis — the empire's nations bringing gifts",
+  "id": "persepolis_relief",
+  "must": [
+   "persepolis",
+   "apadana",
+   "relief"
+  ],
+  "q": "Persepolis Apadana relief tribute procession"
+ },
+ {
+  "alt": "The Gate of All Nations at Persepolis",
+  "id": "persepolis_gate",
+  "must": [
+   "persepolis",
+   "gate",
+   "nations"
+  ],
+  "q": "Gate of All Nations Persepolis lamassu"
+ },
+ {
+  "alt": "The Bisotun inscription — Darius carved his story into a cliff",
+  "id": "bisotun",
+  "must": [
+   "bisotun",
+   "behistun",
+   "darius"
+  ],
+  "q": "Bisotun inscription Darius relief Behistun"
+ },
+ {
+  "alt": "The Tomb of Cyrus at Pasargadae",
+  "id": "pasargadae",
+  "must": [
+   "cyrus",
+   "pasargadae",
+   "tomb"
+  ],
+  "q": "Tomb of Cyrus Pasargadae"
+ },
+ {
+  "alt": "The royal tombs cut into the cliff at Naqsh-e Rostam",
+  "id": "naqsh_rostam_tombs",
+  "must": [
+   "naqsh",
+   "rostam",
+   "rustam"
+  ],
+  "q": "Naqsh-e Rostam necropolis tombs cliff"
+ },
+ {
+  "alt": "Shapur I triumphant over the Roman emperor Valerian, carved in rock",
+  "id": "valerian_relief",
+  "must": [
+   "shapur",
+   "valerian"
+  ],
+  "q": "Shapur Valerian relief Naqsh-e Rostam Bishapur triumph"
+ },
+ {
+  "alt": "Taq Kasra — the great arch of Ctesiphon, still standing",
+  "id": "taq_kasra",
+  "must": [
+   "taq",
+   "kasra",
+   "ctesiphon"
+  ],
+  "q": "Taq Kasra arch Ctesiphon"
+ },
+ {
+  "alt": "Inside a qanat — the underground rivers that kept the plateau alive",
+  "id": "qanat_inside",
+  "must": [
+   "qanat",
+   "kariz"
+  ],
+  "q": "qanat underground water channel Iran shaft"
+ },
+ {
+  "alt": "A folio from the Shahnameh of Shah Tahmasp (The Met, Open Access, CC0)",
+  "id": "shahnameh_miniature",
+  "must": [
+   "shahnameh",
+   "tahmasp"
+  ],
+  "q": "Shahnameh of Shah Tahmasp folio Metropolitan Museum"
+ },
+ {
+  "alt": "A Shahnameh miniature — the Book of Kings in pictures (The Met, Open Access, CC0)",
+  "id": "shahnameh_miniature_2",
+  "must": [
+   "shahnameh",
+   "shahnama"
+  ],
+  "q": "Shahnameh manuscript miniature Persian painting hero"
+ },
+ {
+  "alt": "A Persian brass astrolabe — astronomy you could hold in one hand",
+  "id": "astrolabe_photo",
+  "must": [
+   "astrolabe"
+  ],
+  "q": "Persian astrolabe brass museum"
+ },
+ {
+  "alt": "The Shah Mosque, Isfahan — turquoise domes over the great square",
+  "id": "isfahan_shah_mosque",
+  "must": [
+   "isfahan",
+   "shah mosque",
+   "imam mosque"
+  ],
+  "q": "Shah Mosque Isfahan dome tiles"
+ },
+ {
+  "alt": "Naqsh-e Jahan — 'the image of the world' — Isfahan's great square",
+  "id": "naqsh_jahan",
+  "must": [
+   "naqsh",
+   "jahan",
+   "isfahan"
+  ],
+  "q": "Naqsh-e Jahan Square Isfahan aerial"
+ },
+ {
+  "alt": "Si-o-se-pol — Isfahan's bridge of thirty-three arches at dusk",
+  "id": "isfahan_bridge",
+  "must": [
+   "si-o-se-pol",
+   "bridge",
+   "isfahan"
+  ],
+  "q": "Si-o-se-pol bridge Isfahan night"
+ },
+ {
+  "alt": "The throne hall of Golestan Palace — a later Qajar-era Peacock Throne (not Nader Shah's original)",
+  "id": "peacock_throne_room",
+  "must": [
+   "golestan",
+   "throne"
+  ],
+  "q": "Golestan Palace throne hall Takht-e Marmar Tehran"
+ },
+ {
+  "alt": "The Tehran Conference, 1943 — the Big Three in Iran's capital (US government photo, public domain)",
+  "id": "tehran_conference_1943",
+  "must": [
+   "tehran",
+   "conference",
+   "1943"
+  ],
+  "q": "Tehran Conference 1943 Roosevelt Churchill Stalin"
+ },
+ {
+  "alt": "The Abadan refinery — once among the largest on Earth [GATE RISK FLAG: FLAGGED: historical refinery photos are often archive-licensed. Fallback in script: oil_derrick stage scene.]",
+  "id": "abadan_refinery",
+  "must": [
+   "abadan",
+   "refinery"
+  ],
+  "q": "Abadan refinery oil Iran historical"
+ },
+ {
+  "alt": "Dr Mohammad Mossadegh — the prime minister who nationalised Iran's oil [GATE RISK FLAG: FLAGGED: 1950s news photography, licence uncertain. Fallback in script: pm_ir stage scene at a podium.]",
+  "id": "mossadegh_portrait",
+  "must": [
+   "mossadegh",
+   "mosaddegh"
+  ],
+  "q": "Mohammad Mossadegh portrait 1951"
+ },
+ {
+  "alt": "The Veresk bridge on the Trans-Iranian Railway",
+  "id": "reza_shah_railway",
+  "must": [
+   "veresk",
+   "railway",
+   "bridge"
+  ],
+  "q": "Veresk bridge Trans-Iranian Railway"
+ },
+ {
+  "alt": "Persepolis, 1971 — the tent city built for the 2,500-year party [GATE RISK FLAG: FLAGGED: 1971 press photography rarely PD/CC. Fallback in script: persepolis night tableau.]",
+  "id": "persepolis_1971",
+  "must": [
+   "persepolis",
+   "1971",
+   "celebration"
+  ],
+  "q": "Persepolis 1971 celebration tents 2500 years monarchy"
+ },
+ {
+  "alt": "1 February 1979 — Khomeini returns to Tehran [GATE RISK FLAG: FLAGGED, likely MISS: 1979 news photography is agency-licensed. Fallback in script: airport-crowd stage scene on tehran_modern, grey tod.]",
+  "id": "khomeini_return_1979",
+  "must": [
+   "khomeini",
+   "1979"
+  ],
+  "q": "Khomeini returns Tehran February 1979 airport crowd"
+ },
+ {
+  "alt": "Azadi Tower, Tehran — built for the 1971 celebrations, kept by the republic",
+  "id": "azadi_tower",
+  "must": [
+   "azadi",
+   "tehran"
+  ],
+  "q": "Azadi Tower Tehran"
+ },
+ {
+  "alt": "Tehran today, under the Alborz mountains",
+  "id": "tehran_today",
+  "must": [
+   "tehran",
+   "milad",
+   "skyline"
+  ],
+  "q": "Tehran skyline Milad Tower Alborz mountains"
+ },
+ {
+  "alt": "A Haft-Sin table — the seven S's of Nowruz, the Persian New Year",
+  "id": "haft_sin_photo",
+  "must": [
+   "haft",
+   "nowruz",
+   "norooz"
+  ],
+  "q": "Haft-Sin Nowruz table setting"
+ },
+ {
+  "alt": "An antique Persian carpet — the pattern that would not die",
+  "id": "persian_carpet",
+  "must": [
+   "persian",
+   "carpet",
+   "rug"
+  ],
+  "q": "antique Persian carpet detail museum"
+ },
+ {
+  "alt": "The fire temple at Yazd — a flame tended for over a thousand years",
+  "id": "yazd_fire_temple",
+  "must": [
+   "yazd",
+   "fire temple",
+   "atash"
+  ],
+  "q": "Yazd fire temple Zoroastrian eternal flame Atash Behram"
+ },
+ {
+  "alt": "The windcatchers of Yazd — desert air-conditioning, centuries old",
+  "id": "windcatcher_yazd",
+  "must": [
+   "windcatcher",
+   "badgir",
+   "yazd"
+  ],
+  "q": "windcatcher badgir Yazd Dowlat Abad"
+ },
+ {
+  "alt": "Weavers at the loom — the pattern is still knotted by hand",
+  "id": "isfahan_carpet_weavers",
+  "must": [
+   "carpet",
+   "weaver",
+   "loom"
+  ],
+  "q": "Persian carpet weavers loom Iran workshop"
+ }
+]
