@@ -1,0 +1,221 @@
+[
+ {
+  "id": "daisen_kofun",
+  "alt": "The Daisen Kofun from the air — a keyhole of forest bigger than the Great Pyramid's base (Japanese government aerial, attribution licence)",
+  "must": [
+   "daisen",
+   "kofun",
+   "nintoku"
+  ],
+  "q": "Daisen Kofun Nintoku tomb aerial photograph"
+ },
+ {
+  "id": "danno_ura",
+  "alt": "The Battle of Dan-no-ura, 1185 — the sea fight that drowned a child emperor and ended the Taira [GATE RISK FLAG: FLAGGED: fewer Commons hits than the other battle art; searches may land on generic Heike imagery or maps. Fallback in script: sea stage scene with two drawn fleets under the great_wave beat; do not hold the render for this pin.]",
+  "must": [
+   "dan-no-ura",
+   "danno",
+   "shimonoseki",
+   "heike"
+  ],
+  "q": "Battle of Dan-no-ura 1185 painting Taira Minamoto"
+ },
+ {
+  "id": "dejima",
+  "alt": "Dejima, Nagasaki — the fan-shaped island that was Japan's only window on the world",
+  "must": [
+   "dejima",
+   "deshima"
+  ],
+  "q": "Dejima Nagasaki Dutch trading post painting"
+ },
+ {
+  "id": "genji_scroll",
+  "alt": "A scene from the Tale of Genji scroll — the world's first novel, painted [GATE RISK FLAG: FLAGGED: 12th-century scroll fragments sit in museum collections whose photography terms vary; PD art but the search may return book covers. Fallback in script: epic-book style stage scene on shrine_jp with a painted scroll prop.]",
+  "must": [
+   "genji",
+   "emaki",
+   "scroll"
+  ],
+  "q": "Tale of Genji emaki scroll painting scene"
+ },
+ {
+  "id": "great_wave",
+  "alt": "Hokusai's Great Wave off Kanagawa, c. 1831 (public domain)",
+  "must": [
+   "great wave",
+   "kanagawa",
+   "hokusai"
+  ],
+  "q": "Great Wave off Kanagawa Hokusai"
+ },
+ {
+  "id": "hideyoshi_portrait",
+  "alt": "Toyotomi Hideyoshi — the peasant who finished the unification (public domain painting)",
+  "must": [
+   "hideyoshi",
+   "toyotomi"
+  ],
+  "q": "Toyotomi Hideyoshi portrait painting"
+ },
+ {
+  "id": "hiroshima_dome",
+  "alt": "The Atomic Bomb Dome, Hiroshima — the ruin kept as a memorial (many CC BY photos on Commons)",
+  "must": [
+   "atomic",
+   "dome",
+   "genbaku",
+   "hiroshima"
+  ],
+  "q": "Atomic Bomb Dome Hiroshima Genbaku photograph"
+ },
+ {
+  "id": "ieyasu_portrait",
+  "alt": "Tokugawa Ieyasu — the patient third unifier (public domain painting)",
+  "must": [
+   "ieyasu",
+   "tokugawa"
+  ],
+  "q": "Tokugawa Ieyasu portrait painting"
+ },
+ {
+  "id": "jomon_pottery",
+  "alt": "A flame-rimmed Jomon pot — pottery sculpted like fire itself, five thousand years old",
+  "must": [
+   "jomon",
+   "flame",
+   "pottery"
+  ],
+  "q": "Jomon flame style pottery kaen doki"
+ },
+ {
+  "id": "macarthur_hirohito",
+  "alt": "MacArthur and Hirohito, September 1945 — the conqueror in khaki, the emperor in morning dress (US Army photo, public domain)",
+  "must": [
+   "macarthur",
+   "hirohito"
+  ],
+  "q": "MacArthur Hirohito meeting 1945 photograph"
+ },
+ {
+  "id": "meiji_portrait",
+  "alt": "The Emperor Meiji in Western dress — the face of a country reinventing itself (public domain)",
+  "must": [
+   "meiji",
+   "emperor"
+  ],
+  "q": "Emperor Meiji portrait photograph western uniform"
+ },
+ {
+  "id": "mongol_scroll",
+  "alt": "The Mongol Invasion Scroll — a samurai who fought the storm-fleet, drawn by a man who was there",
+  "must": [
+   "mongol",
+   "moko",
+   "shurai",
+   "invasion"
+  ],
+  "q": "Moko Shurai Ekotoba Mongol invasion scroll Takezaki Suenaga"
+ },
+ {
+  "id": "nagasaki_cloud",
+  "alt": "The Nagasaki mushroom cloud, 9 August 1945 — photographed from the mission aircraft (US government, public domain)",
+  "must": [
+   "nagasaki",
+   "mushroom",
+   "atomic",
+   "cloud"
+  ],
+  "q": "Nagasaki atomic bomb mushroom cloud 1945 photograph Bockscar"
+ },
+ {
+  "id": "nobunaga_portrait",
+  "alt": "Oda Nobunaga — the first unifier, in the standard period portrait (public domain painting)",
+  "must": [
+   "nobunaga",
+   "oda"
+  ],
+  "q": "Oda Nobunaga portrait painting"
+ },
+ {
+  "id": "perry_ships",
+  "alt": "Commodore Perry's black ships in Edo Bay, 1853 (public domain print)",
+  "must": [
+   "perry",
+   "black ships",
+   "kurofune"
+  ],
+  "q": "Perry black ships Edo Bay 1853 print"
+ },
+ {
+  "id": "russo_japanese_war",
+  "alt": "The Russo-Japanese War, 1904-05 — Japan sinks a European great power's fleet at Tsushima (period prints and photos, public domain)",
+  "must": [
+   "tsushima",
+   "russo-japanese",
+   "japanese war"
+  ],
+  "q": "Battle of Tsushima 1905 Russo-Japanese War print photograph"
+ },
+ {
+  "id": "sekigahara_screen",
+  "alt": "The Battle of Sekigahara on a folding screen — one afternoon that decided two and a half centuries",
+  "must": [
+   "sekigahara"
+  ],
+  "q": "Sekigahara battle screen byobu painting"
+ },
+ {
+  "id": "shinkansen_1964",
+  "alt": "A 0 Series Shinkansen, 1964 — the bullet train that announced the new Japan [GATE RISK FLAG: FLAGGED, likely MISS: 1964 launch photography is largely JR / press-agency copyright; Commons holdings skew to later preserved units in modern museum shots. Fallback in script: shinkansen_jp stage scene on tokyo_jp. If a preserved-unit photo is used instead, caption must not claim it is 1964.]",
+  "must": [
+   "shinkansen",
+   "0 series",
+   "bullet train"
+  ],
+  "q": "0 Series Shinkansen 1964 bullet train Tokaido"
+ },
+ {
+  "id": "tanegashima_gun",
+  "alt": "A Tanegashima matchlock — the Portuguese gun that changed Japanese war (museum photos on Commons under CC BY)",
+  "must": [
+   "tanegashima",
+   "matchlock",
+   "arquebus"
+  ],
+  "q": "Tanegashima matchlock gun museum"
+ },
+ {
+  "id": "todaiji_buddha",
+  "alt": "The Great Buddha of Todai-ji, Nara — fifteen metres of bronze, cast in 752",
+  "must": [
+   "todaiji",
+   "todai-ji",
+   "daibutsu",
+   "buddha"
+  ],
+  "q": "Todai-ji Daibutsu Great Buddha Nara bronze statue"
+ },
+ {
+  "id": "tokyo_firebombing",
+  "alt": "Tokyo after the firebombing, March 1945 — a city of ash seen from the air (US government, public domain)",
+  "must": [
+   "tokyo",
+   "firebombing",
+   "bombing",
+   "raid"
+  ],
+  "q": "Tokyo firebombing March 1945 aerial aftermath photograph"
+ },
+ {
+  "id": "tokyo_today",
+  "alt": "Tokyo today — the largest city on Earth, rebuilt from ash [GATE RISK FLAG: FLAGGED: Commons is full of Tokyo skylines but licences vary (CC BY-SA is NOT accepted by the fetcher — PD/CC0/CC BY only), so the first search hits may all fail the licence check. Fallback in script: tokyo_jp stage scene with the tower.]",
+  "must": [
+   "tokyo",
+   "skyline",
+   "skytree",
+   "tower"
+  ],
+  "q": "Tokyo skyline Skytree panorama photograph"
+ }
+]
