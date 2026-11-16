@@ -1,0 +1,227 @@
+[
+ {
+  "id": "abbey_gate_memorial",
+  "alt": "The memorial to the thirteen US service members killed at Abbey Gate (US DoD, public domain)",
+  "must": [
+   "abbey gate",
+   "memorial"
+  ],
+  "q": "Abbey Gate memorial thirteen service members"
+ },
+ {
+  "id": "ahmad_shah_coronation",
+  "alt": "Ahmad Shah Durrani, crowned in 1747 — the painting by Abdul Ghafoor Breshna [GATE RISK FLAG: FLAGGED: 20th-century artist, likely MISS; fallback in script: the loya_jirga_tent stage tableau.]",
+  "must": [
+   "ahmad shah",
+   "durrani"
+  ],
+  "q": "Ahmad Shah Durrani coronation painting Breshna"
+ },
+ {
+  "id": "ai_khanoum_theatre",
+  "alt": "The Greek theatre at Ai-Khanoum on the Oxus — a whole Greek city at the edge of the world [GATE RISK FLAG: FLAGGED: excavation photography terms vary (CC BY-SA risk); fallback in script: the drawn Greek theatre stage on hindukush.]",
+  "must": [
+   "ai-khanoum",
+   "ai khanoum",
+   "theatre",
+   "theater"
+  ],
+  "q": "Ai-Khanoum theatre excavation photograph"
+ },
+ {
+  "id": "bala_hissar",
+  "alt": "The Bala Hissar, Kabul’s old fortress, in a nineteenth-century engraving (public domain)",
+  "must": [
+   "bala hissar",
+   "bala hisar"
+  ],
+  "q": "Bala Hissar Kabul engraving 19th century"
+ },
+ {
+  "id": "bamiyan_buddhas_1970",
+  "alt": "The Buddhas of Bamiyan as they stood for fourteen centuries, photographed before 2001 [GATE RISK FLAG: FLAGGED: 1970s photo licences vary; fallback in script: the drawn bamiyan_niche stage with t:buddha on bamiyan_valley.]",
+  "must": [
+   "bamiyan",
+   "buddha"
+  ],
+  "q": "Buddhas of Bamiyan before destruction photograph"
+ },
+ {
+  "id": "bamiyan_niches_today",
+  "alt": "The empty niches at Bamiyan today — the statues gone, the cliff still standing [GATE RISK FLAG: FLAGGED: many Commons shots are CC BY-SA, which the fetcher rejects; fallback in script: the drawn bamiyan_niche stage on bamiyan_valley.]",
+  "must": [
+   "bamiyan",
+   "niche"
+  ],
+  "q": "Bamiyan empty niches cliff photograph"
+ },
+ {
+  "id": "blue_mosque_mazar",
+  "alt": "The Blue Mosque at Mazar-i-Sharif — turquoise tile under a hard sky (CC BY)",
+  "must": [
+   "blue mosque",
+   "mazar"
+  ],
+  "q": "Blue Mosque Mazar-i-Sharif photograph"
+ },
+ {
+  "id": "c17_evacuation",
+  "alt": "Inside a C-17 over Kabul — hundreds carried out in a single flight (US Air Force, public domain)",
+  "must": [
+   "c-17",
+   "c17",
+   "evacuees"
+  ],
+  "q": "C-17 Kabul evacuees interior photograph 2021"
+ },
+ {
+  "id": "durand_line_map",
+  "alt": "The Durand Line on an 1893-era map — a border drawn through the Pashtun homeland (public domain)",
+  "must": [
+   "durand"
+  ],
+  "q": "Durand Line 1893 map Afghanistan boundary"
+ },
+ {
+  "id": "gandhara_buddha",
+  "alt": "A Gandhara Buddha — Greek hands, Buddhist calm (Met Open Access, CC0)",
+  "must": [
+   "gandhara",
+   "buddha"
+  ],
+  "q": "Gandhara Buddha head sculpture Metropolitan Museum"
+ },
+ {
+  "id": "gandhara_head_2",
+  "alt": "Another Gandhara head — the Greek wave in the hair, the calm in the face (Met Open Access, CC0)",
+  "must": [
+   "gandhara",
+   "head"
+  ],
+  "q": "Gandhara Buddha head stucco Metropolitan Museum"
+ },
+ {
+  "id": "herat_citadel",
+  "alt": "The Citadel of Herat — Alexander’s fortress, rebuilt by every empire since (CC BY)",
+  "must": [
+   "herat",
+   "citadel"
+  ],
+  "q": "Herat Citadel Afghanistan photograph"
+ },
+ {
+  "id": "kabul_1960s",
+  "alt": "Kabul in the 1960s — the quiet decade of the last king [GATE RISK FLAG: FLAGGED: period photo licences vary; fallback in script: kabul_old stage scenes.]",
+  "must": [
+   "kabul",
+   "1960s",
+   "1960"
+  ],
+  "q": "Kabul 1960s street photograph Afghanistan"
+ },
+ {
+  "id": "kabul_airport_2021",
+  "alt": "The Kabul airlift, August 2021 (US Air Force, public domain)",
+  "must": [
+   "kabul",
+   "airport",
+   "evacuation",
+   "2021"
+  ],
+  "q": "Kabul airport evacuation August 2021 C-17 photograph"
+ },
+ {
+  "id": "kabul_today",
+  "alt": "Kabul today — a city of millions in the bowl of the mountains [GATE RISK FLAG: FLAGGED: skyline licences vary (CC BY-SA risk); fallback in script: kabul_modern stage scenes.]",
+  "must": [
+   "kabul",
+   "skyline",
+   "city"
+  ],
+  "q": "Kabul skyline panorama photograph"
+ },
+ {
+  "id": "kanishka_coin",
+  "alt": "A gold coin of Kanishka — the Kushan emperor whose dates historians still argue about [GATE RISK FLAG: FLAGGED: museum coin photography terms vary; fallback in script: the coin_kanishka stage scene.]",
+  "must": [
+   "kanishka",
+   "coin",
+   "kushan"
+  ],
+  "q": "Kanishka gold coin Kushan"
+ },
+ {
+  "id": "khyber_pass_1890",
+  "alt": "The Khyber Pass in the nineteenth century — the east door of Afghanistan (public domain photograph)",
+  "must": [
+   "khyber"
+  ],
+  "q": "Khyber Pass photograph 19th century"
+ },
+ {
+  "id": "maiwand_lion",
+  "alt": "The Maiwand Lion at Reading, 1886 — Britain’s memorial to the men who fell at Maiwand [GATE RISK FLAG: object is PD; photograph licences vary (CC BY fine); fallback in script: drawn lion statue stage.]",
+  "must": [
+   "maiwand",
+   "lion",
+   "reading"
+  ],
+  "q": "Maiwand Lion Reading memorial photograph"
+ },
+ {
+  "id": "massoud_portrait",
+  "alt": "Ahmad Shah Massoud, the Lion of Panjshir [GATE RISK FLAG: FLAGGED, likely MISS: the famous pakol portraits are press copyright. Fallback in script: the massoud role look (pakol) on stage, and the painted-portrait thumbnail carries the face.]",
+  "must": [
+   "massoud",
+   "masoud"
+  ],
+  "q": "Ahmad Shah Massoud portrait Panjshir"
+ },
+ {
+  "id": "minaret_of_jam",
+  "alt": "The Minaret of Jam, twelfth century — a tower of brick lace standing alone in the mountains [GATE RISK FLAG: FLAGGED: many photos are CC BY-SA; fallback in script: drawn minaret stage on hindukush.]",
+  "must": [
+   "minaret of jam",
+   "jam"
+  ],
+  "q": "Minaret of Jam Afghanistan photograph"
+ },
+ {
+  "id": "mujahideen_stinger",
+  "alt": "A mujahid with a Stinger missile — the weapon that changed the air war (US DoD, public domain)",
+  "must": [
+   "stinger",
+   "mujahideen",
+   "mujahidin"
+  ],
+  "q": "Mujahideen Stinger missile Afghanistan photograph"
+ },
+ {
+  "id": "remnants_of_an_army",
+  "alt": "Elizabeth Butler, 'The Remnants of an Army', 1879 — Doctor Brydon reaches Jalalabad alone (public domain)",
+  "must": [
+   "remnants of an army",
+   "butler",
+   "brydon"
+  ],
+  "q": "Remnants of an Army Elizabeth Butler 1879 painting"
+ },
+ {
+  "id": "soviet_tank_kabul",
+  "alt": "Soviet armour in Kabul, 1979-89 [GATE RISK FLAG: FLAGGED: RIA Novosti material is CC BY-SA and will MISS; fallback in script: tank_af stage scenes.]",
+  "must": [
+   "soviet",
+   "kabul",
+   "tank"
+  ],
+  "q": "Soviet troops Kabul Afghanistan 1980s photograph"
+ },
+ {
+  "id": "zahir_shah_portrait",
+  "alt": "Mohammed Zahir Shah — king for forty years, 1933 to 1973 [GATE RISK FLAG: FLAGGED: official portrait licences vary; fallback in script: the zahir_shah role look on stage.]",
+  "must": [
+   "zahir shah"
+  ],
+  "q": "Mohammed Zahir Shah portrait"
+ }
+]
