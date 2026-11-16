@@ -39,11 +39,10 @@
  "gandhara_buddha": "no usable image. File:Head of a Buddha or Bodhisattva, facing (5th-6th century), probably Hadda, Tapa Shotor, MET Museum, New York.jpg: licence \"CC BY-SA 4.0\" not allowed; File:MET 13 96 6.jpeg: only 500 px wide; File:MET 13 96 4 B.jpg: only 596 px wide; File:MET 13 96 3.jpeg: only 519 px wide",
  "gandhara_head_2": "no usable image. File:MET 13 96 4 B.jpg: only 596 px wide; File:MET 13 96 3.jpeg: only 519 px wide; File:MET 1996 383 O.jpg: only 550 px wide; MET 31 106 9 B: does not contain ['gandhara', 'head']",
  "kabul_1960s": "no usable image. ",
- "kabul_today": "no usable image. ",
+ "kabul_today": "HTTP Error 429: Too Many Requests",
  "massoud_portrait": "HTTP Error 429: Too Many Requests",
  "minaret_of_jam": "HTTP Error 429: Too Many Requests",
  "mujahideen_stinger": "HTTP Error 429: Too Many Requests",
  "remnants_of_an_army": "HTTP Error 429: Too Many Requests",
- "soviet_tank_kabul": "HTTP Error 429: Too Many Requests",
- "zahir_shah_portrait": "HTTP Error 429: Too Many Requests"
+ "soviet_tank_kabul": "HTTP Error 429: Too Many Requests"
 }
