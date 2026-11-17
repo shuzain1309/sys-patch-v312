@@ -1,0 +1,202 @@
+[
+ {
+  "alt": "McLean House, Appomattox Court House, 1865, public domain. Fallback: courthouse background.",
+  "id": "appomattox_house",
+  "must": [
+   "McLean House Appomattox 1865 photograph"
+  ],
+  "q": "McLean House Appomattox photograph Library of Congress"
+ },
+ {
+  "alt": "US Capitol daguerreotype, 1846 (Plumbe), public domain. Fallback: senate background with the balance_board prop.",
+  "id": "capitol_1846",
+  "must": [
+   "United States Capitol 1846 daguerreotype Plumbe"
+  ],
+  "q": "US Capitol 1846 daguerreotype Plumbe Library of Congress"
+ },
+ {
+  "alt": "Escaped enslaved people ('contrabands') at Fort Monroe, 1861, public domain. Fallback: drawn scene at the fort_monroe gate with usct_soldier figures.",
+  "id": "contraband_fort_monroe",
+  "must": [
+   "contrabands Fort Monroe 1861 photograph"
+  ],
+  "q": "contraband Fort Monroe 1861 Library of Congress"
+ },
+ {
+  "alt": "Jefferson Davis portrait, public domain. Fallback: davis look in the senate set.",
+  "id": "davis_portrait",
+  "must": [
+   "Jefferson Davis portrait"
+  ],
+  "q": "Jefferson Davis portrait Library of Congress"
+ },
+ {
+  "alt": "Dred Scott portrait, 1857, public domain — VERIFY MEDIUM at fetch (often an engraving after a photograph); caption accordingly. Fallback: plain-background concept scene with the paper prop.",
+  "id": "dred_scott",
+  "must": [
+   "Dred Scott portrait 1857"
+  ],
+  "q": "Dred Scott portrait 1857 Library of Congress"
+ },
+ {
+  "alt": "The Emancipation Proclamation document, public domain (National Archives). Fallback: paper prop with headline on the plain set.",
+  "id": "emancipation_doc",
+  "must": [
+   "Emancipation Proclamation document"
+  ],
+  "q": "Emancipation Proclamation document National Archives"
+ },
+ {
+  "alt": "Admiral David Glasgow Farragut portrait, public domain. Fallback: union_officer look on the harbor set.",
+  "id": "farragut_portrait",
+  "must": [
+   "David Farragut portrait admiral"
+  ],
+  "q": "Admiral Farragut portrait Library of Congress"
+ },
+ {
+  "alt": "Ford's Theatre, 1865, public domain. Fallback: theatre_night background, marquee blank.",
+  "id": "ford_theatre",
+  "must": [
+   "Ford's Theatre 1865 photograph"
+  ],
+  "q": "Fords Theatre 1865 photograph Library of Congress"
+ },
+ {
+  "alt": "Frederick Douglass portrait, public domain. Fallback: book and scroll props on the plain set.",
+  "id": "frederick_douglass",
+  "must": [
+   "Frederick Douglass portrait"
+  ],
+  "q": "Frederick Douglass portrait Library of Congress"
+ },
+ {
+  "alt": "The only known photograph of Lincoln at Gettysburg, November 1863, public domain. Fallback: lincoln_sil figure among the headstones prop.",
+  "id": "gettysburg_lincoln",
+  "must": [
+   "Lincoln at Gettysburg photograph November 1863"
+  ],
+  "q": "Lincoln Gettysburg November 19 1863 photograph"
+ },
+ {
+  "alt": "Grant at Cold Harbor, 1864, public domain. Fallback: grant look leaning on the field_dawn fence line.",
+  "id": "grant_cold_harbor",
+  "must": [
+   "Ulysses Grant Cold Harbor 1864 photograph"
+  ],
+  "q": "Grant Cold Harbor 1864 photograph Library of Congress"
+ },
+ {
+  "alt": "Harriet Tubman portrait, c. 1885, public domain. Fallback: lantern prop on the plain set (the Underground Railroad beat).",
+  "id": "harriet_tubman",
+  "must": [
+   "Harriet Tubman portrait"
+  ],
+  "q": "Harriet Tubman portrait Library of Congress"
+ },
+ {
+  "alt": "CSS Hunley — a PAINTING by Conrad Wise Chapman, 1863, public domain. Caption must call it a painting, never a photograph. Fallback: runner_ship silhouette on the sea background at night.",
+  "id": "hunley_painting",
+  "must": [
+   "CSS Hunley painting Chapman 1863"
+  ],
+  "q": "CSS Hunley Chapman painting 1863"
+ },
+ {
+  "alt": "Thomas 'Stonewall' Jackson portrait, 1862, public domain. Fallback: jackson look on the field_dawn set.",
+  "id": "jackson_portrait",
+  "must": [
+   "Stonewall Jackson portrait 1862"
+  ],
+  "q": "Stonewall Jackson portrait Library of Congress"
+ },
+ {
+  "alt": "John Brown portrait, 1859, public domain. Fallback: john_brown look on the plain set.",
+  "id": "john_brown_1859",
+  "must": [
+   "John Brown portrait 1859 abolitionist"
+  ],
+  "q": "John Brown 1859 portrait Library of Congress"
+ },
+ {
+  "alt": "Robert E. Lee portrait, 1865 (Cook), public domain. Fallback: lee look on the plain set.",
+  "id": "lee_portrait_1865",
+  "must": [
+   "Robert E Lee portrait 1865 Cook"
+  ],
+  "q": "Robert E Lee 1865 portrait Library of Congress"
+ },
+ {
+  "alt": "Lincoln portrait, 1860 (Hesler), public domain. Fallback: lincoln_sil figure at a desk on the senate/interior set.",
+  "id": "lincoln_1860",
+  "must": [
+   "Abraham Lincoln portrait 1860 Hesler"
+  ],
+  "q": "Abraham Lincoln 1860 Hesler portrait Library of Congress"
+ },
+ {
+  "alt": "Lincoln's last portrait — the cracked-plate Gardner portrait, February 1865, public domain. Fallback: lincoln_sil figure, head bowed, on the plain set.",
+  "id": "lincoln_1865",
+  "must": [
+   "Lincoln cracked plate portrait Gardner 1865"
+  ],
+  "q": "Lincoln last portrait cracked plate Gardner 1865"
+ },
+ {
+  "alt": "General George B. McClellan portrait, public domain. Fallback: mcclellan look in the tent/hall set.",
+  "id": "mcclellan_portrait",
+  "must": [
+   "George McClellan portrait general"
+  ],
+  "q": "George B McClellan portrait Library of Congress"
+ },
+ {
+  "alt": "Richmond ruins, April 1865, public domain. Fallback: ruined_city background with smoke.",
+  "id": "richmond_ruins",
+  "must": [
+   "Richmond ruins April 1865 photograph"
+  ],
+  "q": "Richmond ruins 1865 photograph Library of Congress"
+ },
+ {
+  "alt": "Sherman in Atlanta (Barnard), 1864, public domain. Fallback: sherman look on the ruined_city set.",
+  "id": "sherman_atlanta",
+  "must": [
+   "Sherman Atlanta 1864 Barnard photograph"
+  ],
+  "q": "Sherman Atlanta 1864 Barnard Library of Congress"
+ },
+ {
+  "alt": "The Fort Sumter garrison flag — photograph of the artefact, public domain. Caption must say it is the flag itself, not the battle. Fallback: flag_us prop at 33 stars.",
+  "id": "sumter_flag",
+  "must": [
+   "Fort Sumter garrison flag photograph"
+  ],
+  "q": "Fort Sumter flag 1861 artifact photograph"
+ },
+ {
+  "alt": "United States Colored Troops soldiers, public domain. Fallback: usct_soldier figures with troop props on the battlefield set.",
+  "id": "usct_soldiers",
+  "must": [
+   "United States Colored Troops soldiers photograph"
+  ],
+  "q": "USCT soldiers photograph Library of Congress"
+ },
+ {
+  "alt": "USS Monitor, July 1862, public domain. Fallback: ironclad prop (monitor state) on the river_reach background.",
+  "id": "uss_monitor",
+  "must": [
+   "USS Monitor July 1862 photograph James River"
+  ],
+  "q": "USS Monitor 1862 photograph Library of Congress"
+ },
+ {
+  "alt": "Vicksburg siege / courthouse view, 1863, public domain. Fallback: courthouse background with the flag_us prop.",
+  "id": "vicksburg_siege",
+  "must": [
+   "Vicksburg siege 1863 photograph courthouse"
+  ],
+  "q": "Vicksburg 1863 siege photograph Library of Congress"
+ }
+]
