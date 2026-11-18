@@ -12,6 +12,7 @@ import {IranProp, isIranProp, IranBg, isIranBg, IRAN_GROUND} from './iran_pack';
 import {JapanProp, isJapanProp, JapanBg, isJapanBg, JAPAN_GROUND} from './japan_pack';
 import {AfghanistanProp, isAfghanistanProp, AfghanistanBg, isAfghanistanBg, AFGHANISTAN_GROUND} from './afghanistan_pack';
 import {CivilwarProp, isCivilwarProp, CivilwarBg, isCivilwarBg, CIVILWAR_GROUND} from './civilwar_pack';
+import {PortugalProp, isPortugalProp, PortugalBg, isPortugalBg, PORTUGAL_GROUND} from './portugal_pack';
 
 export const HAND = typeof window === 'undefined' ? 'sans-serif' : loadHand('normal', {weights: ['400'], subsets: ['latin']}).fontFamily;
 export const INK = '#241c17';
@@ -65,6 +66,7 @@ export type Look = {hat: 'none' | 'explorer' | 'top' | 'crown' | 'cap' | 'helmet
   trim?: string; outfit?: Outfit; hair?: Hair; hc?: string; facial?: 'full' | 'goatee' | 'stache' | 'long' | 'ceremonial'; sleeve?: string; bare?: boolean; shoes?: string; fc?: string; glasses?: boolean; era?: string; kohl?: boolean; g?: 'm' | 'f'};
 export const LOOKS: Record<string, Look> = {
   narrator: {hat: 'explorer', shirt: '#d9c79a', pants: '#6b5a45', skin: '#f3dcc6', extra: 'scarf', ec: '#c0392b', hair: 'short', hc: '#a8a8a8', facial: 'stache', trim: '#8a6d3b', shoes: '#5a4632'},
+  presenter: {hat: 'conical', shirt: '#f7f2df', pants: '#7a6248', skin: '#eec39b', extra: 'scarf', ec: '#e07b2a', trim: '#e07b2a', hair: 'short', hc: '#3a2a22', shoes: '#5a4632', g: 'm'}, // K1 (2026-11-18): the recurring presenter — conical straw hat, white tunic, orange sash (scarf + trim)
   merchant: {hat: 'top', shirt: '#2b2d42', pants: '#2b2d42', skin: '#efd3b8', outfit: 'coat', trim: '#c9a84a', hair: 'short', hc: '#3b2a20', facial: 'stache'},
   banker: {hat: 'bowler', shirt: '#44464f', pants: '#2f3038', skin: '#eed2b6', outfit: 'coat', trim: '#d8d8d8', hair: 'short', hc: '#6d5a48', facial: 'full', ec: '#6d5a48'},
   king: {hat: 'crown', shirt: '#6a2c91', pants: '#4a1d68', skin: '#f0d2b6', outfit: 'robe', trim: '#f2c230', cape: '#8e2a2a', hair: 'long', hc: '#d8d8d8', facial: 'long', ec: '#d8d8d8', shoes: '#3a2a1a'},
@@ -146,8 +148,8 @@ export type Faction = {c: string; c2?: string; kind?: TroopKind};
 export const FACTIONS: Record<string, Faction> = {};
 export const registerFactions = (o: Record<string, Faction> | undefined) => { if (o) Object.assign(FACTIONS, o); };
 
-export type Held = 'sword' | 'spear' | 'torch' | 'scroll' | 'dagger' | 'goblet' | 'standard' | 'lyre' | 'coin' | 'magnifier' | 'khopesh' | 'ankh' | 'bow' | 'crook' | 'musket' | 'saber' | 'lance' | 'eagle' | 'baton' | 'spyglass';
-export type ActorT = {who?: string; x: number | [number, number]; y?: number; s?: number; pose?: PoseName; face?: Face; flip?: boolean; say?: string; at?: number; talk?: boolean; look?: string | Look; raw?: boolean; held?: Held; shield?: boolean; fa?: number; hide?: number; ghost?: number; ns?: boolean; z?: number};
+export type Held = 'sword' | 'spear' | 'torch' | 'scroll' | 'dagger' | 'goblet' | 'standard' | 'lyre' | 'coin' | 'magnifier' | 'khopesh' | 'ankh' | 'bow' | 'crook' | 'musket' | 'saber' | 'lance' | 'eagle' | 'baton' | 'spyglass' | 'pointer';
+export type ActorT = {who?: string; x: number | [number, number]; y?: number; s?: number; pose?: PoseName; face?: Face; flip?: boolean; say?: string; at?: number; talk?: boolean; look?: string | Look; raw?: boolean; held?: Held; shield?: boolean; fa?: number; hide?: number; ghost?: number; ns?: boolean; z?: number; move?: {x: number; y?: number; dur?: number}};
 
 const Hat: React.FC<{k: Look['hat']; top: number; skin: string; col?: string}> = ({k, top, skin, col}) => {
   switch (k) {
@@ -233,6 +235,7 @@ const HeldArt: React.FC<{k: Held; f: number}> = ({k, f}) => {
     case 'baton': return (<g {...OL}><rect x={-7} y={-76} width={14} height={82} rx={3} fill="#2b4a8a" />{[-60, -42, -24].map((y, i) => <circle key={i} cx={0} cy={y} r={3.4} fill="#e2b84a" stroke="none" />)}<rect x={-9} y={-80} width={18} height={8} fill="#e2b84a" /><rect x={-9} y={2} width={18} height={8} fill="#e2b84a" /></g>);
     case 'spyglass': return (<g {...OL}><g transform="rotate(28 0 0)"><rect x={-6} y={-110} width={12} height={96} rx={3} fill="#a8793f" /><rect x={-9} y={-132} width={18} height={26} rx={3} fill="#c4a24a" /><rect x={-7} y={-18} width={14} height={14} rx={3} fill="#6b3a2a" /></g></g>);
     case 'coin': return (<g {...OL}><circle cx={0} cy={-24} r={26} fill="#f6cf4a" /><circle cx={0} cy={-24} r={17} fill="none" stroke="#b8860b" strokeWidth={3} /></g>);
+    case 'pointer': return (<g {...OL}><rect x={-4} y={-308} width={8} height={322} rx={4} fill="#8a5a33" /><rect x={-4} y={-308} width={8} height={64} fill="#a8793f" /><circle cx={0} cy={-314} r={9} fill="#c0392b" /><rect x={-13} y={-16} width={26} height={10} rx={4} fill="#c4a24a" /></g>); // K1: long thin pointer stick (grip at origin, tip up the held axis)
   }
 };
 
@@ -276,8 +279,10 @@ export const Actor: React.FC<{a: ActorT; words?: WordT[]; seed?: string}> = ({a,
   const {fps, durationInFrames: d} = useVideoConfig();
   const look: Look = typeof a.look === 'object' ? a.look : LOOKS[a.look ?? a.who ?? 'blue'] ?? LOOKS.blue;
   const ph = random(`${seed}ph`) * 6;
-  const x = Array.isArray(a.x) ? interpolate(f, [0, d * 0.85], a.x, {...C, easing: Easing.inOut(Easing.quad)}) : a.x;
-  const moving = Array.isArray(a.x) && a.x[0] !== a.x[1] && f < d * 0.85;
+  const mvA = (a.at ?? 0) * d, mvB = mvA + Math.max(2, (a.move?.dur ?? Math.max(0.05, 1 - (a.at ?? 0))) * d); // K5 transit window
+  const x = a.move ? interpolate(f, [mvA, mvB], [Array.isArray(a.x) ? a.x[0] : a.x, a.move.x], {...C, easing: Easing.inOut(Easing.quad)}) : Array.isArray(a.x) ? interpolate(f, [0, d * 0.85], a.x, {...C, easing: Easing.inOut(Easing.quad)}) : a.x;
+  const ay = a.move && a.move.y !== undefined ? interpolate(f, [mvA, mvB], [a.y ?? 940, a.move.y], {...C, easing: Easing.inOut(Easing.quad)}) : (a.y ?? 940);
+  const moving = (Array.isArray(a.x) && a.x[0] !== a.x[1] && f < d * 0.85) || (a.move !== undefined && f >= mvA && f < mvB);
   const fallen = a.fa !== undefined && f >= a.fa * d;
   const pose: PoseName = fallen ? 'fall' : a.pose ?? (moving ? 'walk' : 'idle');
   const fr = pose === 'fall' ? (a.fa !== undefined ? interpolate(f, [a.fa * d, a.fa * d + 9], [0, 1], {...C, easing: Easing.in(Easing.quad)}) : 1) : 0;
@@ -363,7 +368,7 @@ export const Actor: React.FC<{a: ActorT; words?: WordT[]; seed?: string}> = ({a,
   const hem = longGarment ? -16 + dy * 0.2 : 0;
   const legCol = (out === 'armor' && look.bare) || out === 'kilt' ? look.skin : look.pants;
   return (
-    <g transform={`translate(${x} ${a.y ?? 940}) scale(${(a.flip ? -1 : 1) * s * e.k} ${s * e.k})`} opacity={e.o * gone * (a.ghost ?? 1) * (a.ghost !== undefined ? 0.92 + Math.sin(f / 9 + ph) * 0.08 : 1)}>
+    <g transform={`translate(${x} ${ay}) scale(${(a.flip ? -1 : 1) * s * e.k} ${s * e.k})`} opacity={e.o * gone * (a.ghost ?? 1) * (a.ghost !== undefined ? 0.92 + Math.sin(f / 9 + ph) * 0.08 : 1)}>
       {a.ghost !== undefined && <g fill="#9fd8ff"><ellipse cx={0} cy={-200} rx={170} ry={280} opacity={0.08} /><ellipse cx={0} cy={-200} rx={135} ry={245} opacity={0.1} /><ellipse cx={0} cy={-200} rx={100} ry={210} opacity={0.12} /></g>}
       {a.ghost === undefined && !a.ns && <ellipse cx={0} cy={4} rx={86} ry={13} fill="#000" opacity={0.18} />}
       <g transform={`rotate(${-fr * 88})`}>
@@ -466,8 +471,9 @@ export const Actor: React.FC<{a: ActorT; words?: WordT[]; seed?: string}> = ({a,
 };
 
 // ===================== PROPS =====================
-export type PropKind = 'house' | 'tudor' | 'church' | 'cactus' | 'tree' | 'skyscraper' | 'factory' | 'mountain' | 'ship' | 'wall' | 'flag' | 'coins' | 'crown' | 'bank' | 'fire' | 'smoke' | 'sun' | 'moon' | 'cloud' | 'sign' | 'banner' | 'crowd' | 'crate' | 'road' | 'waves' | 'column' | 'temple' | 'arch' | 'colosseum' | 'wolf' | 'elephant' | 'standard' | 'tent' | 'torch' | 'throne' | 'basket' | 'shieldwall' | 'river' | 'birds' | 'galley' | 'tower' | 'stonewall' | 'hill' | 'balcony' | 'rubble' | 'cabbage' | 'legion' | 'troop' | 'horse' | 'catapult' | 'ram' | 'siegetower' | 'ballista' | 'gate' | 'longship' | 'fleet' | 'photo' | 'pyramid' | 'sphinx' | 'obelisk' | 'palm' | 'reeds' | 'nileboat' | 'chariot' | 'sarcophagus' | 'pylon' | 'glyphs' | 'goldmask' | 'scales' | 'rosetta' | 'lighthouse' | 'mudbrick' | 'shaduf' | 'camel' | 'mosque' | 'minaret' | 'bombard' | 'cage' | 'cauldron' | 'tulips' | 'cup' | 'silkcord' | 'crescent' | 'tug' | 'trench' | 'steamship' | 'bazaar' | 'serail' | 'chain' | 'scroll' | 'press' | 'caravel' | 'galleon' | 'teocalli' | 'cannon' | 'book' | 'telescope' | 'orrery' | 'globe' | 'guillotine' | 'bastille' | 'versailles' | 'mirror' | 'door' | 'wagon' | 'crop' | 'constantinople' | 'duomo' | 'potosi' | 'scaffold' | 'bed' | 'ceiling' | 'castlewin' | 'bridge' | 'kremlin' | 'gunline' | 'rocket' | 'stbasil' | 'izba' | 'perun' | 'tank' | 'train' | 'sputnik' | 'sub' | 'reactor' | 'winterpalace' | 'emblem' | 'console' | 'watchtower' | 'yurt' | 'icehole' | 'bell' | 'dome' | 'masada' | 'jtemple' | 'sepulchre' | 'menorah' | 'truecross' | 'jar' | 'key' | 'shells' | 'jet' | 'desk' | 'watertower' | 'podium' | 'crossflag' | 'seder' | 'oracle' | 'terracotta' | 'junk' | 'pagoda' | 'greatwall' | 'firework' | 'furnace' | 'lantern' | 'compass' | 'types' | 'forbidden' | 'dragonthrone' | 'ding' | 'silkroll' | 'clash' | 'cake' | 'seesaw' | 'country' | 'folder' | 'stamp' | 'paper' | 'newspaper' | 'wheelbarrow' | 'banknotes' | 'balloon' | 'plane' | 'beetle' | 'brandenburg' | 'wallseg' | 'bulb' | 'ballotbox' | 'medal' | 'eyes' | 'barrel' | 'inkwell' | 'inkstain' | 'sausage' | 'coaster' | 'tablet' | 'briefcase' | 'gavel' | 'tvset' | 'hangul_scroll' | 'turtle_ship' | 'turtle_banknote' | 'magazine_map' | 'stopwatch' | 'dmz_wire' | 'volvo' | 'tanker_kr' | 'phone_kr' | 'phonefire' | 'goldpile' | 'ryugyong' | 'statue_kim' | 'cow_kr' | 'kr_country' | 'carpet_ir' | 'loom_ir' | 'faravahar' | 'fire_altar' | 'cylinder_ir' | 'daric' | 'qanat' | 'cuneiform_tablet' | 'relief_wall' | 'epic_book' | 'astrolabe' | 'tile_mosaic' | 'peacock_throne' | 'oil_derrick' | 'haft_sin' | 'skull_pyramid' | 'gate_jp' | 'torii_jp' | 'katana_jp' | 'tanegashima_jp' | 'blackship_jp' | 'shinkansen_jp' | 'kofun_jp' | 'jomon_pot_jp' | 'flag_af' | 'pass_gate' | 'bamiyan_niche' | 'gandhara_head' | 'coin_kanishka' | 'loya_jirga_tent' | 'stinger_tube' | 'tank_af' | 'durand_stone' | 'silk_bale' | 'lapis' | 'madrassa_book' | 'airport_gate' | 'radio_set' | 'school_desk' | 'flag_us' | 'flag_cs' | 'balance_board' | 'telegraph_key' | 'ironclad' | 'cotton_bale' | 'runner_ship' | 'draft_board' | 'headstones';
-export type PropT = {k: PropKind; x: number; y: number; s?: number; d?: number; c?: string; t?: string; n?: number; at?: number; flip?: boolean; kind?: TroopKind; form?: 'block' | 'line' | 'wedge' | 'scatter' | 'square'; fight?: boolean; march?: boolean; c2?: string; rider?: string; rider2?: string; fac?: string; held?: Held; src?: string; w?: number; h?: number; ship?: 'galley' | 'longship' | 'ship'; z?: number; clash?: {a?: string; b?: string; n?: number}; m?: string; tx?: string; ts?: number};
+export type PropKind = 'house' | 'tudor' | 'church' | 'cactus' | 'tree' | 'skyscraper' | 'factory' | 'mountain' | 'ship' | 'wall' | 'flag' | 'coins' | 'crown' | 'bank' | 'fire' | 'smoke' | 'sun' | 'moon' | 'cloud' | 'sign' | 'banner' | 'crowd' | 'crate' | 'road' | 'waves' | 'column' | 'temple' | 'arch' | 'colosseum' | 'wolf' | 'elephant' | 'standard' | 'tent' | 'torch' | 'throne' | 'basket' | 'shieldwall' | 'river' | 'birds' | 'galley' | 'tower' | 'stonewall' | 'hill' | 'balcony' | 'rubble' | 'cabbage' | 'legion' | 'troop' | 'horse' | 'catapult' | 'ram' | 'siegetower' | 'ballista' | 'gate' | 'longship' | 'fleet' | 'photo' | 'pyramid' | 'sphinx' | 'obelisk' | 'palm' | 'reeds' | 'nileboat' | 'chariot' | 'sarcophagus' | 'pylon' | 'glyphs' | 'goldmask' | 'scales' | 'rosetta' | 'lighthouse' | 'mudbrick' | 'shaduf' | 'camel' | 'mosque' | 'minaret' | 'bombard' | 'cage' | 'cauldron' | 'tulips' | 'cup' | 'silkcord' | 'crescent' | 'tug' | 'trench' | 'steamship' | 'bazaar' | 'serail' | 'chain' | 'scroll' | 'press' | 'caravel' | 'galleon' | 'teocalli' | 'cannon' | 'book' | 'telescope' | 'orrery' | 'globe' | 'guillotine' | 'bastille' | 'versailles' | 'mirror' | 'door' | 'wagon' | 'crop' | 'constantinople' | 'duomo' | 'potosi' | 'scaffold' | 'bed' | 'ceiling' | 'castlewin' | 'bridge' | 'kremlin' | 'gunline' | 'rocket' | 'stbasil' | 'izba' | 'perun' | 'tank' | 'train' | 'sputnik' | 'sub' | 'reactor' | 'winterpalace' | 'emblem' | 'console' | 'watchtower' | 'yurt' | 'icehole' | 'bell' | 'dome' | 'masada' | 'jtemple' | 'sepulchre' | 'menorah' | 'truecross' | 'jar' | 'key' | 'shells' | 'jet' | 'desk' | 'watertower' | 'podium' | 'crossflag' | 'seder' | 'oracle' | 'terracotta' | 'junk' | 'pagoda' | 'greatwall' | 'firework' | 'furnace' | 'lantern' | 'compass' | 'types' | 'forbidden' | 'dragonthrone' | 'ding' | 'silkroll' | 'clash' | 'cake' | 'seesaw' | 'country' | 'folder' | 'stamp' | 'paper' | 'newspaper' | 'wheelbarrow' | 'banknotes' | 'balloon' | 'plane' | 'beetle' | 'brandenburg' | 'wallseg' | 'bulb' | 'ballotbox' | 'medal' | 'eyes' | 'barrel' | 'inkwell' | 'inkstain' | 'sausage' | 'coaster' | 'tablet' | 'briefcase' | 'gavel' | 'tvset' | 'hangul_scroll' | 'turtle_ship' | 'turtle_banknote' | 'magazine_map' | 'stopwatch' | 'dmz_wire' | 'volvo' | 'tanker_kr' | 'phone_kr' | 'phonefire' | 'goldpile' | 'ryugyong' | 'statue_kim' | 'cow_kr' | 'kr_country' | 'carpet_ir' | 'loom_ir' | 'faravahar' | 'fire_altar' | 'cylinder_ir' | 'daric' | 'qanat' | 'cuneiform_tablet' | 'relief_wall' | 'epic_book' | 'astrolabe' | 'tile_mosaic' | 'peacock_throne' | 'oil_derrick' | 'haft_sin' | 'skull_pyramid' | 'gate_jp' | 'torii_jp' | 'katana_jp' | 'tanegashima_jp' | 'blackship_jp' | 'shinkansen_jp' | 'kofun_jp' | 'jomon_pot_jp' | 'flag_af' | 'pass_gate' | 'bamiyan_niche' | 'gandhara_head' | 'coin_kanishka' | 'loya_jirga_tent' | 'stinger_tube' | 'tank_af' | 'durand_stone' | 'silk_bale' | 'lapis' | 'madrassa_book' | 'airport_gate' | 'radio_set' | 'school_desk' | 'flag_us' | 'flag_cs' | 'balance_board' | 'telegraph_key' | 'ironclad' | 'cotton_bale' | 'runner_ship' | 'draft_board' | 'headstones' | 'border_pt' | 'padrao_pt' | 'armillary_pt' | 'azulejo_pt' | 'rooster_pt' | 'counter' | 'pictogram' | 'bird' | 'clock';
+export type AnimKind = 'wave' | 'flicker' | 'swing' | 'spin' | 'bob' | 'tick';
+export type PropT = {k: PropKind; x: number; y: number; s?: number; d?: number; c?: string; t?: string; n?: number; at?: number; flip?: boolean; kind?: TroopKind; form?: 'block' | 'line' | 'wedge' | 'scatter' | 'square'; fight?: boolean; march?: boolean; c2?: string; rider?: string; rider2?: string; fac?: string; held?: Held; src?: string; w?: number; h?: number; ship?: 'galley' | 'longship' | 'ship'; z?: number; clash?: {a?: string; b?: string; n?: number}; m?: string; tx?: string; ts?: number; move?: {x: number; y?: number; dur?: number}; grow?: boolean | {dur?: number}; from?: number; to?: number; dur?: number; cols?: number; kb?: boolean; anim?: AnimKind; animSpd?: number};
 
 // z-order bias (px of baseline). BACK kinds always sit behind an actor standing within 90px of their baseline; FRONT kinds in front of one.
 export const LAYER_Z: Partial<Record<PropKind, number>> = {throne: -90, dragonthrone: -90, bed: -90, ding: -40, door: -60, mirror: -60, compass: 0, podium: 90, sign: 90, desk: 90, console: 90, cage: 90, scaffold: 90, seder: 90, lantern: 0, wallseg: 0, brandenburg: -40};
@@ -796,17 +802,103 @@ export const StampPhoto: React.FC<{src: string; boxW: number; boxH: number; bord
 };
 const PhotoProp: React.FC<{p: PropT}> = ({p}) => {
   const bw = p.w ?? 360, bh = p.h ?? 460, src = p.src ?? '';
+  const f = useCurrentFrame();
+  const {durationInFrames: dd} = useVideoConfig();
+  const kb = p.kb === false ? 1 : 0.965 + 0.035 * clamp01(f / Math.max(1, dd - 1)); // 6.i.5 Ken Burns settle: the stamp grows 0.965 -> 1.0 across the scene; scale stays <= 1 so the photo is NEVER cropped
   const d = usePhotoDims(src);
   const {h} = photoFit(d, bw, bh);
   const H = h + 2 * 14, top = -92 - H;
   return (
     <g {...OL}><Shadow w={bw / 2 + 30} />
       <path d={`M${-bw / 4} ${top + H} L${-bw / 3} 0 M${bw / 4} ${top + H} L${bw / 3} 0`} stroke="#6b4a2a" strokeWidth={10} fill="none" />
-      {src ? <g transform={`translate(0 ${top + H / 2})`} stroke="none"><StampPhoto src={src} boxW={bw} boxH={bh} border={14} r={7} pitch={30} shadow={false} /></g>
+      {src ? <g transform={`translate(0 ${top + H / 2}) scale(${kb})`} stroke="none"><StampPhoto src={src} boxW={bw} boxH={bh} border={14} r={7} pitch={30} shadow={false} /></g>
         : <text y={-bh / 2 - 80} textAnchor="middle" fontFamily={HAND} fontSize={40} fill="#6b5a45" stroke="none">photo</text>}
       {p.t && <g><rect x={-bw / 2 - 6} y={-86} width={bw + 12} height={46} rx={10} fill="#fffaf0" /><text y={-52} textAnchor="middle" fontFamily={HAND} fontSize={32} fill={INK} stroke="none">{p.t}</text></g>}
     </g>
   );
+};
+
+// ---------- K3 TRANSFORMATION PRIMITIVES (2026-11-18): counter + pictogram ----------
+// counter: a headline number counting up across a timed window (casualties, populations, prices).
+// pictogram: a grid of little figures; `to` of `n` light up progressively (scale stated in a texts element).
+const fmtNum = (v: number) => String(Math.round(v)).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+const CounterArt: React.FC<{p: PropT; f: number}> = ({p, f}) => {
+  const {durationInFrames: d} = useVideoConfig();
+  const target = p.n ?? 100, from = p.from ?? 0, a0 = (p.at ?? 0) * d, dur = Math.max(2, (p.dur ?? 0.35) * d);
+  const prog = clamp01((f - a0) / dur), e = prog * prog * (3 - 2 * prog);
+  const col = p.c ?? '#fff';
+  return (<g><text x={0} y={-58} textAnchor="middle" fontFamily={HAND} fontSize={120} fontWeight={700} fill={col} stroke={INK} strokeWidth={10} paintOrder="stroke" strokeLinejoin="round">{fmtNum(from + (target - from) * e)}</text>{p.t && <text x={0} y={8} textAnchor="middle" fontFamily={HAND} fontSize={46} fill={col} stroke={INK} strokeWidth={7} paintOrder="stroke" strokeLinejoin="round">{p.t}</text>}</g>);
+};
+const PictoGlyph: React.FC<{col: string; ghost?: boolean}> = ({col, ghost}) => (
+  <g opacity={ghost ? 0.15 : 1}>
+    <path d="M0 -40 V-14 M-13 -30 H13 M0 -14 L-11 0 M0 -14 L11 0" fill="none" stroke={INK} strokeWidth={9.5} strokeLinecap="round" />
+    <path d="M0 -40 V-14 M-13 -30 H13 M0 -14 L-11 0 M0 -14 L11 0" fill="none" stroke={col} strokeWidth={5.5} strokeLinecap="round" />
+    <circle cx={0} cy={-53} r={11} fill={col} stroke={INK} strokeWidth={3.5} />
+  </g>
+);
+const PictogramArt: React.FC<{p: PropT; f: number}> = ({p, f}) => {
+  const {durationInFrames: d} = useVideoConfig();
+  const total = Math.max(1, Math.floor(p.n ?? 10)), target = Math.min(total, Math.max(0, Math.floor(p.to ?? total))), cols = Math.max(1, Math.floor(p.cols ?? Math.min(10, total)));
+  const a0 = (p.at ?? 0) * d, dur = Math.max(2, (p.dur ?? 0.4) * d), prog = clamp01((f - a0) / dur);
+  const lit = prog * target, col = p.c ?? '#f2c230';
+  return (<g>{Array.from({length: total}, (_, i) => {
+    const row = Math.floor(i / cols), inRow = Math.min(cols, total - row * cols), gx = (i % cols - (inRow - 1) / 2) * 58, gy = -row * 96;
+    const on = i < Math.floor(lit), partial = !on && i === Math.floor(lit) && target > 0 ? lit - Math.floor(lit) : 0;
+    const scI = partial > 0 ? 0.4 + 0.6 * partial : 1;
+    return <g key={i} transform={`translate(${gx} ${gy}) scale(${scI})`}><PictoGlyph col={col} ghost={!on && partial <= 0} /></g>;
+  })}</g>);
+};
+
+// ---------- PROP STATE MACHINES (teardown §6.ii.4, added later 2026-11-18): the `anim` vocabulary + the clock ----------
+// ONE generic, deterministic animation layer for ANY prop (core or pack), applied in StageOne
+// INSIDE the grow clip and under the prop's own art. Transform order is fixed:
+// move (position) -> grow (clip) -> anim (this layer) -> the prop's intrinsic art.
+// Strictly opt-in: a prop with no `anim` renders byte-identically to before. Photo props
+// ignore `anim` entirely (the stamp never distorts). Phase and jitter come from remotion's
+// seeded `random` — never Math.random — so every render is reproducible. `animSpd` is the
+// only knob (rate multiplier, default 1). The motion starts at the prop's `at` when set.
+//   wave    gentle sway of the whole prop around its base — flags, banners, sails, cloth
+//   flicker seeded opacity/scale jitter — flames, torches, lanterns, hearth light
+//   swing   pendulum around a top anchor 160 units up — hanging lanterns, keys, bells
+//   spin    slow rotation around a centre 110 units up — dial/rose props (compass class)
+//   bob     gentle vertical bob + slight roll — boats and floating props, water bgs only
+//   tick    stepwise rotation (6° steps) around the same centre — needle/dial props
+// Some props already move intrinsically (Flag ripples, Flame dances, bell/key/lantern sway,
+// wagon wheels turn, ship bobs); `anim` COMPOUNDS with that motion — it is for props whose
+// art is static, or to push a hero prop harder. One animated prop per scene is usually enough.
+const animWrap = (p: PropT, f: number, d: number, seed: string): {t?: string; o?: number} | null => {
+  if (!p.anim || p.k === 'photo') return null;
+  const lf = Math.max(0, f - (p.at ?? 0) * d), spd = p.animSpd ?? 1, ph = random(`${seed}anph`) * 6.2832;
+  switch (p.anim) {
+    case 'wave': return {t: `rotate(${(Math.sin(lf * spd * 0.095 + ph) * 2.4).toFixed(3)} 0 0)`};
+    case 'flicker': return {t: `scale(${(1 + 0.045 * Math.sin(lf * spd * 0.8 + ph)).toFixed(4)})`, o: Math.min(1, Math.max(0.55, 0.84 + 0.10 * Math.sin(lf * spd * 0.6 + ph) + 0.14 * (random(`${seed}anfl${f}`) - 0.5)))};
+    case 'swing': return {t: `rotate(${(Math.sin(lf * spd * 0.075 + ph) * 4.5).toFixed(3)} 0 -160)`};
+    case 'spin': return {t: `rotate(${((lf * spd * 1.5) % 360).toFixed(2)} 0 -110)`};
+    case 'bob': { const b = Math.sin(lf * spd * 0.08 + ph); return {t: `translate(0 ${(b * 6).toFixed(2)}) rotate(${(Math.sin(lf * spd * 0.08 + ph + 1) * 1.1).toFixed(3)} 0 0)`}; }
+    case 'tick': return {t: `rotate(${(Math.floor(lf / Math.max(2, Math.round(12 / spd))) * 6) % 360} 0 -110)`};
+    default: return null;
+  }
+};
+
+// clock: a round wall clock whose hands TICK from `from` to `to` (hour numbers, decimals
+// allowed — 9.5 = 09:30) across the window [at, at + dur] (dur defaults to the rest of the
+// scene). The hands jump in steps (~one tick per 12 frames) and hold at `to` afterwards —
+// time visibly passing, the §6.ii.4 emblem. `c` colours the minute hand. The clock carries
+// NO text: caption it with a texts element, like the pictogram's scale line.
+const ClockArt: React.FC<{p: PropT; f: number}> = ({p, f}) => {
+  const {durationInFrames: d} = useVideoConfig();
+  const from = p.from ?? 9, to = p.to ?? 12, a0 = (p.at ?? 0) * d, durF = Math.max(2, (p.dur ?? Math.max(0.05, 1 - (p.at ?? 0))) * d);
+  const steps = Math.max(1, Math.round(durF / 12)), q = clamp01((f - a0) / durF), qs = Math.floor(q * steps) / steps;
+  const hrs = from + (to - from) * qs, hA = ((hrs % 12) / 12) * 360, mA = (hrs % 1) * 360, col = p.c ?? '#c0392b', cy = -150;
+  return (<g {...OL}><Shadow w={105} />
+    <rect x={-5} y={cy - 130} width={10} height={28} fill="#6b4a2a" /><circle cx={0} cy={cy - 142} r={11} fill="none" stroke="#c4a24a" strokeWidth={6} />
+    <circle cx={0} cy={cy} r={112} fill="#c4a24a" /><circle cx={0} cy={cy} r={98} fill="#f6f1e4" />
+    {Array.from({length: 12}, (_, i) => { const a = (i * Math.PI) / 6, q4 = i % 3 === 0, r1 = q4 ? 72 : 79, r2 = 90; return <line key={i} x1={(Math.sin(a) * r1).toFixed(1)} y1={(cy - Math.cos(a) * r1).toFixed(1)} x2={(Math.sin(a) * r2).toFixed(1)} y2={(cy - Math.cos(a) * r2).toFixed(1)} stroke={INK} strokeWidth={q4 ? 7 : 4} strokeLinecap="round" />; })}
+    <g transform={`translate(0 ${cy})`}>
+      <g transform={`rotate(${hA.toFixed(2)})`}><path d="M-8 16 L0 -54 L8 16Z" fill={INK} /></g>
+      <g transform={`rotate(${mA.toFixed(2)})`}><path d="M-5 20 L0 -80 L5 20Z" fill={col} /></g>
+      <circle r={10} fill={INK} /><circle r={4.5} fill="#f6f1e4" stroke="none" />
+    </g></g>);
 };
 
 const PropArt: React.FC<{p: PropT; f: number; seed: string}> = ({p, f, seed}) => {
@@ -816,6 +908,7 @@ const PropArt: React.FC<{p: PropT; f: number; seed: string}> = ({p, f, seed}) =>
   if (isJapanProp(p.k)) return <JapanProp p={p} f={f} seed={seed} />;
   if (isAfghanistanProp(p.k)) return <AfghanistanProp p={p} f={f} seed={seed} />;
   if (isCivilwarProp(p.k)) return <CivilwarProp p={p} f={f} seed={seed} />;
+  if (isPortugalProp(p.k)) return <PortugalProp p={p} f={f} seed={seed} />;
   const c = p.c;
   switch (p.k) {
     case 'house': {
@@ -1265,6 +1358,10 @@ const PropArt: React.FC<{p: PropT; f: number; seed: string}> = ({p, f, seed}) =>
     case 'podium': return (<g {...OL}><Shadow w={60} /><path d="M-56 0 L-44 -150 H44 L56 0Z" fill="#7a5233" /><path d="M-62 -150 H62 L52 -176 H-52Z" fill="#8a5a33" /><path d="M0 -176 v-40" strokeWidth={5} /><circle cx={0} cy={-224} r={9} fill="#2b2d33" /></g>);
     case 'crossflag': { const sw = Math.sin(f / 12) * 4; return (<g {...OL}><rect x={-3} y={-380} width={7} height={380} fill="#8a5a33" /><path d={`M4 -372 Q70 ${-384 + sw} 140 -372 L140 -270 Q70 ${-282 - sw} 4 -270Z`} fill="#fbfaf4" /><path d="M72 -368 V-274 M30 -322 H116" stroke="#c0392b" strokeWidth={20} /></g>); }
     case 'seder': return (<g {...OL}><Shadow w={150} /><rect x={-170} y={-96} width={340} height={14} fill="#8a5a33" /><path d="M-150 -82 V0 M150 -82 V0" strokeWidth={10} /><path d="M-170 -96 H170 L150 -60 H-150Z" fill="#fffaf0" /><ellipse cx={-70} cy={-104} rx={52} ry={10} fill="#e9f1fa" /><ellipse cx={70} cy={-104} rx={40} ry={8} fill="#e9f1fa" /><path d="M118 -104 l10 -40 h28 l10 40Z" fill="#a8242c" />{[-8, 24].map((x, i) => <g key={i}><rect x={x} y={-150} width={10} height={46} fill="#fffaf0" /><ellipse cx={x + 5} cy={-162} rx={6} ry={12 + Math.sin(f / 5 + i) * 2} fill="#ffcf4a" stroke="none" /></g>)}</g>);
+    case 'counter': return <CounterArt p={p} f={f} />;
+    case 'pictogram': return <PictogramArt p={p} f={f} />;
+    case 'clock': return <ClockArt p={p} f={f} />;
+    case 'bird': { const flap = Math.sin(f / 2.6 + p.x * 0.013) * 9, bc = c ?? INK; return (<g fill="none" stroke={bc} strokeWidth={6} strokeLinecap="round"><path d={`M-36 0 Q-18 ${-15 - flap} 0 -2 Q18 ${-15 - flap} 36 0`} /><circle cx={0} cy={-1} r={3.5} fill={bc} stroke="none" /></g>); } // K5: single bird glyph; flight comes from the prop's move
     default: return null;
   }
 };
@@ -1328,10 +1425,10 @@ export const Weather: React.FC<{k: WeatherKind | WeatherKind[]; seed?: string}> 
 };
 
 // ===================== BACKDROPS + STAGE =====================
-export type BgKind = 'desert' | 'grass' | 'sea' | 'street' | 'interior' | 'steppe' | 'snow' | 'mountains' | 'forest' | 'battlefield' | 'harbor' | 'castle' | 'palace' | 'nile' | 'pyramids' | 'temple' | 'tomb' | 'cathedral' | 'workshop' | 'salon' | 'jerusalem' | 'judean' | 'coast' | 'hall' | 'yellowriver' | 'karst' | 'plain' | 'town' | 'stadium' | 'wallnight' | 'office' | 'ruins' | 'bunker' | 'palace_kr' | 'dmz' | 'shipyard_kr' | 'seoulnight' | 'pyongyang' | 'market_kr' | 'darkhome' | 'persepolis' | 'isfahan' | 'plateau' | 'fire_temple' | 'bazaar_ir' | 'caravanserai' | 'tehran_modern' | 'ricefield_jp' | 'edo_jp' | 'castle_jp' | 'shrine_jp' | 'tokyo_ruin' | 'tokyo_jp' | 'hindukush' | 'kabul_old' | 'kandahar' | 'bamiyan_valley' | 'khyber' | 'bazaar_af' | 'kabul_modern' | 'field_dawn' | 'river_reach' | 'cotton_port' | 'senate' | 'telegraph_office' | 'hospital' | 'ruined_city' | 'courthouse' | 'theatre_night';
+export type BgKind = 'desert' | 'grass' | 'sea' | 'street' | 'interior' | 'steppe' | 'snow' | 'mountains' | 'forest' | 'battlefield' | 'harbor' | 'castle' | 'palace' | 'nile' | 'pyramids' | 'temple' | 'tomb' | 'cathedral' | 'workshop' | 'salon' | 'jerusalem' | 'judean' | 'coast' | 'hall' | 'yellowriver' | 'karst' | 'plain' | 'parchment' | 'town' | 'stadium' | 'wallnight' | 'office' | 'ruins' | 'bunker' | 'palace_kr' | 'dmz' | 'shipyard_kr' | 'seoulnight' | 'pyongyang' | 'market_kr' | 'darkhome' | 'persepolis' | 'isfahan' | 'plateau' | 'fire_temple' | 'bazaar_ir' | 'caravanserai' | 'tehran_modern' | 'ricefield_jp' | 'edo_jp' | 'castle_jp' | 'shrine_jp' | 'tokyo_ruin' | 'tokyo_jp' | 'hindukush' | 'kabul_old' | 'kandahar' | 'bamiyan_valley' | 'khyber' | 'bazaar_af' | 'kabul_modern' | 'field_dawn' | 'river_reach' | 'cotton_port' | 'senate' | 'telegraph_office' | 'hospital' | 'ruined_city' | 'courthouse' | 'theatre_night' | 'tagus' | 'sagres' | 'douro' | 'hills_pt' | 'pines_pt';
 export type Tod = 'day' | 'dusk' | 'night' | 'fire';
 export type TextT = {t: string; x: number; y: number; at?: number; size?: number; color?: string};
-export type StageT = {shake?: {at: number; amp?: number}; flash?: {at: number; c?: string}; bars?: boolean; focus?: FocusT | FocusT[]; spot?: {x: number; y: number; r?: number}; bg: BgKind; tod?: Tod; props?: PropT[]; actors?: ActorT[]; texts?: TextT[]; fx?: WeatherKind | WeatherKind[]; cam?: {x?: [number, number]; z?: [number, number]; at?: [number, number]}; shots?: ShotT[]; labels?: LabelT[]};
+export type StageT = {shake?: {at: number; amp?: number}; flash?: {at: number; c?: string}; bars?: boolean; focus?: FocusT | FocusT[]; spot?: {x: number; y: number; r?: number}; bg: BgKind; plate?: string; drift?: boolean; blurbg?: boolean; tod?: Tod; props?: PropT[]; actors?: ActorT[]; texts?: TextT[]; fx?: WeatherKind | WeatherKind[]; cam?: {x?: [number, number]; z?: [number, number]; at?: [number, number]}; shots?: ShotT[]; labels?: LabelT[]};
 // Screen-space labels that follow the camera: name (anchored to an actor), faction pill, place, date chip, fact-check badge
 export type LabelT = {k: 'name' | 'faction' | 'place' | 'date' | 'fact'; t: string; fac?: string; sub?: string; actor?: number; x?: number; y?: number; c?: string; at?: number; until?: number; below?: boolean};
 // camera helpers: `cam: bust(actor)` frames head and shoulders of that actor, `cam: pushIn(actor)` a slow push toward the face
@@ -1345,7 +1442,7 @@ export const shotSpans = (st: StageT): {st: StageT; a0: number; a1: number}[] =>
   return st.shots.map((sh, i) => { const a1 = i === st.shots!.length - 1 ? 1 : Math.min(1, Math.max(a0, sh.until)); const o = {st: {...st, ...sh.st, shots: undefined} as StageT, a0, a1}; a0 = a1; return o; });
 };
 const SKY: Record<Tod, [string, string]> = {day: ['#69bff0', '#e8f7ff'], dusk: ['#323c7c', '#f7ab6c'], night: ['#050919', '#1c2a58'], fire: ['#2a0a0a', '#ff8a3a']};
-const GROUND: Record<BgKind, string> = {desert: '#dcae72', grass: '#86bb5f', sea: '#2f86c4', street: '#9096a0', interior: '#a06f44', steppe: '#cdb26a', snow: '#eef3f8', mountains: '#8a9a6a', forest: '#4f7f3f', battlefield: '#7a6244', harbor: '#9a7b52', castle: '#8f8a7a', palace: '#d9d2c1', nile: '#9fb35a', pyramids: '#e0c48a', temple: '#cdbf9a', tomb: '#6b5440', cathedral: '#8c8578', workshop: '#8a6a44', salon: '#c9b690', jerusalem: '#d6c19b', judean: '#d3bd92', coast: '#ecd9a8', hall: '#6b3a24', yellowriver: '#c9a15a', karst: '#7fa56a', ...GERMANY_GROUND, ...KOREA_GROUND, ...IRAN_GROUND, ...JAPAN_GROUND, ...AFGHANISTAN_GROUND, ...CIVILWAR_GROUND};
+const GROUND: Record<BgKind, string> = {parchment: '#e2d0a4', desert: '#dcae72', grass: '#86bb5f', sea: '#2f86c4', street: '#9096a0', interior: '#a06f44', steppe: '#cdb26a', snow: '#eef3f8', mountains: '#8a9a6a', forest: '#4f7f3f', battlefield: '#7a6244', harbor: '#9a7b52', castle: '#8f8a7a', palace: '#d9d2c1', nile: '#9fb35a', pyramids: '#e0c48a', temple: '#cdbf9a', tomb: '#6b5440', cathedral: '#8c8578', workshop: '#8a6a44', salon: '#c9b690', jerusalem: '#d6c19b', judean: '#d3bd92', coast: '#ecd9a8', hall: '#6b3a24', yellowriver: '#c9a15a', karst: '#7fa56a', ...GERMANY_GROUND, ...KOREA_GROUND, ...IRAN_GROUND, ...JAPAN_GROUND, ...AFGHANISTAN_GROUND, ...CIVILWAR_GROUND, ...PORTUGAL_GROUND};
 const HZ = 700;
 
 const Hills: React.FC<{seed: string; base: number; amp: number; col: string; dx: number}> = ({seed, base, amp, col, dx}) => {
@@ -1459,16 +1556,44 @@ const NearExtra: React.FC<{bg: BgKind; seed: string; cx: number; f: number}> = (
   }
   return null;
 };
-const Backdrop: React.FC<{bg: BgKind; tod: Tod; f: number; cx: number; seed: string}> = ({bg, tod, f, cx, seed}) => {
+// ---------- K6 PLATE BACKGROUNDS (2026-11-18, teardown 6.ii.3 minimal form): a painted plate image as the stage background.
+// The plate lives at public/plates/<name>.jpg in the repo; it renders full-bleed (cover-crop) with the slow drift, actors/props on top as usual.
+const PlateBg: React.FC<{name: string; drift?: boolean}> = ({name, drift = true}) => {
+  const f = useCurrentFrame();
+  const {durationInFrames: d} = useVideoConfig();
+  const src = `plates/${name}.jpg`;
+  const dims = usePhotoDims(src); // holds the render until the plate file has loaded, exactly like the photo pipeline
+  const p = drift ? clamp01(f / Math.max(1, d - 1)) : 0;
+  const sc = 1.045 + 0.05 * p, pan = (p - 0.5) * 26;
+  if (!dims) return <rect width={1920} height={1080} fill="#232830" />;
+  return <image href={staticFile(src)} x={960 - 960 * sc + pan} y={540 - 540 * sc} width={1920 * sc} height={1080 * sc} preserveAspectRatio="xMidYMid slice" />;
+};
+
+const Backdrop: React.FC<{bg: BgKind; tod: Tod; f: number; cx: number; seed: string; plate?: string; plateDrift?: boolean}> = ({bg, tod, f, cx, seed, plate, plateDrift}) => {
   const [t1, t2] = SKY[tod];
   const gc = GROUND[bg];
   const night = tod === 'night' || tod === 'fire';
+  if (plate) return <PlateBg name={plate} drift={plateDrift} />;
   if (isGermanyBg(bg)) return <GermanyBg bg={bg as any} f={f} cx={cx} seed={seed} />;
   if (isKoreaBg(bg)) return <KoreaBg bg={bg as any} f={f} cx={cx} seed={seed} />;
   if (isIranBg(bg)) return <IranBg bg={bg as any} f={f} cx={cx} seed={seed} />;
   if (isJapanBg(bg)) return <JapanBg bg={bg as any} f={f} cx={cx} seed={seed} />;
   if (isAfghanistanBg(bg)) return <AfghanistanBg bg={bg as any} f={f} cx={cx} seed={seed} />;
   if (isCivilwarBg(bg)) return <CivilwarBg bg={bg as any} f={f} cx={cx} seed={seed} />;
+  if (isPortugalBg(bg)) return <PortugalBg bg={bg as any} f={f} cx={cx} seed={seed} />;
+  if (bg === 'parchment') {
+    // 6.i.2 parchment wash: procedural, deterministic (seeded) — soft blotches, fibre flecks, a darker foot band and a vignette. Boards/photos mount on it; flat 'plain' stays available.
+    return (
+      <g>
+        <defs><radialGradient id={`par${seed}`}><stop offset="0.62" stopColor="#000" stopOpacity={0} /><stop offset="1" stopColor="#7a5c28" stopOpacity={0.16} /></radialGradient></defs>
+        <rect width={1920} height={1080} fill="#ead9b8" />
+        {Array.from({length: 26}, (_, i) => <ellipse key={i} cx={random(`${seed}pb${i}`) * 1920} cy={random(`${seed}pc${i}`) * 1080} rx={120 + random(`${seed}pr${i}`) * 260} ry={60 + random(`${seed}ps${i}`) * 130} fill={i % 2 ? '#f6ecd2' : '#dcc493'} opacity={0.16} />)}
+        {Array.from({length: 110}, (_, i) => { const x = random(`${seed}pf${i}`) * 1920, y = random(`${seed}pg${i}`) * 1080, a = random(`${seed}pa${i}`) * Math.PI; return <line key={'f' + i} x1={x} y1={y} x2={x + Math.cos(a) * 26} y2={y + Math.sin(a) * 26} stroke="#b89b62" strokeWidth={1.6} opacity={0.1} />; })}
+        <rect y={900} width={1920} height={180} fill="#000" opacity={0.045} />
+        <rect width={1920} height={1080} fill={`url(#par${seed})`} />
+      </g>
+    );
+  }
   if (bg === 'temple') {
     return (
       <g stroke={INK} strokeWidth={3}>
@@ -1606,8 +1731,9 @@ const StageOne: React.FC<{st: StageT; words?: WordT[]; seed: string; avoid?: Rec
   const f = useCurrentFrame();
   const {fps, durationInFrames: d} = useVideoConfig();
   const tod = st.tod ?? 'day';
-  const cx = interpolate(f, [0, d], st.cam?.x ?? [0, 0], {...C, easing: Easing.inOut(Easing.quad)});
-  const z = interpolate(f, [0, d], st.cam?.z ?? [1, 1.06], {...C, easing: Easing.inOut(Easing.quad)});
+  const driftOff = st.drift === false; // 6.i.5 slow drift: default gentle push-in (z 1 -> 1.06) + a 22px pan; drift:false = locked-off camera (explicit cam still wins)
+  const cx = interpolate(f, [0, d], st.cam?.x ?? (driftOff ? [0, 0] : [0, 22]), {...C, easing: Easing.inOut(Easing.quad)});
+  const z = interpolate(f, [0, d], st.cam?.z ?? (driftOff ? [1, 1] : [1, 1.06]), {...C, easing: Easing.inOut(Easing.quad)});
   const sk = st.shake ? Math.max(0, 1 - (f - st.shake.at * d) / 16) * (f >= st.shake.at * d ? 1 : 0) * (st.shake.amp ?? 14) : 0;
   const shx = Math.sin(f * 2.9) * sk, shy = Math.cos(f * 3.7) * sk;
   const fl = st.flash ? Math.max(0, 1 - (f - st.flash.at * d) / 9) * (f >= st.flash.at * d ? 1 : 0) : 0;
@@ -1616,21 +1742,28 @@ const StageOne: React.FC<{st: StageT; words?: WordT[]; seed: string; avoid?: Rec
   const items: Dr[] = [];
   (st.props ?? []).forEach((p, i) => {
     const dd = p.d ?? interpolate(p.y, [690, 960], [0.5, 1], C);
-    const e = p.at !== undefined ? pop(f, fps, p.at * d) : {o: 1, k: 1};
+    const e0 = p.at !== undefined ? pop(f, fps, p.at * d) : {o: 1, k: 1};
+    const e = p.grow ? {o: e0.o, k: 1} : e0; // K3: grow replaces the pop-scale entrance with a clip reveal
     const s = p.s ?? 1;
-    items.push({y: p.y + (p.z ?? LAYER_Z[p.k] ?? 0), el: (<g key={`p${i}`} transform={`translate(${p.x - cx * dd} ${p.y}) scale(${(p.flip ? -1 : 1) * s * e.k} ${s * e.k})`} opacity={e.o}><PropArt p={p} f={f} seed={`${seed}${i}`} /></g>)});
+    let px = p.x, py = p.y; // K5: transit motion interpolates the position across the move window
+    if (p.move) { const a0 = (p.at ?? 0) * d, a1 = a0 + Math.max(2, (p.move.dur ?? Math.max(0.05, 1 - (p.at ?? 0))) * d); px = interpolate(f, [a0, a1], [p.x, p.move.x], {...C, easing: Easing.inOut(Easing.quad)}); py = p.move.y !== undefined ? interpolate(f, [a0, a1], [p.y, p.move.y], {...C, easing: Easing.inOut(Easing.quad)}) : p.y; }
+    const gp = p.grow ? clamp01((f - (p.at ?? 0) * d) / Math.max(2, ((p.grow === true ? 0.3 : p.grow.dur) ?? 0.3) * d)) : 0;
+    const gid = `gr${seed}${i}`;
+    const aw = animWrap(p, f, d, `${seed}${i}`); // §6.ii.4 state machines: anim layer sits inside the grow clip, under the art; null (no wrapper emitted) when the prop has no anim
+    items.push({y: py + (p.z ?? LAYER_Z[p.k] ?? 0), el: (<g key={`p${i}`} transform={`translate(${px - cx * dd} ${py}) scale(${(p.flip ? -1 : 1) * s * e.k} ${s * e.k})`} opacity={e.o}>{p.grow ? <clipPath id={gid}><rect x={-2600} y={-1700 * gp} width={5200} height={1700 * gp + 6} /></clipPath> : null}<g clipPath={p.grow ? `url(#${gid})` : undefined}>{aw ? (<g transform={aw.t} opacity={aw.o}><PropArt p={p} f={f} seed={`${seed}${i}`} /></g>) : (<PropArt p={p} f={f} seed={`${seed}${i}`} />)}</g></g>)});
   });
   (st.actors ?? []).forEach((a, i) => {
     const ax = Array.isArray(a.x) ? a.x : a.x;
     items.push({y: (a.y ?? 940) + (a.z ?? 0), el: (<g key={`a${i}`} transform={`translate(${-cx} 0)`}><Actor a={{...a, x: ax}} words={a.talk ? words : undefined} seed={`${seed}a${i}`} /></g>)});
   });
   items.sort((p, q) => p.y - q.y);
+  const useBlur = !!st.blurbg && !st.focus; // 6.i.6 blur backdrop for emphasis beats; NEVER combined with the focus overlay — focus wins if both are set
   const tint = tod === 'dusk' ? 'rgba(255,140,60,0.14)' : tod === 'night' ? 'rgba(10,20,70,0.42)' : tod === 'fire' ? `rgba(255,80,10,${0.2 + Math.sin(f / 5) * 0.05})` : 'rgba(0,0,0,0)';
   return (
     <svg viewBox="0 0 1920 1080" width={1920} height={1080} style={{position: 'absolute', inset: 0}}>
-      <defs><radialGradient id={`vg${seed}`}><stop offset="0.55" stopColor="#000" stopOpacity={0} /><stop offset="1" stopColor="#000" stopOpacity={0.45} /></radialGradient></defs>
+      <defs><radialGradient id={`vg${seed}`}><stop offset="0.55" stopColor="#000" stopOpacity={0} /><stop offset="1" stopColor="#000" stopOpacity={0.45} /></radialGradient>{useBlur && <filter id={`bl${seed}`} x="-8%" y="-8%" width="116%" height="116%"><feGaussianBlur stdDeviation="6.5" /></filter>}</defs>
       <g transform={`translate(${shx} ${shy}) ${st.cam?.at ? `translate(960 540) scale(${z}) translate(${-st.cam.at[0]} ${-st.cam.at[1]})` : `translate(960 700) scale(${z}) translate(-960 -700)`}`}>
-        <Backdrop bg={st.bg} tod={tod} f={f} cx={cx} seed={seed} />
+        {useBlur ? (<g filter={`url(#bl${seed})`}><g transform="translate(960 540) scale(1.05) translate(-960 -540)"><Backdrop bg={st.bg} tod={tod} f={f} cx={cx} seed={seed} plate={st.plate} plateDrift={st.drift !== false} /></g></g>) : (<Backdrop bg={st.bg} tod={tod} f={f} cx={cx} seed={seed} plate={st.plate} plateDrift={st.drift !== false} />)}
         {items.map((q) => q.el)}
         <rect width={1920} height={1080} fill={tint} />
       </g>
@@ -1650,7 +1783,7 @@ const StageOne: React.FC<{st: StageT; words?: WordT[]; seed: string; avoid?: Rec
           if (l.k === 'fact') { x = l.x ?? 1740; y = l.y ?? 70; }
           if (l.k === 'date') { x = l.x ?? 36; y = l.y ?? 60; }
           const a = l.actor !== undefined ? (st.actors ?? [])[l.actor] : undefined;
-          if (a) { const ax = Array.isArray(a.x) ? a.x[1] : a.x, sc = (a.s ?? 1) * CHAR; const q = toS(ax, (a.y ?? 940) + (l.below ? 74 : -(404 * sc + (l.sub ? 62 : 38)))); x = q[0]; y = Math.min(1040, Math.max(70, q[1])); }
+          if (a) { const ax = a.move ? a.move.x : Array.isArray(a.x) ? a.x[1] : a.x, sc = (a.s ?? 1) * CHAR; const q = toS(ax, (a.y ?? 940) + (l.below ? 74 : -(404 * sc + (l.sub ? 62 : 38)))); x = q[0]; y = Math.min(1040, Math.max(70, q[1])); }
           return <LabelArt key={i} l={l} x={x} y={y} f={f} d={d} />;
         });
       })()}

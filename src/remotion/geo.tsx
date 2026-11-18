@@ -10,7 +10,7 @@ import geoLib from '../../library/geo.json'; // prebuilt places, historical regi
 import {feature, mesh} from 'topojson-client';
 import w110 from 'world-atlas/countries-110m.json';
 import w50 from 'world-atlas/countries-50m.json';
-import {HAND, INK, MapClash} from './world';
+import {Actor, HAND, INK, MapClash} from './world';
 import {FocusOverlay, FocusT} from './germany_pack';
 
 const C = {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'} as const;
@@ -24,11 +24,11 @@ type GeoStrict = {
   hi?: Record<string, string>; // country name (world-atlas spelling) -> fill colour, e.g. {'United Kingdom': '#d9455a'}
   dash?: string[]; // extra dashed white outline
   pins?: {name: string; lon: number; lat: number; at?: number}[];
-  routes?: {a: [number, number]; b: [number, number]; color?: string; at?: number}[];
+  routes?: {a: [number, number]; b: [number, number]; color?: string; at?: number; arrow?: boolean; t?: string}[]; // arrow = arrowhead at the moving head instead of the dot; t = a label riding the arc, landing as the arrow lands
   labels?: {t: string; sub?: string; lon: number; lat: number; at?: number; size?: number; kind?: 'city' | 'sea' | 'river' | 'mountain'}[];
   names?: boolean | string[];
   lines?: {name?: string; pts: [number, number][]; color?: string; width?: number; at?: number}[];
-  regions?: {name: string; pts: [number, number][]; color: string; sub?: string; at?: number}[];
+  regions?: {name: string; pts: [number, number][]; color: string; sub?: string; at?: number; pulse?: boolean}[]; // pulse = a glow flash as the fill lands (the "lights up" read)
 };
 // What a script writes. Anywhere a lon/lat is needed you can give {place:'Thebes'} instead (library/geo.json); regions and lines can be {ref:'upper_egypt'} / {ref:'nile'}.
 type Loc = {lon?: number; lat?: number; place?: string; k?: number};
@@ -38,9 +38,15 @@ export type GeoT = Omit<GeoStrict, 'from' | 'to' | 'pins' | 'labels' | 'regions'
   labels?: {t?: string; place?: string; sub?: string; lon?: number; lat?: number; at?: number; size?: number; kind?: 'city' | 'sea' | 'river' | 'mountain'}[]; // sub = smaller yellow line (reference style); kind picks the style
   names?: boolean | string[]; // true = name every highlighted country; or a list of country names to label (neighbours, no fill needed)
   lines?: {ref?: string; name?: string; pts?: [number, number][]; color?: string; width?: number; at?: number}[]; // rivers and borders: lon/lat polyline or {ref:'nile'}
-  regions?: {ref?: string; name?: string; pts?: [number, number][]; color?: string; sub?: string; at?: number}[]; // historical polities: lon/lat outline or {ref:'new_kingdom_empire'}, filled and named
+  regions?: {ref?: string; name?: string; pts?: [number, number][]; color?: string; sub?: string; at?: number; pulse?: boolean}[]; // historical polities: lon/lat outline or {ref:'new_kingdom_empire'}, filled and named; pulse = glow flash as the fill lands
+  hiAt?: Record<string, number>; // timed hi fills: country name -> scene fraction at which its fill fades in (read from the raw scene object, like texture/presenter, so resolveGeo cannot strip it); unlisted countries render statically
+  hiPulse?: string[]; // country names whose hi fill flashes a glow pulse as it lands (expects a matching hiAt entry)
   focus?: FocusT | FocusT[]; // grey scrim with a circular void on the year badge (default) or at x,y,r; `at`/`to` = fractions of the scene
   clash?: {lon?: number; lat?: number; place?: string; a?: string; b?: string; at?: number; s?: number}[]; // army clash art (small armies, swords, fire) at map points; a/b = the two sides' colours; at = fraction of the scene
+  texture?: boolean; // K2 (2026-11-18): deterministic relief texture under the territory fills + a gentle sea grain; DEFAULT ON — texture:false restores the flat look
+  approx?: boolean; // 6.i.7: draw the tiny "Borders approximate" disclaimer, bottom-right — set on scenes showing modern (post-1900) borders
+  twobeat?: boolean; // 6.i.4: two-beat reveal — fills land first, labels/pins second; DEFAULT ON when the scene has fills, twobeat:false restores legacy timing
+  presenter?: {lon?: number; lat?: number; place?: string; corner?: 'bl' | 'br' | 'tl' | 'tr'; point?: string; pointLon?: number; pointLat?: number; pointPlace?: string; at?: number; s?: number}; // K1 (2026-11-18): the presenter standing on the map; point = the name of a pin in pins[] for his pointer to touch
 };
 
 // ---------- procedural satellite textures (tileable value noise, generated once per browser tab) ----------
@@ -165,10 +171,23 @@ export const GeoMap: React.FC<{g: GeoT; seed: string}> = ({g: gRaw, seed}) => {
   const L = geo.lod[li] || geo.lod.find((x: any) => x)!;
   const sw = (w: number) => w / m; // keep line widths constant on screen without vector-effect
   const T = 2400; // texture tile size in projection units
-  const biome = tex('biome', 1024), cloud = tex('cloud', 512);
+  const biome = tex('biome', 1024), cloud = tex('cloud', 512), shade = tex('shade', 512);
+  const useTex = (gRaw as any).texture !== false; // K2: read from the raw script object (like clash/focus) so resolveGeo cannot strip it
   const at = (v: number | undefined) => spring({frame: f - (v ?? 0) * d, fps, config: {damping: 13, stiffness: 150}});
   const op = (v: number) => Math.min(1, Math.max(0, v));
   const hiNames = Object.keys(g.hi ?? {});
+  const twoBeat = (gRaw as any).twobeat !== false && (hiNames.length > 0 || (g.regions ?? []).length > 0); // 6.i.4 two-beat reveal: fills first, names second
+  const dAt = (v: number | undefined) => (twoBeat ? Math.min(0.9, (v ?? 0) + 0.18) : v);
+  const hiAt = ((gRaw as any).hiAt ?? {}) as Record<string, number>; // timed hi fills: raw-read like texture/presenter so resolveGeo cannot strip them
+  const hiPulse = ((gRaw as any).hiPulse ?? []) as string[];
+  const pulseP = (landAt: number) => { const pp = (f - landAt * d) / Math.max(1, 0.8 * fps); return pp >= 0 && pp <= 1 ? pp : -1; }; // landing pulse: progress 0..1 over ~0.8 s from the landing moment, -1 = inactive; frame-based, deterministic
+  const pulseG = (dd: string, col: string, pp: number, key: string) => (
+    <g key={key}>
+      <path d={dd} fill="#ffffff" opacity={(1 - pp) * 0.38} />
+      <path d={dd} fill={col} opacity={(1 - pp) * 0.45} />
+      <path d={dd} fill="none" stroke="#ffffff" strokeWidth={sw(6 + pp * 16)} strokeLinejoin="round" opacity={(1 - pp) * 0.8} />
+    </g>
+  );
   // ---- map naming: auto country names, historical regions, collision-free placement. Placement is solved at the END camera state and
   // applied as fixed pixel offsets, so labels glide with the map instead of hopping while it zooms. Never allowed to break a render. ----
   const mEnd = to.k / kmax;
@@ -228,6 +247,7 @@ export const GeoMap: React.FC<{g: GeoT; seed: string}> = ({g: gRaw, seed}) => {
         <radialGradient id={`vg${seed}`}><stop offset="0.55" stopColor="#000" stopOpacity={0} /><stop offset="1" stopColor="#000" stopOpacity={0.5} /></radialGradient>
         {biome && <pattern id={`bi${seed}`} patternUnits="userSpaceOnUse" width={T} height={T}><image href={biome} width={T} height={T} /></pattern>}
         {cloud && <pattern id={`cl${seed}`} patternUnits="userSpaceOnUse" width={1500} height={1500} patternTransform={`translate(${f * 0.6} ${f * 0.12})`}><image href={cloud} width={1500} height={1500} /></pattern>}
+        {useTex && shade && <pattern id={`rel${seed}`} patternUnits="userSpaceOnUse" width={T} height={T}><image href={shade} width={T} height={T} /></pattern>}
         {globe && <clipPath id={`sph${seed}`}><circle cx={960} cy={540} r={R} /></clipPath>}
       </defs>
       {globe ? (
@@ -242,25 +262,30 @@ export const GeoMap: React.FC<{g: GeoT; seed: string}> = ({g: gRaw, seed}) => {
       )}
       <g clipPath={globe ? `url(#sph${seed})` : undefined}>
         {globe && <circle cx={960} cy={540} r={R} fill={`url(#oc${seed})`} />}
+        {useTex && shade && <rect width={1920} height={1080} fill={`url(#rel${seed})`} opacity={0.05} />}
         <g transform={tf}>
           {/* continental shelf glow: two soft strokes on the coarse coastline */}
           {[44, 16].map((w, i) => <path key={w} d={geo.shelf} fill="none" stroke="#2f8fe0" strokeWidth={sw(w)} strokeLinejoin="round" opacity={[0.12, 0.22][i]} />)}
           <path d={geo.grat} fill="none" stroke="#9fd2ff" strokeWidth={sw(0.7)} opacity={0.14} />
           <path d={L.land} fill={biome ? `url(#bi${seed})` : '#5b8f55'} />
+          {useTex && shade && <path d={L.land} fill={`url(#rel${seed})`} opacity={0.16} />} {/* K2: relief shading over the base land, UNDER the hi/region fills (0.86/0.82 alpha) and every label/pin */}
           <path d={L.land} fill="none" stroke="#14301f" strokeWidth={sw(1.1)} opacity={0.65} />
           <path d={L.borders} fill="none" stroke="#fff" strokeWidth={sw(0.9)} opacity={0.22} />
           {hiNames.map((n) => {
             const dd = geo.one(li, n), col = g.hi![n];
             if (!dd) return null;
+            const timed = hiAt[n] !== undefined;
             return (
-              <g key={n}>
+              <g key={n} opacity={timed ? op(at(hiAt[n]) * 3) : undefined}>
                 <path d={dd} fill="none" stroke="#fff" strokeWidth={sw(14)} opacity={0.14} strokeLinejoin="round" />
                 <path d={dd} fill={col} opacity={0.86} />
                 <path d={dd} fill="none" stroke="#fff" strokeWidth={sw(3.2)} strokeLinejoin="round" />
               </g>
             );
           })}
+          {hiPulse.map((n) => { const dd = geo.one(li, n); if (!dd || hiAt[n] === undefined) return null; const pp = pulseP(hiAt[n]); return pp < 0 ? null : pulseG(dd, g.hi?.[n] ?? '#ffffff', pp, `hp:${n}`); })}
           {(g.regions ?? []).map((r, i) => regionPaths[i] ? (<g key={`rg${i}`} opacity={op(at(r.at) * 3)}><path d={regionPaths[i]} fill="none" stroke="#fff" strokeWidth={sw(14)} opacity={0.14} strokeLinejoin="round" /><path d={regionPaths[i]} fill={r.color} opacity={0.82} /><path d={regionPaths[i]} fill="none" stroke="#fff" strokeWidth={sw(3.2)} strokeLinejoin="round" /></g>) : null)}
+          {(g.regions ?? []).map((r, i) => { if (!regionPaths[i]) return null; const want = (r as any).pulse ?? (gRaw as any).regions?.[i]?.pulse; if (!want) return null; const pp = pulseP(r.at ?? 0); return pp < 0 ? null : pulseG(regionPaths[i], r.color, pp, `rp${i}`); })}
           {(g.lines ?? []).map((l, i) => { if (!linePaths[i]) return null; const a0 = (l.at ?? 0.1) * d, prog = interpolate(f, [a0, a0 + Math.max(30, d * 0.4)], [0, 1], {...C, easing: Easing.inOut(Easing.quad)}); return (<g key={`ln${i}`}><path d={linePaths[i]} pathLength={1} fill="none" stroke={INK} strokeWidth={sw((l.width ?? 7) + 4)} strokeLinecap="round" strokeLinejoin="round" strokeDasharray="1" strokeDashoffset={1 - prog} opacity={0.55} /><path d={linePaths[i]} pathLength={1} fill="none" stroke={l.color ?? '#4fb3e8'} strokeWidth={sw(l.width ?? 7)} strokeLinecap="round" strokeLinejoin="round" strokeDasharray="1" strokeDashoffset={1 - prog} /></g>); })}
           {(g.dash ?? []).map((n) => { const dd = geo.one(li, n); return dd ? <path key={n} d={dd} fill="none" stroke="#fff" strokeWidth={sw(3)} strokeDasharray={`${12 / m} ${9 / m}`} strokeDashoffset={-f * 0.6 / m} /> : null; })}
           {(g.routes ?? []).map((r, i) => {
@@ -276,13 +301,45 @@ export const GeoMap: React.FC<{g: GeoT; seed: string}> = ({g: gRaw, seed}) => {
       <rect width={1920} height={1080} fill={`url(#vg${seed})`} />
       {(g.routes ?? []).map((r, i) => {
         const prog = interpolate(f, [(r.at ?? 0.1) * d, (r.at ?? 0.1) * d + Math.max(30, d * 0.5)], [0, 1], {...C, easing: Easing.inOut(Easing.quad)});
-        const hp = geo.proj(geoInterpolate(r.a, r.b)(prog));
-        if (!hp || prog <= 0 || !geo.visible(geoInterpolate(r.a, r.b)(prog) as [number, number])) return null;
-        const q = sc(hp);
-        return <circle key={`h${i}`} cx={q[0]} cy={q[1]} r={12} fill={r.color ?? '#ffd24a'} stroke={INK} strokeWidth={3} />;
+        if (prog <= 0) return null;
+        const ip = geoInterpolate(r.a, r.b);
+        const col = r.color ?? '#ffd24a';
+        const headLL = ip(prog) as [number, number];
+        const hp = geo.proj(headLL);
+        const head = (() => {
+          if (!hp || !geo.visible(headLL)) return null;
+          const q = sc(hp);
+          const dot = <circle key="dot" cx={q[0]} cy={q[1]} r={12} fill={col} stroke={INK} strokeWidth={3} />;
+          if (!(r as any).arrow) return dot;
+          // arrowhead: a filled triangle at the head, oriented along the arc tangent in projected screen space (same pattern as the head dot)
+          const pA = geo.proj(ip(Math.max(0, prog - 0.02)) as [number, number]), pB = geo.proj(ip(Math.min(1, prog + 0.02)) as [number, number]);
+          if (!pA || !pB) return dot;
+          const qA = sc(pA), qB = sc(pB);
+          let dx = qB[0] - qA[0], dy = qB[1] - qA[1];
+          const dl = Math.hypot(dx, dy);
+          if (dl < 0.5) return dot;
+          dx /= dl; dy /= dl;
+          const AL = 30, AW = 12; // arrowhead length / half-width in screen px, proportional to the route's 6-unit screen width
+          const tip: [number, number] = [q[0] + dx * AL * 0.45, q[1] + dy * AL * 0.45];
+          const bc: [number, number] = [q[0] - dx * AL * 0.55, q[1] - dy * AL * 0.55];
+          return <polygon key="ah" points={`${tip[0]},${tip[1]} ${bc[0] - dy * AW},${bc[1] + dx * AW} ${bc[0] + dy * AW},${bc[1] - dx * AW}`} fill={col} stroke={INK} strokeWidth={3} strokeLinejoin="round" />;
+        })();
+        const lbl = (() => {
+          const t = (r as any).t as string | undefined;
+          if (!t) return null;
+          const lo = interpolate(prog, [0.8, 1], [0, 1], C); // the label lands as the arrow lands
+          if (lo <= 0) return null;
+          const midLL = ip(0.5) as [number, number];
+          const mp = geo.proj(midLL);
+          if (!mp || !geo.visible(midLL)) return null;
+          const mq = sc(mp);
+          return <text key="rl" x={mq[0]} y={mq[1]} textAnchor="middle" dominantBaseline="middle" fontFamily={HAND} fontSize={48} fill="#fff" stroke={INK} strokeWidth={8} paintOrder="stroke" opacity={lo}>{t}</text>;
+        })();
+        if (!head && !lbl) return null;
+        return <g key={`h${i}`}>{head}{lbl}</g>;
       })}
       {named.filter((it) => (it.kind === 'name' || it.kind === 'region') && !it.dropped).map((it) => {
-        const q = sc(it.pt), e = at(it.at);
+        const q = sc(it.pt), e = at(dAt(it.at));
         return (
           <g key={it.id} opacity={op(e * 3)}>
             <text x={q[0] + it.dx} y={q[1] + it.dy} textAnchor="middle" fontFamily={HAND} fontSize={it.fs} fill="#fff" stroke={INK} strokeWidth={Math.max(6, it.fs * 0.12)} paintOrder="stroke" letterSpacing={it.kind === 'name' ? 1 : 0}>{it.t}</text>
@@ -293,7 +350,7 @@ export const GeoMap: React.FC<{g: GeoT; seed: string}> = ({g: gRaw, seed}) => {
       {(g.pins ?? []).map((pn, i) => {
         const xy = geo.proj([pn.lon, pn.lat]);
         if (!xy || !geo.visible([pn.lon, pn.lat])) return null;
-        const q = sc(xy), e = at(pn.at);
+        const q = sc(xy), e = at(dAt(pn.at));
         return (
           <g key={i} transform={`translate(${q[0]} ${q[1]})`} opacity={op(e * 3)}>
             <circle r={14 + ((f * 0.6) % 40)} fill="none" stroke="#ffd24a" strokeWidth={3} opacity={1 - ((f * 0.6) % 40) / 40} />
@@ -309,7 +366,7 @@ export const GeoMap: React.FC<{g: GeoT; seed: string}> = ({g: gRaw, seed}) => {
       {(g.labels ?? []).map((lb, i) => {
         const xy = geo.proj([lb.lon, lb.lat]);
         if (!xy || !geo.visible([lb.lon, lb.lat])) return null;
-        const nm = named.find((q) => q.id === `l:${i}`), q = sc(xy), a0 = (lb.at ?? 0) * d, ox = nm?.dx ?? 0, oy = nm?.dy ?? 0;
+        const nm = named.find((q) => q.id === `l:${i}`), q = sc(xy), a0 = (dAt(lb.at) ?? 0) * d, ox = nm?.dx ?? 0, oy = nm?.dy ?? 0;
         const typed = (from: number, len: number, per: number) => (len <= 0 ? 0 : Math.round(interpolate(f, [from, from + len * per], [0, len], C)));
         const n = typed(a0, lb.t.length, 2.2);
         const n2 = typed(a0 + lb.t.length * 2.2 + 6, lb.sub?.length ?? 0, 2);
@@ -317,13 +374,34 @@ export const GeoMap: React.FC<{g: GeoT; seed: string}> = ({g: gRaw, seed}) => {
         const txt = lb.t.slice(0, n);
         return (
           <g key={i}>
-            {kind === 'city' && <circle cx={q[0]} cy={q[1]} r={8} fill="#fff" stroke={INK} strokeWidth={3} opacity={op(at(lb.at) * 3)} />}
-            {kind === 'mountain' && <path d={`M${q[0] - 14} ${q[1] + 8} L${q[0]} ${q[1] - 16} L${q[0] + 14} ${q[1] + 8}Z`} fill="#fff" stroke={INK} strokeWidth={3} opacity={op(at(lb.at) * 3)} />}
+            {kind === 'city' && <circle cx={q[0]} cy={q[1]} r={8} fill="#fff" stroke={INK} strokeWidth={3} opacity={op(at(dAt(lb.at)) * 3)} />}
+            {kind === 'mountain' && <path d={`M${q[0] - 14} ${q[1] + 8} L${q[0]} ${q[1] - 16} L${q[0] + 14} ${q[1] + 8}Z`} fill="#fff" stroke={INK} strokeWidth={3} opacity={op(at(dAt(lb.at)) * 3)} />}
             <text x={q[0] + ox} y={q[1] + oy + (kind === 'city' || kind === 'mountain' ? -26 : 0)} textAnchor="middle" fontFamily={HAND} fontSize={fs} fontStyle={kind === 'sea' || kind === 'river' || kind === 'mountain' ? 'italic' : 'normal'} letterSpacing={kind === 'sea' ? 9 : 0} fill={kind === 'sea' ? '#cfe9ff' : '#fff'} stroke={kind === 'sea' ? '#0b2a52' : INK} strokeWidth={kind === 'sea' ? 6 : kind ? 6 : 9} paintOrder="stroke" opacity={kind === 'sea' ? 0.92 : 1}>{txt}</text>
             {lb.sub && <text x={q[0] + ox} y={q[1] + oy + fs * 0.78} textAnchor="middle" fontFamily={HAND} fontSize={fs * 0.62} fill="#ffe14a" stroke={INK} strokeWidth={7} paintOrder="stroke">{lb.sub.slice(0, n2)}</text>}
           </g>
         );
       })}
+      {(gRaw as any).approx && <text x={1890} y={1054} textAnchor="end" fontFamily={HAND} fontSize={19} fill="#ffffff" opacity={0.55}>Borders approximate</text>}
+      {(() => {
+        const pr = (gRaw as any).presenter as any; // K1: read from the raw script object, like clash
+        if (!pr) return null;
+        let pos: [number, number] | null = null;
+        if (pr.corner) { pos = pr.corner === 'bl' ? [180, 950] : pr.corner === 'br' ? [1740, 950] : pr.corner === 'tl' ? [180, 330] : [1740, 330]; }
+        else { const ll = (pr.place ? (geoLib as any).places?.[pr.place] : pr.lon !== undefined ? [pr.lon, pr.lat] : null) as [number, number] | null; const xy = ll ? geo.proj(ll) : null; if (!ll || !xy || !geo.visible(ll)) return null; const q = sc(xy); pos = [q[0], q[1]]; }
+        if (!pos) return null;
+        const pin = pr.point ? (g.pins ?? []).find((pn: any) => pn.name === pr.point) : undefined;
+        const tll = (pin ? [pin.lon, pin.lat] : pr.pointLon !== undefined ? [pr.pointLon, pr.pointLat] : pr.pointPlace ? (geoLib as any).places?.[pr.pointPlace] : null) as [number, number] | null;
+        let tgt: [number, number] | null = null;
+        if (tll) { const xy = geo.proj(tll); if (xy && geo.visible(tll)) { const q = sc(xy); tgt = [q[0], q[1]]; } }
+        const S = (pr.s ?? 0.45) * 1.3, flip = tgt ? tgt[0] < pos[0] : false;
+        const hand: [number, number] = [pos[0] + (flip ? -1 : 1) * 130 * S, pos[1] - 245 * S];
+        return (
+          <g>
+            {tgt && (<g><line x1={hand[0]} y1={hand[1]} x2={tgt[0]} y2={tgt[1]} stroke={INK} strokeWidth={9} strokeLinecap="round" /><line x1={hand[0]} y1={hand[1]} x2={tgt[0]} y2={tgt[1]} stroke="#8a5a33" strokeWidth={5} strokeLinecap="round" /><circle cx={tgt[0]} cy={tgt[1]} r={13 + Math.sin(f / 6) * 2.5} fill="none" stroke="#ffd24a" strokeWidth={4} /></g>)}
+            <g transform={`translate(${pos[0]} ${pos[1]})`}><Actor a={{look: 'presenter', x: 0, y: 0, s: pr.s ?? 0.45, pose: tgt ? 'point' : 'idle', held: tgt ? 'pointer' : undefined, flip, at: pr.at ?? 0, ns: true}} seed="pres" /></g>
+          </g>
+        );
+      })()}
       {(gRaw as any).focus && <FocusOverlay focus={(gRaw as any).focus} f={f} d={d} seed={seed} />}
     </svg>
   );
