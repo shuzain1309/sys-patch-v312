@@ -66,10 +66,15 @@ jobs:
         with:
           path: ~/.cache/huggingface
           key: hf-kokoro-whisper-v1
+      - uses: actions/cache@v4
+        with:
+          path: ~/apt-archives
+          key: apt-voice-v1
       - name: 3 Install voice engine
         run: |
+          mkdir -p ~/apt-archives/partial
           sudo apt-get update -y
-          sudo apt-get install -y espeak-ng ffmpeg libsndfile1
+          sudo apt-get install -y -o Dir::Cache::Archives=$HOME/apt-archives espeak-ng ffmpeg libsndfile1
           pip install torch --index-url https://download.pytorch.org/whl/cpu
           pip install -r src/tts/requirements.txt -c src/tts/constraints.txt
           python -m spacy download en_core_web_sm
@@ -103,10 +108,15 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+      - uses: actions/cache@v4
+        with:
+          path: ~/apt-archives
+          key: apt-merge-v1
       - name: 5 Install audio tools
         run: |
+          mkdir -p ~/apt-archives/partial
           sudo apt-get update -y
-          sudo apt-get install -y ffmpeg libsndfile1
+          sudo apt-get install -y -o Dir::Cache::Archives=$HOME/apt-archives ffmpeg libsndfile1
           pip install numpy soundfile pillow
       - name: 6 Merge speech, make captions and SEO
         run: python src/tts/generate_voice.py merge
@@ -163,11 +173,16 @@ jobs:
         with:
           path: node_modules
           key: nm-${{ hashFiles('package.json') }}-${{ vars.DEPS_VERSION || '1' }}
+      - uses: actions/cache@v4
+        with:
+          path: ~/apt-archives
+          key: apt-render-v1
       - name: Install (cached after the first run)
         run: |
           [ -d node_modules/remotion ] || npm install --no-audit --no-fund
+          mkdir -p ~/apt-archives/partial
           sudo apt-get update -y
-          sudo apt-get install -y libnss3 libdbus-1-3 libatk1.0-0t64 libasound2t64 libxrandr2 libxkbcommon-dev libxfixes3 libxcomposite1 libxdamage1 libgbm-dev libatk-bridge2.0-0t64 libpango-1.0-0 libcairo2 libcups2t64
+          sudo apt-get install -y -o Dir::Cache::Archives=$HOME/apt-archives libnss3 libdbus-1-3 libatk1.0-0t64 libasound2t64 libxrandr2 libxkbcommon-dev libxfixes3 libxcomposite1 libxdamage1 libgbm-dev libatk-bridge2.0-0t64 libpango-1.0-0 libcairo2 libcups2t64
           npx remotion browser ensure
           echo "cores: $(nproc)"; npx remotion versions 2>/dev/null | head -3 || true
       - name: Render picture, frames ${{ matrix.a }}-${{ matrix.b }}
@@ -233,9 +248,14 @@ jobs:
           pattern: audio-*
           path: wavs
           merge-multiple: true
+      - uses: actions/cache@v4
+        with:
+          path: ~/apt-archives
+          key: apt-finish-v1
       - name: Join picture chunks
         run: |
-          sudo apt-get install -y ffmpeg >/dev/null
+          mkdir -p ~/apt-archives/partial
+          command -v ffmpeg >/dev/null || sudo apt-get install -y -o Dir::Cache::Archives=$HOME/apt-archives ffmpeg >/dev/null
           N=${{ needs.merge.outputs.count }}
           for i in $(seq 0 $((N - 1))); do echo "file 'chunks/chunk-$i.mp4'" >> vlist.txt; done
           ffmpeg -y -loglevel error -f concat -safe 0 -i vlist.txt -c copy video.mp4
@@ -258,7 +278,7 @@ jobs:
         id: drive
         if: env.RCLONE_CONF != ''
         run: |
-          sudo apt-get install -y rclone >/dev/null
+          command -v rclone >/dev/null || sudo apt-get install -y -o Dir::Cache::Archives=$HOME/apt-archives rclone >/dev/null
           mkdir -p ~/.config/rclone
           printf '%s' "$RCLONE_CONF" > ~/.config/rclone/rclone.conf
           D="gdrive:${DRIVE_DIR}/${{ needs.check.outputs.slug }}"

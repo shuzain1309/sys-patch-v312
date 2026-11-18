@@ -118,6 +118,8 @@ def norm_music(src, dst, lufs):
     """Two-pass EBU R128 so every track sits at the same loudness; stereo 48 kHz."""
     tp = -2
     a = run('-i', str(src), '-af', f'loudnorm=I={lufs}:TP={tp}:LRA=11:print_format=json', '-f', 'null', '-').stderr
+    if '{' not in a or '}' not in a:
+        raise RuntimeError(f'loudnorm measured nothing for {src.name} - ffmpeg could not decode it as audio')
     j = json.loads(a[a.rindex('{'):a.rindex('}') + 1])
     af = (f'loudnorm=I={lufs}:TP={tp}:LRA=11:measured_I={j["input_i"]}:measured_TP={j["input_tp"]}:measured_LRA={j["input_lra"]}'
           f':measured_thresh={j["input_thresh"]}:offset={j["target_offset"]}:linear=true')
@@ -131,6 +133,7 @@ def build(out, credits=None):
     mix = json.loads((ROOT / 'audio-mix.json').read_text())
     man = {'sfx': {}, 'music': {}, 'levels': {k: v for k, v in mix.items() if not k.startswith('_')}}
     lines = []
+    skipped = []
     for kind in KINDS:
         _, lib, cred_f = load(kind)
         (out / kind).mkdir(parents=True, exist_ok=True)
@@ -139,11 +142,17 @@ def build(out, credits=None):
             if p.suffix not in EXT:
                 continue
             dst = out / kind / f'{p.stem}.wav'
-            if kind == 'music':
-                norm_music(p, dst, mix['music_lufs'])
-            else:
-                loop = p.stem.endswith('_loop')  # ambience beds sit lower than one-shot effects
-                norm_sfx(p, dst, mix['sfx']['mean_db'] - (4 if loop else 0), mix['sfx']['peak_db'])
+            print(f'  {kind}: {p.name}', flush=True)
+            try:
+                if kind == 'music':
+                    norm_music(p, dst, mix['music_lufs'])
+                else:
+                    loop = p.stem.endswith('_loop')  # ambience beds sit lower than one-shot effects
+                    norm_sfx(p, dst, mix['sfx']['mean_db'] - (4 if loop else 0), mix['sfx']['peak_db'])
+            except Exception as e:
+                print(f'::warning::SKIP {kind}/{p.name}: {e} - treated as missing, its cues fall silent')
+                skipped.append(f'{kind}/{p.name}')
+                continue
             man[kind][p.stem] = {'sec': seconds(dst)}
             c = cred.get(p.stem)
             lines.append(f'{kind}/{p.stem}: ' + (f'{c["name"]} by {c["username"]} ({c["license"]}) freesound.org/s/{c["id"]}' if c else 'added by hand, licence not recorded'))
@@ -152,6 +161,8 @@ def build(out, credits=None):
         pathlib.Path(credits).parent.mkdir(parents=True, exist_ok=True)
         pathlib.Path(credits).write_text('Sound effects and music used by this render (real recordings, CC0 unless stated)\n\n' + '\n'.join(lines) + '\n')
     print(f'audio: {len(man["sfx"])} effects, {len(man["music"])} music tracks')
+    if skipped:
+        print(f'::warning::skipped {len(skipped)} bad file(s): {", ".join(skipped)}')
     if not man['sfx']:
         print('::warning::sfx-real/ is empty; run the fetch-sfx workflow once')
     if not man['music']:
