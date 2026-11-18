@@ -46,7 +46,7 @@ export type GeoT = Omit<GeoStrict, 'from' | 'to' | 'pins' | 'labels' | 'regions'
   texture?: boolean; // K2 (2026-11-18): deterministic relief texture under the territory fills + a gentle sea grain; DEFAULT ON — texture:false restores the flat look
   approx?: boolean; // 6.i.7: draw the tiny "Borders approximate" disclaimer, bottom-right — set on scenes showing modern (post-1900) borders
   twobeat?: boolean; // 6.i.4: two-beat reveal — fills land first, labels/pins second; DEFAULT ON when the scene has fills, twobeat:false restores legacy timing
-  presenter?: {lon?: number; lat?: number; place?: string; corner?: 'bl' | 'br' | 'tl' | 'tr'; point?: string; pointLon?: number; pointLat?: number; pointPlace?: string; at?: number; s?: number}; // K1 (2026-11-18): the presenter standing on the map; point = the name of a pin in pins[] for his pointer to touch
+  presenter?: {lon?: number; lat?: number; place?: string; corner?: 'bl' | 'br' | 'tl' | 'tr'; point?: string; pointLon?: number; pointLat?: number; pointPlace?: string; stand?: 'n' | 's' | 'e' | 'w' | 'ne' | 'nw' | 'se' | 'sw' | 'auto'; at?: number; s?: number}; // K1 (2026-11-18): the presenter on the map; point = the name of a pin in pins[] for his pointer to touch. When pointing, his position is DERIVED FROM THE STICK (stand = direction he stands relative to the target, default 'auto'); lon/lat/place only place him when he is not pointing
 };
 
 // ---------- procedural satellite textures (tileable value noise, generated once per browser tab) ----------
@@ -385,22 +385,60 @@ export const GeoMap: React.FC<{g: GeoT; seed: string}> = ({g: gRaw, seed}) => {
       {(() => {
         const pr = (gRaw as any).presenter as any; // K1: read from the raw script object, like clash
         if (!pr) return null;
-        let pos: [number, number] | null = null;
-        if (pr.corner) { pos = pr.corner === 'bl' ? [180, 950] : pr.corner === 'br' ? [1740, 950] : pr.corner === 'tl' ? [180, 330] : [1740, 330]; }
-        else { const ll = (pr.place ? (geoLib as any).places?.[pr.place] : pr.lon !== undefined ? [pr.lon, pr.lat] : null) as [number, number] | null; const xy = ll ? geo.proj(ll) : null; if (!ll || !xy || !geo.visible(ll)) return null; const q = sc(xy); pos = [q[0], q[1]]; }
-        if (!pos) return null;
+        const S = (pr.s ?? 0.45) * 1.3;
         const pin = pr.point ? (g.pins ?? []).find((pn: any) => pn.name === pr.point) : undefined;
         const tll = (pin ? [pin.lon, pin.lat] : pr.pointLon !== undefined ? [pr.pointLon, pr.pointLat] : pr.pointPlace ? (geoLib as any).places?.[pr.pointPlace] : null) as [number, number] | null;
         let tgt: [number, number] | null = null;
         if (tll) { const xy = geo.proj(tll); if (xy && geo.visible(tll)) { const q = sc(xy); tgt = [q[0], q[1]]; } }
-        const S = (pr.s ?? 0.45) * 1.3, flip = tgt ? tgt[0] < pos[0] : false;
-        const hand: [number, number] = [pos[0] + (flip ? -1 : 1) * 130 * S, pos[1] - 245 * S];
-        return (
-          <g>
-            {tgt && (<g><line x1={hand[0]} y1={hand[1]} x2={tgt[0]} y2={tgt[1]} stroke={INK} strokeWidth={9} strokeLinecap="round" /><line x1={hand[0]} y1={hand[1]} x2={tgt[0]} y2={tgt[1]} stroke="#8a5a33" strokeWidth={5} strokeLinecap="round" /><circle cx={tgt[0]} cy={tgt[1]} r={13 + Math.sin(f / 6) * 2.5} fill="none" stroke="#ffd24a" strokeWidth={4} /></g>)}
-            <g transform={`translate(${pos[0]} ${pos[1]})`}><Actor a={{look: 'presenter', x: 0, y: 0, s: pr.s ?? 0.45, pose: tgt ? 'point' : 'idle', held: tgt ? 'pointer' : undefined, flip, at: pr.at ?? 0, ns: true}} seed="pres" /></g>
-          </g>
-        );
+        const drawPres = (pos: [number, number], point: boolean) => {
+          const flip = point && tgt ? tgt[0] < pos[0] : false;
+          const hand: [number, number] = [pos[0] + (flip ? -1 : 1) * 130 * S, pos[1] - 245 * S];
+          return (
+            <g>
+              {point && tgt && (<g><line x1={hand[0]} y1={hand[1]} x2={tgt[0]} y2={tgt[1]} stroke={INK} strokeWidth={9} strokeLinecap="round" /><line x1={hand[0]} y1={hand[1]} x2={tgt[0]} y2={tgt[1]} stroke="#8a5a33" strokeWidth={5} strokeLinecap="round" /><circle cx={tgt[0]} cy={tgt[1]} r={13 + Math.sin(f / 6) * 2.5} fill="none" stroke="#ffd24a" strokeWidth={4} /></g>)}
+              <g transform={`translate(${pos[0]} ${pos[1]})`}><Actor a={{look: 'presenter', x: 0, y: 0, s: pr.s ?? 0.45, pose: point ? 'point' : 'idle', held: point ? 'pointer' : undefined, flip, at: pr.at ?? 0, ns: true}} seed="pres" /></g>
+            </g>
+          );
+        };
+        if (pr.corner) { const pos: [number, number] = pr.corner === 'bl' ? [180, 950] : pr.corner === 'br' ? [1740, 950] : pr.corner === 'tl' ? [180, 330] : [1740, 330]; return drawPres(pos, !!tgt); }
+        if (tgt) {
+          // Stick-derived placement (Bruce, 2026-11-18): the presenter NEVER stands on the
+          // region he indicates. Only the TIP of his stick touches the target T; his feet
+          // anchor sits exactly one stick-length L from T along the stand direction, and
+          // the drawn stick runs from his hand to the tip on T — place the tip, the man
+          // follows the stick. L = the pointer's drawn length (322 units in the held-item
+          // art in world.tsx) in the same screen scale as the hand offsets (x1.3 x s).
+          // Recomputed per frame from T, so he glides with the camera as before.
+          const L = 322 * S;
+          const DIRS: Record<string, [number, number]> = {n: [0, -1], s: [0, 1], e: [1, 0], w: [-1, 0], ne: [0.7071, -0.7071], nw: [-0.7071, -0.7071], se: [0.7071, 0.7071], sw: [-0.7071, 0.7071]};
+          const anchorFor = (dir: string): [number, number] => [tgt[0] + DIRS[dir][0] * L, tgt[1] + DIRS[dir][1] * L];
+          const farSide = (A: [number, number]): boolean => { // invert the screen anchor back to lon/lat; he hides when his STAND point rotates to the globe's far side (T's own visibility is already checked above)
+            const inv = (geo.proj as any).invert as ((pt: [number, number]) => [number, number] | null) | undefined;
+            if (!inv) return false;
+            const llA = inv([cx + (A[0] - 960) / m, cy + (A[1] - 540) / m]);
+            return !!llA && !geo.visible(llA);
+          };
+          const sN = pr.s ?? 0.45, figH = 615 * sN, figHW = 170 * sN, MG = 12; // his figure box: ~615 units tall at s=1, ~340 wide, feet at the anchor
+          const pen = (A: [number, number]): number => Math.max(0, MG - (A[0] - figHW)) + Math.max(0, (A[0] + figHW) - (1920 - MG)) + Math.max(0, MG - (A[1] - figH)) + Math.max(0, A[1] - (1080 - MG)); // total frame overflow in px; 0 = the whole figure is in frame
+          let pos: [number, number] | null = null;
+          if (pr.stand && pr.stand !== 'auto' && DIRS[pr.stand]) { const A = anchorFor(pr.stand); if (!farSide(A)) pos = A; }
+          else { // 'auto' (default): evaluate the 4 diagonals, then the 4 cardinals. Among the directions that keep the whole figure in frame, prefer the anchor FARTHEST from frame centre — he tends to stand toward the open edge/sea rather than across the map's middle. If none keeps him fully in frame, take the least-overflow direction: minimal overflow, never a fallback onto the target.
+            const ORDER = ['nw', 'ne', 'sw', 'se', 'n', 's', 'e', 'w'];
+            const cands = ORDER.map((dir) => ({dir, A: anchorFor(dir)})).filter((c) => !farSide(c.A));
+            if (!cands.length) return null;
+            const fitting = cands.filter((c) => pen(c.A) === 0);
+            if (fitting.length) { let best = fitting[0]; for (const c of fitting) { const d2 = (c.A[0] - 960) ** 2 + (c.A[1] - 540) ** 2, b2 = (best.A[0] - 960) ** 2 + (best.A[1] - 540) ** 2; if (d2 > b2) best = c; } pos = best.A; }
+            else { let best = cands[0]; for (const c of cands) if (pen(c.A) < pen(best.A)) best = c; pos = best.A; }
+          }
+          if (!pos) return null;
+          return drawPres(pos, true);
+        }
+        // Not pointing: legacy stand placement (lon/lat or library place), idle, no stick.
+        const ll = (pr.place ? (geoLib as any).places?.[pr.place] : pr.lon !== undefined ? [pr.lon, pr.lat] : null) as [number, number] | null;
+        const xy = ll ? geo.proj(ll) : null;
+        if (!ll || !xy || !geo.visible(ll)) return null;
+        const q = sc(xy);
+        return drawPres([q[0], q[1]], false);
       })()}
       {(gRaw as any).focus && <FocusOverlay focus={(gRaw as any).focus} f={f} d={d} seed={seed} />}
     </svg>
