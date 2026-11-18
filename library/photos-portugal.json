@@ -1,0 +1,168 @@
+{
+ "_doc": "Portugal pack photo pins (2026-11-18). PD/CC0/CC BY only at fetch; CC BY-SA flagged as MISS risks with drawn fallbacks named in alt.",
+ "photos": [
+  {
+   "id": "afonso_statue",
+   "alt": "The statue of Afonso Henriques outside Guimarães Castle [RISK: modern sculpture photography often CC BY-SA; fallback: the drawn afonso stage scenes]",
+   "must": [
+    "afonso henriques",
+    "statue",
+    "guimaraes"
+   ],
+   "q": "Afonso Henriques statue Guimaraes castle"
+  },
+  {
+   "id": "guimaraes_castle",
+   "alt": "Guimarães Castle, birthplace of Portugal [RISK: CC BY-SA common; fallback: castle bg stage scenes]",
+   "must": [
+    "guimaraes",
+    "castle"
+   ],
+   "q": "Guimaraes Castle Portugal"
+  },
+  {
+   "id": "afonso_chronicle",
+   "alt": "Afonso Henriques in a medieval chronicle miniature (public domain)",
+   "must": [
+    "afonso",
+    "chronicle"
+   ],
+   "q": "Afonso Henriques chronicle miniature"
+  },
+  {
+   "id": "aljubarrota_chronicle",
+   "alt": "The Battle of Aljubarrota in Jean de Wavrin's chronicle, 1385 (public domain)",
+   "must": [
+    "aljubarrota"
+   ],
+   "q": "Battle of Aljubarrota Wavrin chronicle"
+  },
+  {
+   "id": "batalha_monastery",
+   "alt": "Batalha Monastery, built in thanks for Aljubarrota [RISK: CC BY-SA common; fallback: cathedral bg]",
+   "must": [
+    "batalha",
+    "monastery"
+   ],
+   "q": "Batalha Monastery Portugal"
+  },
+  {
+   "id": "henry_navigator",
+   "alt": "Henry the Navigator from the Saint Vincent Panels, c. 1470 (public domain)",
+   "must": [
+    "henry",
+    "navigator",
+    "saint vincent panels"
+   ],
+   "q": "Henry the Navigator Saint Vincent Panels"
+  },
+  {
+   "id": "sebastiao_portrait",
+   "alt": "King Sebastian of Portugal, portrait attributed to Alonso Sánchez Coello (public domain)",
+   "must": [
+    "sebastian",
+    "portugal",
+    "portrait"
+   ],
+   "q": "King Sebastian of Portugal portrait Coello"
+  },
+  {
+   "id": "belem_tower",
+   "alt": "Belém Tower on the Tagus, Lisbon [RISK: CC BY-SA common; fallback: tagus bg with drawn tower]",
+   "must": [
+    "belem",
+    "tower"
+   ],
+   "q": "Belem Tower Lisbon"
+  },
+  {
+   "id": "jeronimos_monastery",
+   "alt": "Jerónimos Monastery, Lisbon [RISK: CC BY-SA common; fallback: cathedral bg]",
+   "must": [
+    "jeronimos"
+   ],
+   "q": "Jeronimos Monastery Lisbon"
+  },
+  {
+   "id": "cantino_map",
+   "alt": "The Cantino planisphere, 1502 — the world Portugal and Spain divided (public domain)",
+   "must": [
+    "cantino"
+   ],
+   "q": "Cantino planisphere 1502"
+  },
+  {
+   "id": "gama_tomb",
+   "alt": "The tomb of Vasco da Gama at Jerónimos [RISK: CC BY-SA common; fallback: tomb bg]",
+   "must": [
+    "vasco da gama",
+    "tomb"
+   ],
+   "q": "Vasco da Gama tomb Jeronimos"
+  },
+  {
+   "id": "padrao_cao",
+   "alt": "A padrão stone pillar of Diogo Cão [RISK: museum photography terms vary; fallback: the drawn padrao_pt prop scenes]",
+   "must": [
+    "padrao",
+    "diogo cao"
+   ],
+   "q": "Diogo Cao padrao stone pillar"
+  },
+  {
+   "id": "lisbon_earthquake_1755",
+   "alt": "Lisbon in flames and flood, 1755 — contemporary engraving (public domain)",
+   "must": [
+    "lisbon",
+    "earthquake",
+    "1755"
+   ],
+   "q": "Lisbon earthquake 1755 engraving"
+  },
+  {
+   "id": "restauradores_lisbon",
+   "alt": "The Restauradores obelisk, Lisbon — raised to the 1640 restoration [RISK: CC BY-SA common; fallback: street bg]",
+   "must": [
+    "restauradores"
+   ],
+   "q": "Restauradores Square Lisbon obelisk"
+  },
+  {
+   "id": "olivenca_castle",
+   "alt": "The castle of Olivença, the town Spain kept in 1801 [RISK: CC BY-SA common; fallback: castle bg]",
+   "must": [
+    "olivenca",
+    "olivenza"
+   ],
+   "q": "Olivenca castle"
+  },
+  {
+   "id": "porto_ribeira",
+   "alt": "The Ribeira waterfront, Porto [RISK: CC BY-SA common; fallback: harbor bg]",
+   "must": [
+    "porto",
+    "ribeira"
+   ],
+   "q": "Porto Ribeira waterfront"
+  },
+  {
+   "id": "tagus_bridge",
+   "alt": "The 25 de Abril Bridge over the Tagus, Lisbon [RISK: CC BY-SA common; fallback: tagus bg]",
+   "must": [
+    "25 de abril",
+    "bridge",
+    "lisbon"
+   ],
+   "q": "25 de Abril Bridge Lisbon"
+  },
+  {
+   "id": "sagres_fortress",
+   "alt": "The fortress at Sagres, on the cliffs Henry watched [RISK: CC BY-SA common; fallback: sagres bg]",
+   "must": [
+    "sagres",
+    "fortress"
+   ],
+   "q": "Sagres fortress Portugal"
+  }
+ ]
+}
