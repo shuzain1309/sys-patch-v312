@@ -53,5 +53,14 @@
  "sumter_flag": "HTTP Error 429: Too Many Requests",
  "usct_soldiers": "HTTP Error 429: Too Many Requests",
  "uss_monitor": "HTTP Error 429: Too Many Requests",
- "vicksburg_siege": "HTTP Error 429: Too Many Requests"
+ "vicksburg_siege": "HTTP Error 429: Too Many Requests",
+ "guimaraes_castle": "download failed: HTTP Error 429: Too many requests. Please contact the Wikimedia SRE team at noc@wikimedia.org and refer to this message. (daab851)",
+ "afonso_chronicle": "no usable image. ",
+ "afonso_statue": "no usable image. File:D. Afonso Henriques em Guimarães 09-1.jpg: licence \"CC BY-SA 4.0\" not allowed",
+ "aljubarrota_chronicle": "no usable image. ",
+ "sagres_fortress": "download failed: HTTP Error 429: Too many requests. Please contact the Wikimedia SRE team at noc@wikimedia.org and refer to this message. (daab851)",
+ "henry_navigator": "no usable image. File:Alternative Henry the Navigator (St. Vincent Panels).jpg: only 370 px wide; File:ID key fifth panel of St Vincent panels.jpg: only 776 px wide; File:Nuno Gonçalves - Altarpiece of Saint Vincent, the panel of the Knights - WGA9737.jpg: only 448 px wide; File:Henry the Navigator1",
+ "padrao_cao": "no usable image. ",
+ "jeronimos_monastery": "no usable image. File:Jerónimos Monastery in Belém - Lisbon - Portugal - 05.jpg: licence \"CC BY-SA 4.0\" not allowed; File:Jerónimos Monastery in Belém - Lisbon - Portugal - 04.jpg: licence \"CC BY-SA 4.0\" not allowed; File:Jerónimos Monastery in Belém - Lisbon - Portugal - 03.jpg: licence \"CC BY-SA 4",
+ "belem_tower": "HTTP Error 429: Too Many Requests"
 }
