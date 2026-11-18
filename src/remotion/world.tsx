@@ -1428,7 +1428,7 @@ export const Weather: React.FC<{k: WeatherKind | WeatherKind[]; seed?: string}> 
 export type BgKind = 'desert' | 'grass' | 'sea' | 'street' | 'interior' | 'steppe' | 'snow' | 'mountains' | 'forest' | 'battlefield' | 'harbor' | 'castle' | 'palace' | 'nile' | 'pyramids' | 'temple' | 'tomb' | 'cathedral' | 'workshop' | 'salon' | 'jerusalem' | 'judean' | 'coast' | 'hall' | 'yellowriver' | 'karst' | 'plain' | 'parchment' | 'town' | 'stadium' | 'wallnight' | 'office' | 'ruins' | 'bunker' | 'palace_kr' | 'dmz' | 'shipyard_kr' | 'seoulnight' | 'pyongyang' | 'market_kr' | 'darkhome' | 'persepolis' | 'isfahan' | 'plateau' | 'fire_temple' | 'bazaar_ir' | 'caravanserai' | 'tehran_modern' | 'ricefield_jp' | 'edo_jp' | 'castle_jp' | 'shrine_jp' | 'tokyo_ruin' | 'tokyo_jp' | 'hindukush' | 'kabul_old' | 'kandahar' | 'bamiyan_valley' | 'khyber' | 'bazaar_af' | 'kabul_modern' | 'field_dawn' | 'river_reach' | 'cotton_port' | 'senate' | 'telegraph_office' | 'hospital' | 'ruined_city' | 'courthouse' | 'theatre_night' | 'tagus' | 'sagres' | 'douro' | 'hills_pt' | 'pines_pt';
 export type Tod = 'day' | 'dusk' | 'night' | 'fire';
 export type TextT = {t: string; x: number; y: number; at?: number; size?: number; color?: string};
-export type StageT = {shake?: {at: number; amp?: number}; flash?: {at: number; c?: string}; bars?: boolean; focus?: FocusT | FocusT[]; spot?: {x: number; y: number; r?: number}; bg: BgKind; plate?: string; drift?: boolean; blurbg?: boolean; host?: {side?: 'l' | 'r'; pose?: PoseName; at?: number; pointer?: boolean}; tod?: Tod; props?: PropT[]; actors?: ActorT[]; texts?: TextT[]; fx?: WeatherKind | WeatherKind[]; cam?: {x?: [number, number]; z?: [number, number]; at?: [number, number]}; shots?: ShotT[]; labels?: LabelT[]};
+export type StageT = {shake?: {at: number; amp?: number}; flash?: {at: number; c?: string}; bars?: boolean; focus?: FocusT | FocusT[]; spot?: {x: number; y: number; r?: number}; bg: BgKind; plate?: string; drift?: boolean; blurbg?: boolean; tod?: Tod; props?: PropT[]; actors?: ActorT[]; texts?: TextT[]; fx?: WeatherKind | WeatherKind[]; cam?: {x?: [number, number]; z?: [number, number]; at?: [number, number]}; shots?: ShotT[]; labels?: LabelT[]};
 // Screen-space labels that follow the camera: name (anchored to an actor), faction pill, place, date chip, fact-check badge
 export type LabelT = {k: 'name' | 'faction' | 'place' | 'date' | 'fact'; t: string; fac?: string; sub?: string; actor?: number; x?: number; y?: number; c?: string; at?: number; until?: number; below?: boolean};
 // camera helpers: `cam: bust(actor)` frames head and shoulders of that actor, `cam: pushIn(actor)` a slow push toward the face
@@ -1727,24 +1727,6 @@ const LabelArt: React.FC<{l: LabelT; x: number; y: number; f: number; d: number}
   return <g transform={`translate(${X} ${Y + (1 - p.k) * 14})`} opacity={p.o * out}>{body}</g>;
 };
 
-// HOST CLOSE-UP (2026-11-18, Bruce — the presenter hosts; HistorySuitcase framing): a stage may set
-// `host` to render the registered `presenter` look WAIST-UP over the backdrop — head-to-stomach
-// filling ~88% of the frame height, cropped by the frame's bottom edge. Screen-space (locked-off:
-// the backdrop may drift/blur behind him, he does not), in the actor layer — above the backdrop,
-// below labels/texts, focus overlay still last. Geometry from the Actor rig's own proportions
-// (standing pose, Actor-local units, feet at 0): conical-hat apex -468 (tassel curls reach -496),
-// head centre -340 (r 58), shoulders -268, hip line -150, tunic belt -162..-152. The crop line is
-// the hip line (-150): the whole torso incl. the belt stays in frame, the legs are cut by the
-// frame edge — a waist-up shot by construction, not by eyeball. Span -468..-150 = 318 units is
-// scaled to 0.88 x 1080 = 950px (sEff ~2.99; tassel tips land at y~46, still in frame), and the
-// feet anchor sits at y = 1080 + 150 x sEff ~ 1528 so the hip line lands exactly on y=1080.
-// Anchors x 500 (side 'l') / 1420 (side 'r', flipped): hat brim (±84 units ~ ±251px) clears the
-// frame edge, and his pointing hand (~+147 units ~ +439px) reaches just inside frame centre.
-const HOST_TOP = -468, HOST_CROP = -150, HOST_FILL = 0.88;
-const HOST_SEFF = (1080 * HOST_FILL) / (HOST_CROP - HOST_TOP); // ~2.99 effective (post-CHAR) scale
-const HOST_Y = 1080 - HOST_CROP * HOST_SEFF; // feet anchor ~1528: hip line exactly on the frame's bottom edge
-const HOST_X = {l: 500, r: 1420};
-
 const StageOne: React.FC<{st: StageT; words?: WordT[]; seed: string; avoid?: Rect[]}> = ({st, words, seed, avoid}) => {
   const f = useCurrentFrame();
   const {fps, durationInFrames: d} = useVideoConfig();
@@ -1785,10 +1767,6 @@ const StageOne: React.FC<{st: StageT; words?: WordT[]; seed: string; avoid?: Rec
         {items.map((q) => q.el)}
         <rect width={1920} height={1080} fill={tint} />
       </g>
-      {st.host && (() => { // host close-up: waist-up presenter, screen-space, actor layer (above backdrop+blur, below labels/texts/focus)
-        const side = st.host.side ?? 'l';
-        return (<Actor a={{look: 'presenter', x: HOST_X[side], y: HOST_Y, s: HOST_SEFF / CHAR, pose: st.host.pose ?? 'point', held: st.host.pointer ? 'pointer' : undefined, flip: side === 'r', talk: true, at: st.host.at ?? 0}} words={words} seed={`${seed}host`} />);
-      })()}
       {st.fx && <Weather k={st.fx} seed={seed} />}
       {st.spot && (<g><defs><radialGradient id={`sp${seed}`} cx={st.spot.x} cy={st.spot.y} r={((st.spot.r ?? 330) * 2)} gradientUnits="userSpaceOnUse"><stop offset="0.35" stopColor="#000" stopOpacity={0} /><stop offset="1" stopColor="#000" stopOpacity={0.9} /></radialGradient></defs><rect width={1920} height={1080} fill={`url(#sp${seed})`} opacity={interpolate(f, [0, 16], [0, 1], C)} /></g>)}
       <rect width={1920} height={1080} fill={`url(#vg${seed})`} />
