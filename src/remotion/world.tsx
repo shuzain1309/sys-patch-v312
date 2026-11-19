@@ -280,7 +280,7 @@ export const Actor: React.FC<{a: ActorT; words?: WordT[]; seed?: string}> = ({a,
   const look: Look = typeof a.look === 'object' ? a.look : LOOKS[a.look ?? a.who ?? 'blue'] ?? LOOKS.blue;
   const ph = random(`${seed}ph`) * 6;
   const mvA = (a.at ?? 0) * d, mvB = mvA + Math.max(2, (a.move?.dur ?? Math.max(0.05, 1 - (a.at ?? 0))) * d); // K5 transit window
-  const x = a.move ? interpolate(f, [mvA, mvB], [Array.isArray(a.x) ? a.x[0] : a.x, a.move.x], {...C, easing: Easing.inOut(Easing.quad)}) : Array.isArray(a.x) ? interpolate(f, [0, d * 0.85], a.x, {...C, easing: Easing.inOut(Easing.quad)}) : a.x;
+  const x = a.move ? (a.move.x !== undefined ? interpolate(f, [mvA, mvB], [Array.isArray(a.x) ? a.x[0] : a.x, a.move.x], {...C, easing: Easing.inOut(Easing.quad)}) : (Array.isArray(a.x) ? a.x[0] : a.x)) : Array.isArray(a.x) ? interpolate(f, [0, d * 0.85], a.x, {...C, easing: Easing.inOut(Easing.quad)}) : a.x; // move.x guarded like move.y below: a y-only actor move must not crash interpolate
   const ay = a.move && a.move.y !== undefined ? interpolate(f, [mvA, mvB], [a.y ?? 940, a.move.y], {...C, easing: Easing.inOut(Easing.quad)}) : (a.y ?? 940);
   const moving = (Array.isArray(a.x) && a.x[0] !== a.x[1] && f < d * 0.85) || (a.move !== undefined && f >= mvA && f < mvB);
   const fallen = a.fa !== undefined && f >= a.fa * d;
@@ -1764,7 +1764,7 @@ const StageOne: React.FC<{st: StageT; words?: WordT[]; seed: string; avoid?: Rec
     const e = p.grow ? {o: e0.o, k: 1} : e0; // K3: grow replaces the pop-scale entrance with a clip reveal
     const s = p.s ?? 1;
     let px = p.x, py = p.y; // K5: transit motion interpolates the position across the move window
-    if (p.move) { const a0 = (p.at ?? 0) * d, a1 = a0 + Math.max(2, (p.move.dur ?? Math.max(0.05, 1 - (p.at ?? 0))) * d); px = interpolate(f, [a0, a1], [p.x, p.move.x], {...C, easing: Easing.inOut(Easing.quad)}); py = p.move.y !== undefined ? interpolate(f, [a0, a1], [p.y, p.move.y], {...C, easing: Easing.inOut(Easing.quad)}) : p.y; }
+    if (p.move) { const a0 = (p.at ?? 0) * d, a1 = a0 + Math.max(2, (p.move.dur ?? Math.max(0.05, 1 - (p.at ?? 0))) * d); px = p.move.x !== undefined ? interpolate(f, [a0, a1], [p.x, p.move.x], {...C, easing: Easing.inOut(Easing.quad)}) : p.x; py = p.move.y !== undefined ? interpolate(f, [a0, a1], [p.y, p.move.y], {...C, easing: Easing.inOut(Easing.quad)}) : p.y; } // both axes guarded: a y-only or x-only move must never put undefined into an interpolate outputRange (Portugal s160 crash, 2026-11-19)
     const gp = p.grow ? clamp01((f - (p.at ?? 0) * d) / Math.max(2, ((p.grow === true ? 0.3 : p.grow.dur) ?? 0.3) * d)) : 0;
     const gid = `gr${seed}${i}`;
     const aw = animWrap(p, f, d, `${seed}${i}`); // §6.ii.4 state machines: anim layer sits inside the grow clip, under the art; null (no wrapper emitted) when the prop has no anim
