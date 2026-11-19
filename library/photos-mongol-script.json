@@ -1,0 +1,74 @@
+[
+ {
+  "id": "genghis_portrait",
+  "alt": "Yuan-dynasty album portrait of Genghis Khan, National Palace Museum Taipei, public domain",
+  "must": true,
+  "q": "genghis khan yuan dynasty portrait album leaf"
+ },
+ {
+  "id": "ogedei_portrait",
+  "alt": "Yuan-dynasty album portrait of Ogedei Khan; MISS RISK if not fetchable, drawn fallback is the Karakorum court scene",
+  "must": false,
+  "q": "ogedei khan yuan dynasty portrait"
+ },
+ {
+  "id": "mongol_horsemen_miniature",
+  "alt": "Mongol horsemen in a medieval Persian miniature, Rashid al-Din Jami al-tawarikh, public domain",
+  "must": true,
+  "q": "mongol horsemen miniature rashid al-din jami al-tawarikh"
+ },
+ {
+  "id": "mongol_siege_engines",
+  "alt": "Mongol siege engines before a Chinese city, from the Mongol siege warfare illustrations in Rashid al-Din or a Yuan-era source, public domain",
+  "must": true,
+  "q": "mongol siege engines miniature rashid al-din"
+ },
+ {
+  "id": "baghdad_siege_miniature",
+  "alt": "The Mongol siege of Baghdad 1258, miniature from Rashid al-Din Jami al-tawarikh, public domain",
+  "must": true,
+  "q": "siege of baghdad 1258 miniature rashid al-din"
+ },
+ {
+  "id": "kublai_portrait",
+  "alt": "Yuan-dynasty album portrait of Kublai Khan, National Palace Museum Taipei, public domain",
+  "must": true,
+  "q": "kublai khan yuan dynasty portrait album leaf"
+ },
+ {
+  "id": "kublai_hunting",
+  "alt": "Kublai Khan on a hunting expedition, Yuan-dynasty painting attributed to Liu Guandao c. 1280, public domain; fallback is the Yuan court scene",
+  "must": false,
+  "q": "kublai khan hunting liu guandao 1280"
+ },
+ {
+  "id": "mongol_invasion_scroll",
+  "alt": "The Mongol invasion of Japan, from the Mongol Invasion Scroll Takezaki Suenaga, 13th century, public domain; fallback is the storm fleet scene",
+  "must": false,
+  "q": "mongol invasion scroll takezaki suenaga"
+ },
+ {
+  "id": "marco_polo_departure",
+  "alt": "The Polos leaving China with Princess Kokochin, from the Livre des merveilles manuscript c. 1410-1412, public domain; fallback is the Karakorum caravan scene",
+  "must": false,
+  "q": "marco polo departure livre des merveilles kokochin"
+ },
+ {
+  "id": "hulegu_miniature",
+  "alt": "Hulegu Khan enthroned, miniature from Rashid al-Din Jami al-tawarikh, public domain; fallback is the enthroned prince scene",
+  "must": false,
+  "q": "hulegu khan miniature rashid al-din"
+ },
+ {
+  "id": "golden_horde_coin",
+  "alt": "Silver dirham coin of the Golden Horde, 13th-14th century, museum photograph; MISS RISK, drawn fallback is the Horde tribute scene",
+  "must": false,
+  "q": "golden horde coin dirham 14th century"
+ },
+ {
+  "id": "karakorum_ruins",
+  "alt": "Erdene Zuu monastery and the Karakorum site in Mongolia, CC BY-SA photograph; MISS RISK, drawn fallback is the Karakorum palace background scene",
+  "must": false,
+  "q": "karakorum erdene zuu monastery mongolia"
+ }
+]
