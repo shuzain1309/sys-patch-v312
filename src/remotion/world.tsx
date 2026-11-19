@@ -13,6 +13,7 @@ import {JapanProp, isJapanProp, JapanBg, isJapanBg, JAPAN_GROUND} from './japan_
 import {AfghanistanProp, isAfghanistanProp, AfghanistanBg, isAfghanistanBg, AFGHANISTAN_GROUND} from './afghanistan_pack';
 import {CivilwarProp, isCivilwarProp, CivilwarBg, isCivilwarBg, CIVILWAR_GROUND} from './civilwar_pack';
 import {PortugalProp, isPortugalProp, PortugalBg, isPortugalBg, PORTUGAL_GROUND} from './portugal_pack';
+import {MongolProp, isMongolProp, MongolBg, isMongolBg, MONGOL_GROUND} from './mongol_pack';
 
 export const HAND = typeof window === 'undefined' ? 'sans-serif' : loadHand('normal', {weights: ['400'], subsets: ['latin']}).fontFamily;
 export const INK = '#241c17';
@@ -909,6 +910,7 @@ const PropArt: React.FC<{p: PropT; f: number; seed: string}> = ({p, f, seed}) =>
   if (isAfghanistanProp(p.k)) return <AfghanistanProp p={p} f={f} seed={seed} />;
   if (isCivilwarProp(p.k)) return <CivilwarProp p={p} f={f} seed={seed} />;
   if (isPortugalProp(p.k)) return <PortugalProp p={p} f={f} seed={seed} />;
+  if (isMongolProp(p.k)) return <MongolProp p={p} f={f} seed={seed} />;
   const c = p.c;
   switch (p.k) {
     case 'house': {
@@ -1428,7 +1430,7 @@ export const Weather: React.FC<{k: WeatherKind | WeatherKind[]; seed?: string}> 
 export type BgKind = 'desert' | 'grass' | 'sea' | 'street' | 'interior' | 'steppe' | 'snow' | 'mountains' | 'forest' | 'battlefield' | 'harbor' | 'castle' | 'palace' | 'nile' | 'pyramids' | 'temple' | 'tomb' | 'cathedral' | 'workshop' | 'salon' | 'jerusalem' | 'judean' | 'coast' | 'hall' | 'yellowriver' | 'karst' | 'plain' | 'parchment' | 'town' | 'stadium' | 'wallnight' | 'office' | 'ruins' | 'bunker' | 'palace_kr' | 'dmz' | 'shipyard_kr' | 'seoulnight' | 'pyongyang' | 'market_kr' | 'darkhome' | 'persepolis' | 'isfahan' | 'plateau' | 'fire_temple' | 'bazaar_ir' | 'caravanserai' | 'tehran_modern' | 'ricefield_jp' | 'edo_jp' | 'castle_jp' | 'shrine_jp' | 'tokyo_ruin' | 'tokyo_jp' | 'hindukush' | 'kabul_old' | 'kandahar' | 'bamiyan_valley' | 'khyber' | 'bazaar_af' | 'kabul_modern' | 'field_dawn' | 'river_reach' | 'cotton_port' | 'senate' | 'telegraph_office' | 'hospital' | 'ruined_city' | 'courthouse' | 'theatre_night' | 'tagus' | 'sagres' | 'douro' | 'hills_pt' | 'pines_pt';
 export type Tod = 'day' | 'dusk' | 'night' | 'fire';
 export type TextT = {t: string; x: number; y: number; at?: number; size?: number; color?: string};
-export type StageT = {shake?: {at: number; amp?: number}; flash?: {at: number; c?: string}; bars?: boolean; focus?: FocusT | FocusT[]; spot?: {x: number; y: number; r?: number}; bg: BgKind; plate?: string; drift?: boolean; blurbg?: boolean; host?: {side?: 'l' | 'r'; pose?: PoseName; at?: number; pointer?: boolean}; tod?: Tod; props?: PropT[]; actors?: ActorT[]; texts?: TextT[]; fx?: WeatherKind | WeatherKind[]; cam?: {x?: [number, number]; z?: [number, number]; at?: [number, number]}; shots?: ShotT[]; labels?: LabelT[]};
+export type StageT = {shake?: {at: number; amp?: number}; flash?: {at: number; c?: string}; bars?: boolean; focus?: FocusT | FocusT[]; spot?: {x: number; y: number; r?: number}; bg: BgKind; plate?: string; drift?: boolean; blurbg?: boolean; host?: {side?: 'l' | 'r'; pose?: PoseName; at?: number; pointer?: boolean}; cor?: PoseName | boolean; tod?: Tod; props?: PropT[]; actors?: ActorT[]; texts?: TextT[]; fx?: WeatherKind | WeatherKind[]; cam?: {x?: [number, number]; z?: [number, number]; at?: [number, number]}; shots?: ShotT[]; labels?: LabelT[]};
 // Screen-space labels that follow the camera: name (anchored to an actor), faction pill, place, date chip, fact-check badge
 export type LabelT = {k: 'name' | 'faction' | 'place' | 'date' | 'fact'; t: string; fac?: string; sub?: string; actor?: number; x?: number; y?: number; c?: string; at?: number; until?: number; below?: boolean};
 // camera helpers: `cam: bust(actor)` frames head and shoulders of that actor, `cam: pushIn(actor)` a slow push toward the face
@@ -1442,7 +1444,7 @@ export const shotSpans = (st: StageT): {st: StageT; a0: number; a1: number}[] =>
   return st.shots.map((sh, i) => { const a1 = i === st.shots!.length - 1 ? 1 : Math.min(1, Math.max(a0, sh.until)); const o = {st: {...st, ...sh.st, shots: undefined} as StageT, a0, a1}; a0 = a1; return o; });
 };
 const SKY: Record<Tod, [string, string]> = {day: ['#69bff0', '#e8f7ff'], dusk: ['#323c7c', '#f7ab6c'], night: ['#050919', '#1c2a58'], fire: ['#2a0a0a', '#ff8a3a']};
-const GROUND: Record<BgKind, string> = {parchment: '#e2d0a4', desert: '#dcae72', grass: '#86bb5f', sea: '#2f86c4', street: '#9096a0', interior: '#a06f44', steppe: '#cdb26a', snow: '#eef3f8', mountains: '#8a9a6a', forest: '#4f7f3f', battlefield: '#7a6244', harbor: '#9a7b52', castle: '#8f8a7a', palace: '#d9d2c1', nile: '#9fb35a', pyramids: '#e0c48a', temple: '#cdbf9a', tomb: '#6b5440', cathedral: '#8c8578', workshop: '#8a6a44', salon: '#c9b690', jerusalem: '#d6c19b', judean: '#d3bd92', coast: '#ecd9a8', hall: '#6b3a24', yellowriver: '#c9a15a', karst: '#7fa56a', ...GERMANY_GROUND, ...KOREA_GROUND, ...IRAN_GROUND, ...JAPAN_GROUND, ...AFGHANISTAN_GROUND, ...CIVILWAR_GROUND, ...PORTUGAL_GROUND};
+const GROUND: Record<BgKind, string> = {parchment: '#e2d0a4', desert: '#dcae72', grass: '#86bb5f', sea: '#2f86c4', street: '#9096a0', interior: '#a06f44', steppe: '#cdb26a', snow: '#eef3f8', mountains: '#8a9a6a', forest: '#4f7f3f', battlefield: '#7a6244', harbor: '#9a7b52', castle: '#8f8a7a', palace: '#d9d2c1', nile: '#9fb35a', pyramids: '#e0c48a', temple: '#cdbf9a', tomb: '#6b5440', cathedral: '#8c8578', workshop: '#8a6a44', salon: '#c9b690', jerusalem: '#d6c19b', judean: '#d3bd92', coast: '#ecd9a8', hall: '#6b3a24', yellowriver: '#c9a15a', karst: '#7fa56a', ...GERMANY_GROUND, ...KOREA_GROUND, ...IRAN_GROUND, ...JAPAN_GROUND, ...AFGHANISTAN_GROUND, ...CIVILWAR_GROUND, ...PORTUGAL_GROUND, ...MONGOL_GROUND};
 const HZ = 700;
 
 const Hills: React.FC<{seed: string; base: number; amp: number; col: string; dx: number}> = ({seed, base, amp, col, dx}) => {
@@ -1581,6 +1583,7 @@ const Backdrop: React.FC<{bg: BgKind; tod: Tod; f: number; cx: number; seed: str
   if (isAfghanistanBg(bg)) return <AfghanistanBg bg={bg as any} f={f} cx={cx} seed={seed} />;
   if (isCivilwarBg(bg)) return <CivilwarBg bg={bg as any} f={f} cx={cx} seed={seed} />;
   if (isPortugalBg(bg)) return <PortugalBg bg={bg as any} f={f} cx={cx} seed={seed} />;
+  if (isMongolBg(bg)) return <MongolBg bg={bg as any} f={f} cx={cx} seed={seed} />;
   if (bg === 'parchment') {
     // 6.i.2 parchment wash: procedural, deterministic (seeded) — soft blotches, fibre flecks, a darker foot band and a vignette. Boards/photos mount on it; flat 'plain' stays available.
     return (
@@ -1745,6 +1748,36 @@ const HOST_SEFF = (1080 * HOST_FILL) / (HOST_CROP - HOST_TOP); // ~2.99 effectiv
 const HOST_Y = 1080 - HOST_CROP * HOST_SEFF; // feet anchor ~1528: hip line exactly on the frame's bottom edge
 const HOST_X = {l: 500, r: 1420};
 
+// PRESENTER CORNER PRESENCE (2026-11-19, Bruce): the presenter stands at the RIGHT corner of
+// the frame ALL THE TIME, the way the retired narrator overlay used to — the presenter takes
+// over the corner; the narrator character stays retired (never the 'narrator' look). A scene
+// opts in with `cor` (StageT.cor / GeoT.cor / scene-level on photo scenes): true = pose
+// 'idle', a PoseName string = that pose. Placement mirrors the old NarratorOverlay exactly:
+// x 1640, feet y 1085, s 1.05, flip:true (he faces into the frame). No `at` is set, so there
+// is no pop entrance — he is simply there from frame 0, like the overlay was. He lip-syncs
+// when the component receives the scene's word timings (stage scenes do; GeoMap receives
+// none, so on maps he stands posed and silent-mouthed rather than being skipped). He renders
+// ABOVE everything in the scene, the focus overlay included, so the scrim never dims him —
+// the old overlay sat above the scene the same way. He carries NO name plate in the corner:
+// the 'THE PRESENTER' plate exists only at his first host introduction in a video (standing
+// authoring rule, 2026-11-19). Skip logic lives at the call sites: no corner when the
+// presenter is already embodied in the scene (host close-up, geo presenter, in-scene
+// presenter actor) — he is never on screen twice.
+export const CORNER_X = 1640, CORNER_Y = 1085, CORNER_S = 1.05;
+export const CornerFigure: React.FC<{cor: PoseName | boolean; words?: WordT[]; seed?: string}> = ({cor, words, seed = 'cor'}) => (
+  <Actor a={{look: 'presenter', x: CORNER_X, y: CORNER_Y, s: CORNER_S, pose: cor === true ? 'idle' : cor, talk: !!words, flip: true}} words={words} seed={seed} />
+);
+// Overlay form for scene-level renderers (kit.tsx photo scenes): the same figure in its own
+// absolute svg, exactly like NarratorOverlay. kit.tsx adopts it with one line next to its
+// NarratorOverlay call — {s.cor && <PresenterCorner cor={s.cor} words={tm?.words} />} —
+// until then, photo scenes carry the `cor` field ready and the corner renders on stage,
+// chapter (via Stage) and geo scenes.
+export const PresenterCorner: React.FC<{cor: PoseName | boolean; words?: WordT[]; seed?: string}> = ({cor, words, seed}) => (
+  <svg viewBox="0 0 1920 1080" width={1920} height={1080} style={{position: 'absolute', inset: 0}}>
+    <CornerFigure cor={cor} words={words} seed={seed ?? 'cor'} />
+  </svg>
+);
+
 const StageOne: React.FC<{st: StageT; words?: WordT[]; seed: string; avoid?: Rect[]}> = ({st, words, seed, avoid}) => {
   const f = useCurrentFrame();
   const {fps, durationInFrames: d} = useVideoConfig();
@@ -1824,6 +1857,7 @@ const StageOne: React.FC<{st: StageT; words?: WordT[]; seed: string; avoid?: Rec
         });
       })()}
       {st.focus && <FocusOverlay focus={st.focus} f={f} d={d} seed={seed} />}
+      {st.cor && !st.host && !(st.actors ?? []).some((a) => (a.look ?? a.who) === 'presenter') && <CornerFigure cor={st.cor} words={words} seed={`${seed}cor`} />}
     </svg>
   );
 };

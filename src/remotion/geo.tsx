@@ -10,7 +10,7 @@ import geoLib from '../../library/geo.json'; // prebuilt places, historical regi
 import {feature, mesh} from 'topojson-client';
 import w110 from 'world-atlas/countries-110m.json';
 import w50 from 'world-atlas/countries-50m.json';
-import {Actor, HAND, INK, MapClash} from './world';
+import {Actor, CornerFigure, HAND, INK, MapClash, PoseName} from './world';
 import {FocusOverlay, FocusT} from './germany_pack';
 
 const C = {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'} as const;
@@ -47,6 +47,7 @@ export type GeoT = Omit<GeoStrict, 'from' | 'to' | 'pins' | 'labels' | 'regions'
   approx?: boolean; // 6.i.7: draw the tiny "Borders approximate" disclaimer, bottom-right — set on scenes showing modern (post-1900) borders
   twobeat?: boolean; // 6.i.4: two-beat reveal — fills land first, labels/pins second; DEFAULT ON when the scene has fills, twobeat:false restores legacy timing
   presenter?: {lon?: number; lat?: number; place?: string; corner?: 'bl' | 'br' | 'tl' | 'tr'; point?: string; pointLon?: number; pointLat?: number; pointPlace?: string; stand?: 'n' | 's' | 'e' | 'w' | 'ne' | 'nw' | 'se' | 'sw' | 'auto'; at?: number; s?: number}; // K1 (2026-11-18): the presenter on the map; point = the name of a pin in pins[] for his pointer to touch. When pointing, his position is DERIVED FROM THE STICK (stand = direction he stands relative to the target, default 'auto'); lon/lat/place only place him when he is not pointing
+  cor?: PoseName | boolean; // PRESENTER CORNER (2026-11-19, Bruce): true = pose 'idle', a PoseName = that pose — the presenter stands at the right corner of the frame for the whole scene, the way the retired narrator overlay used to. Read from the raw scene object (like presenter/focus) so resolveGeo cannot strip it; skipped when the scene already carries the geo presenter. GeoMap receives no word timings, so on maps he stands posed without lip-sync rather than being skipped.
 };
 
 // ---------- procedural satellite textures (tileable value noise, generated once per browser tab) ----------
@@ -441,6 +442,7 @@ export const GeoMap: React.FC<{g: GeoT; seed: string}> = ({g: gRaw, seed}) => {
         return drawPres([q[0], q[1]], false);
       })()}
       {(gRaw as any).focus && <FocusOverlay focus={(gRaw as any).focus} f={f} d={d} seed={seed} />}
+      {(gRaw as any).cor && !(gRaw as any).presenter && <CornerFigure cor={(gRaw as any).cor} seed={`${seed}cor`} />}
     </svg>
   );
 };
