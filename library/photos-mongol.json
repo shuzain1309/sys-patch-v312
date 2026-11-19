@@ -1,0 +1,17 @@
+{
+ "_doc": "Mongol Empire photo pins (2026-11-19). Pre-1930 paintings, manuscript miniatures and album portraits preferred (public domain). RISK pins carry a drawn stage fallback in their alt text.",
+ "photos": [
+  {"id": "genghis_portrait", "alt": "Genghis Khan, album-leaf portrait on silk, Yuan dynasty style (public domain, old)", "must": ["genghis", "khan", "portrait"], "q": "Genghis Khan portrait album leaf National Palace Museum"},
+  {"id": "mongol_horsemen_miniature", "alt": "Mongol horsemen in a Persian miniature from Rashid al-Din's world history (public domain, old)", "must": ["mongol", "horsemen", "miniature"], "q": "Mongol horsemen miniature Rashid al-Din Jami al-tawarikh"},
+  {"id": "baghdad_siege_miniature", "alt": "The siege of Baghdad 1258 in a Persian miniature (public domain, old)", "must": ["baghdad", "siege", "miniature"], "q": "Siege of Baghdad 1258 miniature Rashid al-Din"},
+  {"id": "kublai_portrait", "alt": "Kublai Khan, album-leaf portrait on silk (public domain, old)", "must": ["kublai", "portrait"], "q": "Kublai Khan portrait album leaf"},
+  {"id": "kublai_hunting", "alt": "Kublai Khan hunting, painting attributed to Liu Guandao, c. 1280 (public domain, old) [fallback: steppe_mg stage with riders]", "must": ["kublai", "hunting"], "q": "Kublai Khan hunting Liu Guandao painting"},
+  {"id": "mongol_invasion_scroll", "alt": "The Mongol invasion scroll of Takezaki Suenaga: samurai facing the Mongol fleet (public domain, old) [fallback: sea storm stage]", "must": ["mongol", "invasion", "scroll"], "q": "Moko Shurai Ekotoba Mongol invasion scroll Suenaga"},
+  {"id": "marco_polo_departure", "alt": "Marco Polo's departure from China, miniature from the Book of the Marvels (public domain, old) [fallback: harbor stage with junk]", "must": ["marco polo", "departure"], "q": "Marco Polo departure miniature Livre des merveilles"},
+  {"id": "hulegu_miniature", "alt": "Hülegü enthroned, Persian miniature from Rashid al-Din's history (public domain, old) [fallback: palace stage]", "must": ["hulegu", "hulagu", "miniature"], "q": "Hulagu enthroned miniature Rashid al-Din"},
+  {"id": "ogedei_portrait", "alt": "Ögedei Khan, album-leaf portrait (public domain, old) [RISK: fewer copies circulate; fallback: karakorum_mg stage]", "must": ["ogedei", "portrait"], "q": "Ogedei Khan portrait album leaf"},
+  {"id": "mongol_siege_engines", "alt": "Mongol siege engines before a Chinese city, Chinese painting (public domain, old) [fallback: battlefield stage with catapult]", "must": ["mongol", "siege", "painting"], "q": "Mongol siege Chinese city painting trebuchet"},
+  {"id": "golden_horde_coin", "alt": "A Golden Horde silver dirham of the 13th century (public domain / CC0 museum releases) [RISK: licence varies; fallback: coin prop stage]", "must": ["golden horde", "coin"], "q": "Golden Horde dirham coin 13th century"},
+  {"id": "karakorum_ruins", "alt": "The steppe at Karakorum, Mongolia — the capital's site today [RISK: modern CC BY-SA photos common and will MISS; fallback: karakorum_mg stage]", "must": ["karakorum"], "q": "Karakorum Mongolia steppe Erdene Zuu"}
+ ]
+}
