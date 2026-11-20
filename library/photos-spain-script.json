@@ -1,0 +1,56 @@
+[
+ {
+  "id": "segovia_aqueduct",
+  "alt": "The Roman aqueduct of Segovia. MISS-risk (CC BY-SA likely): fallback is the ruins stage beat in the script notes.",
+  "must": false,
+  "q": "Segovia aqueduct"
+ },
+ {
+  "id": "visigoth_crown",
+  "alt": "A Visigothic votive crown from the Guarrazar treasure. MISS-risk (museum photo): fallback is the crown_es prop beat.",
+  "must": false,
+  "q": "Guarrazar votive crown Visigothic"
+ },
+ {
+  "id": "mezquita_cordoba",
+  "alt": "The Great Mosque of Cordoba, the Mezquita arches.",
+  "must": false,
+  "q": "Mezquita Cordoba arches mosque cathedral"
+ },
+ {
+  "id": "compostela_cathedral",
+  "alt": "Santiago de Compostela cathedral facade. MISS-risk (CC BY-SA likely): fallback is the parchment church beat.",
+  "must": false,
+  "q": "Santiago de Compostela cathedral facade"
+ },
+ {
+  "id": "el_cid_statue",
+  "alt": "The statue of El Cid at Burgos. MISS-risk: fallback is the coast stage beat of the Cid.",
+  "must": false,
+  "q": "El Cid statue Burgos"
+ },
+ {
+  "id": "giralda_seville",
+  "alt": "The Giralda tower in Seville, Almohad minaret turned bell tower. MISS-risk (CC BY-SA likely).",
+  "must": false,
+  "q": "Giralda Seville tower"
+ },
+ {
+  "id": "isabella_portrait",
+  "alt": "Isabella of Castile, portrait attributed to Juan de Flandes (public domain). MISS-risk: fallback is the cathedral marriage beat.",
+  "must": false,
+  "q": "Isabella of Castile portrait Juan de Flandes"
+ },
+ {
+  "id": "alhambra_view",
+  "alt": "The Alhambra palace above Granada. MISS-risk (CC BY-SA likely): fallback is the granada_es stage beat.",
+  "must": false,
+  "q": "Alhambra Granada view Albaicin"
+ },
+ {
+  "id": "boabdil_surrender",
+  "alt": "The Surrender of Granada by Francisco Pradilla, 1882 (public domain): Boabdil hands the keys to Ferdinand and Isabella.",
+  "must": true,
+  "q": "Surrender of Granada Pradilla 1882"
+ }
+]
