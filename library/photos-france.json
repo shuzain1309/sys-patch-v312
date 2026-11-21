@@ -1,0 +1,89 @@
+{
+ "_doc": "French Revolution production photo pins (2026-11-21). Public-domain / CC only; MISS-risk pins carry drawn fallbacks in alt.",
+ "photos": [
+  {
+   "id": "versailles_palace",
+   "alt": "Versailles palace and gardens from the air. Drawn fallback: the versailles_fr backdrop.",
+   "must": [
+    "Palace",
+    "of",
+    "Versailles"
+   ],
+   "q": "Palace of Versailles aerial gardens Grand Canal"
+  },
+  {
+   "id": "declaration_rights",
+   "alt": "The Declaration of the Rights of Man, 1789. Drawn fallback: the declaration_fr prop beat.",
+   "must": [
+    "Declaration",
+    "of",
+    "the"
+   ],
+   "q": "Declaration of the Rights of Man 1789 painting"
+  },
+  {
+   "id": "louis16_portrait",
+   "alt": "Louis XVI, portrait. MISS-risk: fallback is the louis16 character.",
+   "must": false,
+   "q": "Louis XVI portrait Callet"
+  },
+  {
+   "id": "marie_antoinette_portrait",
+   "alt": "Marie Antoinette, portrait. MISS-risk: fallback is the marie_antoinette character.",
+   "must": false,
+   "q": "Marie Antoinette portrait Vigee Le Brun"
+  },
+  {
+   "id": "varennes",
+   "alt": "The arrest at Varennes, print. MISS-risk: fallback is the varennes_fr night scene.",
+   "must": false,
+   "q": "arrest of Louis XVI at Varennes print"
+  },
+  {
+   "id": "valmy",
+   "alt": "The Battle of Valmy and its windmill. MISS-risk: fallback is the valmy_fr windmill hill.",
+   "must": false,
+   "q": "Battle of Valmy windmill painting"
+  },
+  {
+   "id": "tuileries",
+   "alt": "The Tuileries palace and garden, historic view. MISS-risk: fallback is the tuileries_fr backdrop.",
+   "must": false,
+   "q": "Tuileries Palace Paris historic photograph"
+  },
+  {
+   "id": "louis_execution",
+   "alt": "The execution of Louis XVI, 1793 print. MISS-risk: fallback is the place_revolution_fr square at a distance.",
+   "must": false,
+   "q": "execution of Louis XVI 1793 print"
+  },
+  {
+   "id": "marie_execution",
+   "alt": "Marie Antoinette on the way to the scaffold, the David sketch. MISS-risk: fallback is the quiet square beat.",
+   "must": false,
+   "q": "Marie Antoinette scaffold David sketch"
+  },
+  {
+   "id": "robespierre_portrait",
+   "alt": "Maximilien Robespierre, portrait. MISS-risk: fallback is the robespierre character.",
+   "must": false,
+   "q": "Maximilien Robespierre portrait"
+  },
+  {
+   "id": "guillotine_place",
+   "alt": "The Place de la Revolution with the guillotine, print. MISS-risk: fallback is the place_revolution_fr backdrop.",
+   "must": false,
+   "q": "Place de la Revolution guillotine print"
+  },
+  {
+   "id": "napoleon_coronation",
+   "alt": "The Coronation of Napoleon by Jacques-Louis David (public domain). Drawn fallback: the cathedral crowning staging.",
+   "must": [
+    "Coronation",
+    "of",
+    "Napoleon"
+   ],
+   "q": "Coronation of Napoleon David painting Notre Dame"
+  }
+ ]
+}
