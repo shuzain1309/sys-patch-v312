@@ -24,55 +24,55 @@
   {
    "id": "louis16_portrait",
    "alt": "Louis XVI, portrait. MISS-risk: fallback is the louis16 character.",
-   "must": false,
+   "must": ["louis xvi", "portrait"],
    "q": "Louis XVI portrait Callet"
   },
   {
    "id": "marie_antoinette_portrait",
    "alt": "Marie Antoinette, portrait. MISS-risk: fallback is the marie_antoinette character.",
-   "must": false,
+   "must": ["marie antoinette", "portrait"],
    "q": "Marie Antoinette portrait Vigee Le Brun"
   },
   {
    "id": "varennes",
    "alt": "The arrest at Varennes, print. MISS-risk: fallback is the varennes_fr night scene.",
-   "must": false,
+   "must": ["varennes", "louis xvi"],
    "q": "arrest of Louis XVI at Varennes print"
   },
   {
    "id": "valmy",
    "alt": "The Battle of Valmy and its windmill. MISS-risk: fallback is the valmy_fr windmill hill.",
-   "must": false,
+   "must": ["valmy", "windmill"],
    "q": "Battle of Valmy windmill painting"
   },
   {
    "id": "tuileries",
    "alt": "The Tuileries palace and garden, historic view. MISS-risk: fallback is the tuileries_fr backdrop.",
-   "must": false,
+   "must": ["tuileries", "palace"],
    "q": "Tuileries Palace Paris historic photograph"
   },
   {
    "id": "louis_execution",
    "alt": "The execution of Louis XVI, 1793 print. MISS-risk: fallback is the place_revolution_fr square at a distance.",
-   "must": false,
+   "must": ["execution", "louis xvi"],
    "q": "execution of Louis XVI 1793 print"
   },
   {
    "id": "marie_execution",
    "alt": "Marie Antoinette on the way to the scaffold, the David sketch. MISS-risk: fallback is the quiet square beat.",
-   "must": false,
+   "must": ["marie antoinette", "scaffold"],
    "q": "Marie Antoinette scaffold David sketch"
   },
   {
    "id": "robespierre_portrait",
    "alt": "Maximilien Robespierre, portrait. MISS-risk: fallback is the robespierre character.",
-   "must": false,
+   "must": ["robespierre", "portrait"],
    "q": "Maximilien Robespierre portrait"
   },
   {
    "id": "guillotine_place",
    "alt": "The Place de la Revolution with the guillotine, print. MISS-risk: fallback is the place_revolution_fr backdrop.",
-   "must": false,
+   "must": ["guillotine", "place de la revolution"],
    "q": "Place de la Revolution guillotine print"
   },
   {
