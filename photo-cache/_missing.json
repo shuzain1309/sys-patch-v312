@@ -71,5 +71,17 @@
  "giralda_seville": "'bool' object is not iterable",
  "isabella_portrait": "'bool' object is not iterable",
  "alhambra_view": "'bool' object is not iterable",
- "boabdil_surrender": "'bool' object is not iterable"
+ "boabdil_surrender": "'bool' object is not iterable",
+ "versailles_palace": "'bool' object is not iterable",
+ "declaration_rights": "'bool' object is not iterable",
+ "louis16_portrait": "'bool' object is not iterable",
+ "marie_antoinette_portrait": "'bool' object is not iterable",
+ "varennes": "'bool' object is not iterable",
+ "valmy": "'bool' object is not iterable",
+ "tuileries": "'bool' object is not iterable",
+ "louis_execution": "'bool' object is not iterable",
+ "marie_execution": "'bool' object is not iterable",
+ "robespierre_portrait": "'bool' object is not iterable",
+ "guillotine_place": "HTTP Error 429: Too Many Requests",
+ "napoleon_coronation": "HTTP Error 429: Too Many Requests"
 }
