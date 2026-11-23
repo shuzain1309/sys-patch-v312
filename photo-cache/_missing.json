@@ -83,5 +83,8 @@
  "marie_execution": "'bool' object is not iterable",
  "robespierre_portrait": "'bool' object is not iterable",
  "guillotine_place": "HTTP Error 429: Too Many Requests",
- "napoleon_coronation": "HTTP Error 429: Too Many Requests"
+ "napoleon_coronation": "HTTP Error 429: Too Many Requests",
+ "lewis_clark": "download failed: HTTP Error 429: Too many requests. Please contact the Wikimedia SRE team at noc@wikimedia.org and refer to this message. (daab851)",
+ "bison_skull_pile": "no usable image. Bison skull pile edit: does not contain ['buffalo', 'skulls']; Bison skull pile-restored: does not contain ['buffalo', 'skulls']",
+ "tombstone_street": "no usable image. "
 }
