@@ -1,0 +1,126 @@
+{
+ "_doc": "Wild West production photo pins (2026-11-22). Public-domain / CC only; MISS-risk pins carry drawn fallbacks in alt.",
+ "photos": [
+  {
+   "id": "lewis_clark",
+   "alt": "Lewis and Clark on the expedition. MISS-risk: fallback is the expedition staging in Ch 1.",
+   "must": [
+    "lewis",
+    "clark"
+   ],
+   "q": "Lewis and Clark expedition painting Three Forks"
+  },
+  {
+   "id": "sutters_mill",
+   "alt": "Sutter's Mill at Coloma, where gold was found in 1848. MISS-risk: fallback is the sutter_ww mill backdrop.",
+   "must": [
+    "sutter",
+    "mill"
+   ],
+   "q": "Sutter's Mill Coloma California"
+  },
+  {
+   "id": "san_francisco_1851",
+   "alt": "San Francisco harbour in the gold rush, crowded with ships. MISS-risk: fallback is the harbour staging in Ch 4.",
+   "must": [
+    "san francisco",
+    "harbor"
+   ],
+   "q": "San Francisco harbor 1851 abandoned ships"
+  },
+  {
+   "id": "golden_spike",
+   "alt": "The Golden Spike ceremony at Promontory Summit, 10 May 1869 (Russell photograph, public domain).",
+   "must": [
+    "golden spike",
+    "1869"
+   ],
+   "q": "Golden Spike ceremony Promontory 1869 photograph"
+  },
+  {
+   "id": "cattle_drive",
+   "alt": "A Texas cattle drive on the trail north. MISS-risk: fallback is the prairie_ww drive staging in Ch 6.",
+   "must": [
+    "cattle",
+    "longhorn"
+   ],
+   "q": "Texas longhorn cattle drive nineteenth century photograph"
+  },
+  {
+   "id": "bison_skull_pile",
+   "alt": "A mountain of bison skulls awaiting grinding, 1892 (public domain). The hide trade made visible.",
+   "must": [
+    "buffalo",
+    "skulls"
+   ],
+   "q": "pile of buffalo skulls 1892 photograph"
+  },
+  {
+   "id": "little_bighorn",
+   "alt": "The Little Bighorn battlefield. MISS-risk: fallback is the prairie_ww staging in Ch 7.",
+   "must": [
+    "little bighorn"
+   ],
+   "q": "Little Bighorn battlefield graves photograph"
+  },
+  {
+   "id": "tombstone_street",
+   "alt": "Allen Street, Tombstone, in the boom years. MISS-risk: fallback is the mainstreet_ww backdrop.",
+   "must": [
+    "tombstone",
+    "arizona"
+   ],
+   "q": "Tombstone Arizona Allen Street 1880s photograph"
+  },
+  {
+   "id": "jesse_james",
+   "alt": "Jesse James, photographed in his guerrilla years (public domain).",
+   "must": [
+    "jesse james"
+   ],
+   "q": "Jesse James portrait photograph"
+  },
+  {
+   "id": "billy_the_kid",
+   "alt": "Billy the Kid, the famous tintype portrait (public domain).",
+   "must": [
+    "billy the kid"
+   ],
+   "q": "Billy the Kid tintype portrait"
+  },
+  {
+   "id": "geronimo",
+   "alt": "Geronimo, photographed in 1898 (public domain).",
+   "must": [
+    "geronimo"
+   ],
+   "q": "Geronimo portrait 1898 photograph"
+  },
+  {
+   "id": "land_run_1889",
+   "alt": "The start of the Oklahoma Land Run, 22 April 1889. MISS-risk: fallback is the prairie_ww staging in Ch 10.",
+   "must": [
+    "land rush",
+    "1889"
+   ],
+   "q": "Oklahoma Land Rush 1889 photograph"
+  },
+  {
+   "id": "buffalo_bill_poster",
+   "alt": "A Buffalo Bill Wild West show poster (public domain lithograph).",
+   "must": [
+    "buffalo bill",
+    "wild west"
+   ],
+   "q": "Buffalo Bill Wild West show poster"
+  },
+  {
+   "id": "annie_oakley",
+   "alt": "Annie Oakley, the sharpshooter of the Wild West show. MISS-risk: fallback is the oakley staging in Ch 12.",
+   "must": [
+    "annie oakley"
+   ],
+   "q": "Annie Oakley portrait photograph"
+  }
+ ]
+}
