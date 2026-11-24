@@ -86,5 +86,10 @@
  "napoleon_coronation": "HTTP Error 429: Too Many Requests",
  "lewis_clark": "download failed: HTTP Error 429: Too many requests. Please contact the Wikimedia SRE team at noc@wikimedia.org and refer to this message. (daab851)",
  "bison_skull_pile": "no usable image. Bison skull pile edit: does not contain ['buffalo', 'skulls']; Bison skull pile-restored: does not contain ['buffalo', 'skulls']",
- "tombstone_street": "no usable image. "
+ "tombstone_street": "no usable image. ",
+ "baghdad_siege": "download failed: HTTP Error 429: Too many requests. Please contact the Wikimedia SRE team at noc@wikimedia.org and refer to this message. (daab851)",
+ "zeng_guofan": "no usable image. File:平定粵匪功臣像─曾國藩像.jpg: only 559 px wide; Tseng Kwo-Fan: does not contain ['zeng guofan']",
+ "warsaw_ghetto": "download failed: HTTP Error 429: Too many requests - please contact noc@wikimedia.org to discuss a less disruptive approach or instead use thumbnail images in sizes listed on https://w.wiki/GHai. (0c640b1)",
+ "stalingrad_ruins": "no usable image. ",
+ "changan_pagoda": "download failed: HTTP Error 429: Too many requests - please contact noc@wikimedia.org to discuss a less disruptive approach or instead use thumbnail images in sizes listed on https://w.wiki/GHai. (0c640b1)"
 }
