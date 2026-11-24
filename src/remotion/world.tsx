@@ -17,6 +17,7 @@ import {MongolProp, isMongolProp, MongolBg, isMongolBg, MONGOL_GROUND} from './m
 import {SpainProp, isSpainProp, SpainBg, isSpainBg, SPAIN_GROUND} from './spain_pack';
 import {FranceProp, isFranceProp, FranceBg, isFranceBg, FRANCE_GROUND} from './france_pack';
 import {WildWestProp, isWildWestProp, WildWestBg, isWildWestBg, WILDWEST_GROUND} from './wildwest_pack';
+import {BrutalWarsProp, isBrutalWarsProp} from './brutalwars_pack';
 
 export const HAND = typeof window === 'undefined' ? 'sans-serif' : loadHand('normal', {weights: ['400'], subsets: ['latin']}).fontFamily;
 export const INK = '#241c17';
@@ -917,6 +918,7 @@ const PropArt: React.FC<{p: PropT; f: number; seed: string}> = ({p, f, seed}) =>
   if (isSpainProp(p.k)) return <SpainProp p={p} f={f} seed={seed} />;
   if (isFranceProp(p.k)) return <FranceProp p={p} f={f} seed={seed} />;
   if (isWildWestProp(p.k)) return <WildWestProp p={p} f={f} seed={seed} />;
+  if (isBrutalWarsProp(p.k)) return <BrutalWarsProp p={p} f={f} seed={seed} />;
   const c = p.c;
   switch (p.k) {
     case 'house': {

@@ -1,0 +1,137 @@
+{
+ "_doc": "Most Brutal Wars production photo pins (2026-11-23). Public-domain / CC only; MISS-risk pins carry drawn fallbacks in alt.",
+ "photos": [
+  {
+   "id": "vietnam_tunnels",
+   "alt": "Inside the Cu Chi tunnels, Vietnam. Drawn fallback: the tunnel staging in Ch 1.",
+   "must": [
+    "cu chi",
+    "tunnel"
+   ],
+   "q": "Cu Chi tunnels Vietnam interior"
+  },
+  {
+   "id": "vietnam_helicopters",
+   "alt": "United States helicopters over Vietnam (United States government photograph, public domain). Drawn fallback: the jet and smoke staging in Ch 1.",
+   "must": [
+    "helicopter",
+    "vietnam"
+   ],
+   "q": "helicopters Vietnam War United States Army photograph"
+  },
+  {
+   "id": "somme_aerial",
+   "alt": "Aerial view of trenches on the Somme, 1916 (official wartime photograph). Drawn fallback: the trench-map staging in Ch 2.",
+   "must": [
+    "aerial",
+    "trench",
+    "somme"
+   ],
+   "q": "aerial photograph trenches Somme 1916"
+  },
+  {
+   "id": "ypres_ruins",
+   "alt": "The ruined Cloth Hall at Ypres (official wartime photograph). Drawn fallback: the ruins staging in Ch 2.",
+   "must": [
+    "ypres",
+    "cloth hall"
+   ],
+   "q": "Ypres Cloth Hall ruins 1917 photograph"
+  },
+  {
+   "id": "verdun_ossuary",
+   "alt": "The Douaumont Ossuary at Verdun. MISS-risk: fallback is the battlefield staging in Ch 2.",
+   "must": [
+    "ossuary",
+    "verdun"
+   ],
+   "q": "Douaumont Ossuary Verdun"
+  },
+  {
+   "id": "genghis_portrait",
+   "alt": "Genghis Khan, Yuan dynasty album portrait (public domain). Drawn fallback: the genghis character in Ch 3.",
+   "must": [
+    "genghis khan",
+    "portrait"
+   ],
+   "q": "Genghis Khan Yuan dynasty portrait album leaf"
+  },
+  {
+   "id": "baghdad_siege",
+   "alt": "The siege of Baghdad, medieval manuscript miniature. MISS-risk: fallback is the Baghdad staging in Ch 3.",
+   "must": [
+    "baghdad",
+    "siege"
+   ],
+   "q": "siege of Baghdad 1258 miniature manuscript"
+  },
+  {
+   "id": "magdeburg_1631",
+   "alt": "The sack of Magdeburg, 1631, contemporary engraving (public domain). Drawn fallback: the burning-city staging in Ch 4.",
+   "must": [
+    "magdeburg",
+    "1631"
+   ],
+   "q": "sack of Magdeburg 1631 engraving Merian"
+  },
+  {
+   "id": "nanjing_wall",
+   "alt": "The city wall of Nanjing. MISS-risk: fallback is the Nanjing staging in Ch 5.",
+   "must": [
+    "nanjing",
+    "city wall"
+   ],
+   "q": "Nanjing city wall Ming dynasty photograph"
+  },
+  {
+   "id": "zeng_guofan",
+   "alt": "Zeng Guofan, portrait. MISS-risk: fallback is the zeng_guofan character in Ch 5.",
+   "must": [
+    "zeng guofan"
+   ],
+   "q": "Zeng Guofan portrait"
+  },
+  {
+   "id": "warsaw_ghetto",
+   "alt": "Warsaw ghetto, 1943, from the Stroop Report (public domain). Drawn fallback: the quiet street staging in Ch 6.",
+   "must": [
+    "warsaw ghetto"
+   ],
+   "q": "Warsaw ghetto Stroop Report photograph 1943"
+  },
+  {
+   "id": "stalingrad_ruins",
+   "alt": "Stalingrad in ruins, 1943. MISS-risk: fallback is the ruined-city staging in Ch 6.",
+   "must": [
+    "stalingrad",
+    "ruins"
+   ],
+   "q": "Stalingrad ruins 1943 photograph fountain"
+  },
+  {
+   "id": "hiroshima_dome",
+   "alt": "The Atomic Bomb Dome, Hiroshima. MISS-risk: fallback is the ruined-city staging in Ch 6.",
+   "must": [
+    "hiroshima",
+    "dome"
+   ],
+   "q": "Hiroshima Atomic Bomb Dome photograph"
+  },
+  {
+   "id": "yang_guifei",
+   "alt": "Yang Guifei, classical Chinese painting (public domain). Drawn fallback: the yang_guifei character in Ch 7.",
+   "must": [
+    "yang guifei"
+   ],
+   "q": "Yang Guifei painting Tang dynasty"
+  },
+  {
+   "id": "changan_pagoda",
+   "alt": "The Giant Wild Goose Pagoda at Xi'an, built under the Tang. MISS-risk: fallback is the palace staging in Ch 7.",
+   "must": [
+    "wild goose pagoda"
+   ],
+   "q": "Giant Wild Goose Pagoda Xi'an photograph"
+  }
+ ]
+}
