@@ -1,0 +1,122 @@
+[
+ {
+  "alt": "The ruins of Lindisfarne Priory on Holy Island, Northumberland — fallback: the drawn lindisfarne_vk monastery scene",
+  "id": "lindisfarne_priory",
+  "must": [
+   "lindisfarne",
+   "priory",
+   "holy island"
+  ],
+  "q": "Lindisfarne Priory ruins Holy Island Northumberland"
+ },
+ {
+  "alt": "The Oseberg ship in the Viking Ship Museum, Oslo — fallback: the drawn longship scenes",
+  "id": "oseberg_ship",
+  "must": [
+   "oseberg",
+   "ship",
+   "viking"
+  ],
+  "q": "Oseberg ship Viking Ship Museum Oslo"
+ },
+ {
+  "alt": "The Jelling stone raised by Harald Bluetooth, Denmark — fallback: the drawn runestone_vk prop scene",
+  "id": "jelling_stone",
+  "must": [
+   "jelling",
+   "stone",
+   "harald"
+  ],
+  "q": "Jelling stone Harald Bluetooth Denmark"
+ },
+ {
+  "alt": "The rift valley at Thingvellir, Iceland, where the Althing met — fallback: the drawn fjord_vk scene",
+  "id": "thingvellir",
+  "must": [
+   "thingvellir",
+   "iceland",
+   "rift"
+  ],
+  "q": "Thingvellir Iceland rift valley Althing"
+ },
+ {
+  "alt": "The ruins of Brattahlid, Erik the Red's farm in Greenland — fallback: the drawn longhouse_vk scene",
+  "id": "brattahlid_ruins",
+  "must": [
+   "brattahlid",
+   "greenland",
+   "erik"
+  ],
+  "q": "Brattahlid Greenland Erik the Red ruins"
+ },
+ {
+  "alt": "The reconstructed Norse longhouse at L'Anse aux Meadows, Newfoundland — fallback: the drawn longhouse_vk scene",
+  "id": "l_anse_aux_meadows",
+  "must": [
+   "anse",
+   "meadows",
+   "newfoundland"
+  ],
+  "q": "L'Anse aux Meadows Norse longhouse Newfoundland"
+ },
+ {
+  "alt": "Hagia Sophia in Istanbul, where the Varangian Guard served — fallback: the drawn cathedral scene",
+  "id": "hagia_sophia",
+  "must": [
+   "hagia",
+   "sophia",
+   "istanbul"
+  ],
+  "q": "Hagia Sophia Istanbul interior"
+ },
+ {
+  "alt": "A scene from the Bayeux Tapestry: the Norman fleet crossing to England — fallback: the drawn shieldwall scenes",
+  "id": "bayeux_tapestry",
+  "must": [
+   "bayeux",
+   "tapestry",
+   "norman"
+  ],
+  "q": "Bayeux Tapestry Norman ships scene"
+ },
+ {
+  "alt": "Monreale Cathedral near Palermo, built by the Norman kings of Sicily — fallback: the drawn cathedral scene",
+  "id": "monreale_palermo",
+  "must": [
+   "monreale",
+   "palermo",
+   "cathedral"
+  ],
+  "q": "Monreale Cathedral Palermo Norman Sicily"
+ },
+ {
+  "alt": "Borgund stave church in Norway, built as the old gods faded — fallback: the drawn church scenes",
+  "id": "borgund_stave_church",
+  "must": [
+   "borgund",
+   "stave",
+   "church"
+  ],
+  "q": "Borgund stave church Norway"
+ },
+ {
+  "alt": "The Gjermundbu helmet, the one near-complete Viking Age helmet ever found — fallback: the drawn helm_vk prop scene",
+  "id": "gjermundbu_helmet",
+  "must": [
+   "gjermundbu",
+   "helmet",
+   "viking"
+  ],
+  "q": "Gjermundbu helmet Viking Age museum"
+ },
+ {
+  "alt": "A Swedish runestone still standing in the landscape — fallback: the drawn runestone_vk prop scene",
+  "id": "runestone_sweden",
+  "must": [
+   "runestone",
+   "sweden",
+   "rune"
+  ],
+  "q": "Swedish runestone standing stone"
+ }
+]
