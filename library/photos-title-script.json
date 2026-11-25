@@ -1,123 +1,106 @@
 [
  {
-  "id": "lewis_clark",
-  "alt": "Lewis and Clark on the expedition. MISS-risk: fallback is the expedition staging in Ch 1.",
+  "id": "bolivar_portrait",
+  "q": "Simon Bolivar portrait painting Gil de Castro",
   "must": [
-   "lewis",
-   "clark"
+   "bolivar",
+   "portrait"
   ],
-  "q": "Lewis and Clark expedition painting Three Forks"
+  "alt": "Simon Bolivar in uniform, from the portraits by Jose Gil de Castro - fallback: the drawn bolivar stage scenes"
  },
  {
-  "id": "sutters_mill",
-  "alt": "Sutter's Mill at Coloma, where gold was found in 1848. MISS-risk: fallback is the sutter_ww mill backdrop.",
+  "id": "san_martin_portrait",
+  "q": "Jose de San Martin portrait painting",
   "must": [
-   "sutter",
-   "mill"
+   "san martin",
+   "portrait"
   ],
-  "q": "Sutter's Mill Coloma California"
+  "alt": "Jose de San Martin in the uniform of the Army of the Andes - fallback: the drawn san_martin stage scenes"
  },
  {
-  "id": "san_francisco_1851",
-  "alt": "San Francisco harbour in the gold rush, crowded with ships. MISS-risk: fallback is the harbour staging in Ch 4.",
+  "id": "hidalgo",
+  "q": "Miguel Hidalgo portrait priest independence Mexico",
   "must": [
-   "san francisco",
-   "harbor"
+   "hidalgo"
   ],
-  "q": "San Francisco harbor 1851 abandoned ships"
+  "alt": "Father Miguel Hidalgo, who rang the Grito de Dolores in 1810 - fallback: the drawn hidalgo stage scene"
  },
  {
-  "id": "golden_spike",
-  "alt": "The Golden Spike ceremony at Promontory Summit, 10 May 1869 (Russell photograph, public domain).",
+  "id": "andes_crossing",
+  "q": "Crossing of the Andes San Martin 1817 painting",
   "must": [
-   "golden spike",
-   "1869"
+   "andes",
+   "san martin"
   ],
-  "q": "Golden Spike ceremony Promontory 1869 photograph"
+  "alt": "The Army of the Andes crossing the cordillera in January 1817 - fallback: the drawn andes_la pass scenes"
  },
  {
-  "id": "cattle_drive",
-  "alt": "A Texas cattle drive on the trail north. MISS-risk: fallback is the prairie_ww drive staging in Ch 6.",
+  "id": "guayaquil",
+  "q": "Entrevista de Guayaquil Bolivar San Martin painting",
   "must": [
-   "cattle",
-   "longhorn"
+   "guayaquil"
   ],
-  "q": "Texas longhorn cattle drive nineteenth century photograph"
+  "alt": "The Guayaquil conference of July 1822, Bolivar and San Martin - fallback: the drawn meeting scene"
  },
  {
-  "id": "bison_skull_pile",
-  "alt": "A mountain of bison skulls awaiting grinding, 1892 (public domain). The hide trade made visible.",
+  "id": "ayacucho",
+  "q": "Battle of Ayacucho 1824 painting Tovar",
   "must": [
-   "buffalo",
-   "skulls"
+   "ayacucho"
   ],
-  "q": "pile of buffalo skulls 1892 photograph"
+  "alt": "The Battle of Ayacucho, 9 December 1824 - fallback: the drawn battlefield scenes"
  },
  {
-  "id": "little_bighorn",
-  "alt": "The Little Bighorn battlefield. MISS-risk: fallback is the prairie_ww staging in Ch 7.",
+  "id": "sucre_portrait",
+  "q": "Antonio Jose de Sucre portrait",
   "must": [
-   "little bighorn"
+   "sucre",
+   "portrait"
   ],
-  "q": "Little Bighorn battlefield graves photograph"
+  "alt": "Antonio Jose de Sucre, the victor of Ayacucho and president of Bolivia - fallback: the drawn sucre stage scenes"
  },
  {
-  "id": "tombstone_street",
-  "alt": "Allen Street, Tombstone, in the boom years. MISS-risk: fallback is the mainstreet_ww backdrop.",
+  "id": "dom_pedro",
+  "q": "Dom Pedro I emperor of Brazil portrait",
   "must": [
-   "tombstone",
-   "arizona"
+   "pedro",
+   "brazil"
   ],
-  "q": "Tombstone Arizona Allen Street 1880s photograph"
+  "alt": "Dom Pedro I, prince of Portugal who became Brazil's first emperor - fallback: the drawn pedro stage scenes"
  },
  {
-  "id": "jesse_james",
-  "alt": "Jesse James, photographed in his guerrilla years (public domain).",
+  "id": "ipiranga",
+  "q": "Independencia ou Morte Pedro Americo Ipiranga 1822",
   "must": [
-   "jesse james"
+   "ipiranga"
   ],
-  "q": "Jesse James portrait photograph"
+  "alt": "Pedro Americo's Independencia ou Morte: Dom Pedro at the Ipiranga, 7 September 1822 - fallback: the drawn riverbank scene"
  },
  {
-  "id": "billy_the_kid",
-  "alt": "Billy the Kid, the famous tintype portrait (public domain).",
+  "id": "potosi",
+  "q": "Cerro Rico Potosi Bolivia silver mountain",
   "must": [
-   "billy the kid"
+   "potosi",
+   "cerro"
   ],
-  "q": "Billy the Kid tintype portrait"
+  "alt": "The Cerro Rico above Potosi, the silver mountain of the Spanish Empire - fallback: the drawn potosi scenes"
  },
  {
-  "id": "geronimo",
-  "alt": "Geronimo, photographed in 1898 (public domain).",
+  "id": "rosas",
+  "q": "Juan Manuel de Rosas portrait",
   "must": [
-   "geronimo"
+   "rosas",
+   "portrait"
   ],
-  "q": "Geronimo portrait 1898 photograph"
+  "alt": "Juan Manuel de Rosas, the caudillo of Buenos Aires - fallback: the drawn rosas stage scenes"
  },
  {
-  "id": "land_run_1889",
-  "alt": "The start of the Oklahoma Land Run, 22 April 1889. MISS-risk: fallback is the prairie_ww staging in Ch 10.",
+  "id": "lima_plaza",
+  "q": "Plaza Mayor Lima cathedral Peru",
   "must": [
-   "land rush",
-   "1889"
+   "lima",
+   "plaza"
   ],
-  "q": "Oklahoma Land Rush 1889 photograph"
- },
- {
-  "id": "buffalo_bill_poster",
-  "alt": "A Buffalo Bill Wild West show poster (public domain lithograph).",
-  "must": [
-   "buffalo bill",
-   "wild west"
-  ],
-  "q": "Buffalo Bill Wild West show poster"
- },
- {
-  "id": "annie_oakley",
-  "alt": "Annie Oakley, the sharpshooter of the Wild West show. MISS-risk: fallback is the oakley staging in Ch 12.",
-  "must": [
-   "annie oakley"
-  ],
-  "q": "Annie Oakley portrait photograph"
+  "alt": "The Plaza Mayor of Lima with its cathedral - fallback: the drawn plaza_la scenes"
  }
 ]
