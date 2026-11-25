@@ -1,0 +1,109 @@
+{
+ "_doc": "Latin America comparison production photo pins (2026-11-25). Public-domain / CC only; every pin carries a drawn fallback in alt.",
+ "photos": [
+  {
+   "id": "bolivar_portrait",
+   "q": "Simon Bolivar portrait painting Gil de Castro",
+   "must": [
+    "bolivar",
+    "portrait"
+   ],
+   "alt": "Simon Bolivar in uniform, from the portraits by Jose Gil de Castro - fallback: the drawn bolivar stage scenes"
+  },
+  {
+   "id": "san_martin_portrait",
+   "q": "Jose de San Martin portrait painting",
+   "must": [
+    "san martin",
+    "portrait"
+   ],
+   "alt": "Jose de San Martin in the uniform of the Army of the Andes - fallback: the drawn san_martin stage scenes"
+  },
+  {
+   "id": "hidalgo",
+   "q": "Miguel Hidalgo portrait priest independence Mexico",
+   "must": [
+    "hidalgo"
+   ],
+   "alt": "Father Miguel Hidalgo, who rang the Grito de Dolores in 1810 - fallback: the drawn hidalgo stage scene"
+  },
+  {
+   "id": "andes_crossing",
+   "q": "Crossing of the Andes San Martin 1817 painting",
+   "must": [
+    "andes",
+    "san martin"
+   ],
+   "alt": "The Army of the Andes crossing the cordillera in January 1817 - fallback: the drawn andes_la pass scenes"
+  },
+  {
+   "id": "guayaquil",
+   "q": "Entrevista de Guayaquil Bolivar San Martin painting",
+   "must": [
+    "guayaquil"
+   ],
+   "alt": "The Guayaquil conference of July 1822, Bolivar and San Martin - fallback: the drawn meeting scene"
+  },
+  {
+   "id": "ayacucho",
+   "q": "Battle of Ayacucho 1824 painting Tovar",
+   "must": [
+    "ayacucho"
+   ],
+   "alt": "The Battle of Ayacucho, 9 December 1824 - fallback: the drawn battlefield scenes"
+  },
+  {
+   "id": "sucre_portrait",
+   "q": "Antonio Jose de Sucre portrait",
+   "must": [
+    "sucre",
+    "portrait"
+   ],
+   "alt": "Antonio Jose de Sucre, the victor of Ayacucho and president of Bolivia - fallback: the drawn sucre stage scenes"
+  },
+  {
+   "id": "dom_pedro",
+   "q": "Dom Pedro I emperor of Brazil portrait",
+   "must": [
+    "pedro",
+    "brazil"
+   ],
+   "alt": "Dom Pedro I, prince of Portugal who became Brazil's first emperor - fallback: the drawn pedro stage scenes"
+  },
+  {
+   "id": "ipiranga",
+   "q": "Independencia ou Morte Pedro Americo Ipiranga 1822",
+   "must": [
+    "ipiranga"
+   ],
+   "alt": "Pedro Americo's Independencia ou Morte: Dom Pedro at the Ipiranga, 7 September 1822 - fallback: the drawn riverbank scene"
+  },
+  {
+   "id": "potosi",
+   "q": "Cerro Rico Potosi Bolivia silver mountain",
+   "must": [
+    "potosi",
+    "cerro"
+   ],
+   "alt": "The Cerro Rico above Potosi, the silver mountain of the Spanish Empire - fallback: the drawn potosi scenes"
+  },
+  {
+   "id": "rosas",
+   "q": "Juan Manuel de Rosas portrait",
+   "must": [
+    "rosas",
+    "portrait"
+   ],
+   "alt": "Juan Manuel de Rosas, the caudillo of Buenos Aires - fallback: the drawn rosas stage scenes"
+  },
+  {
+   "id": "lima_plaza",
+   "q": "Plaza Mayor Lima cathedral Peru",
+   "must": [
+    "lima",
+    "plaza"
+   ],
+   "alt": "The Plaza Mayor of Lima with its cathedral - fallback: the drawn plaza_la scenes"
+  }
+ ]
+}
