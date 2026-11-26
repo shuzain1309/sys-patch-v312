@@ -105,5 +105,7 @@
  "guayaquil": "no usable image. ",
  "ayacucho": "no usable image. ",
  "rosas": "HTTP Error 429: Too Many Requests",
- "lima_plaza": "HTTP Error 429: Too Many Requests"
+ "lima_plaza": "HTTP Error 429: Too Many Requests",
+ "amsterdam_exchange": "no usable image. Emanuel de Witte 20171219 003: does not contain ['amsterdam']",
+ "new_amsterdam_view": "no usable image. File:Plantenstilleven bij de binnenplaats van een buitenhuis, 1660 80.jpg: only 462 px wide; Dutch New York (1909) (14765966225): does not contain ['amsterdam']; Dutch New York (1909) (14579204730): does not contain ['amsterdam']; Kitchen Scene title QS:P1476,en:\"Kitchen Scene \"labe"
 }
