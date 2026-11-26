@@ -1832,6 +1832,20 @@ const StageOne: React.FC<{st: StageT; words?: WordT[]; seed: string; avoid?: Rec
       if (env > 0) { const e = env * env * (3 - 2 * env), pk = pu.z ?? 1.15; zEff = z * (1 + (pk - 1) * e); cEff = [cEff[0] + (pu.x - cEff[0]) * e, cEff[1] + (pu.y - cEff[1]) * e]; aEff = aEff + (540 - aEff) * e; }
     }
   }
+  // VIEWPORT COVERAGE CLAMP (2026-11-26, Bruce's Netherlands render review): a pulse or cam that
+  // centres an off-centre target TRANSLATES the scaled stage; unclamped, the stage's edge slides
+  // inside the 1920x1080 viewport and the black outside the painting shows. Clamp the stage
+  // centre's screen displacement per axis to the coverage bound |offset| <= (s-1)*half-frame, so
+  // the scaled stage always covers the frame. The clamp is the final step of the effective-camera
+  // computation: it only ever reduces translation toward the bound (the zoom is untouched), a
+  // zero-translation camera is unchanged, and at s <= 1 it centres the stage (best coverage
+  // possible). Labels read cEff through toS below, so plates ride the clamped camera too.
+  {
+    const mx = 960 * Math.max(0, zEff - 1), my = 540 * Math.max(0, zEff - 1);
+    const ux = zEff * (960 - cEff[0]), uy = (aEff - 540) + zEff * (540 - cEff[1]);
+    const cux = Math.max(-mx, Math.min(mx, ux)), cuy = Math.max(-my, Math.min(my, uy));
+    if (cux !== ux || cuy !== uy) cEff = [960 - cux / zEff, 540 - (cuy - (aEff - 540)) / zEff];
+  }
   const sk = st.shake ? Math.max(0, 1 - (f - st.shake.at * d) / 16) * (f >= st.shake.at * d ? 1 : 0) * (st.shake.amp ?? 14) : 0;
   const shx = Math.sin(f * 2.9) * sk, shy = Math.cos(f * 3.7) * sk;
   const fl = st.flash ? Math.max(0, 1 - (f - st.flash.at * d) / 9) * (f >= st.flash.at * d ? 1 : 0) : 0;
