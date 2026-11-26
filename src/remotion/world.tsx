@@ -20,6 +20,7 @@ import {WildWestProp, isWildWestProp, WildWestBg, isWildWestBg, WILDWEST_GROUND}
 import {BrutalWarsProp, isBrutalWarsProp} from './brutalwars_pack';
 import {VikingsProp, isVikingsProp, VikingsBg, isVikingsBg, VIKINGS_GROUND} from './vikings_pack';
 import {LatinAmericaProp, isLatinAmericaProp, LatinAmericaBg, isLatinAmericaBg, LATINAMERICA_GROUND} from './latinamerica_pack';
+import {NetherlandsProp, isNetherlandsProp, NetherlandsBg, isNetherlandsBg, NETHERLANDS_GROUND} from './netherlands_pack';
 
 export const HAND = typeof window === 'undefined' ? 'sans-serif' : loadHand('normal', {weights: ['400'], subsets: ['latin']}).fontFamily;
 export const INK = '#241c17';
@@ -923,6 +924,7 @@ const PropArt: React.FC<{p: PropT; f: number; seed: string}> = ({p, f, seed}) =>
   if (isBrutalWarsProp(p.k)) return <BrutalWarsProp p={p} f={f} seed={seed} />;
   if (isVikingsProp(p.k)) return <VikingsProp p={p} f={f} seed={seed} />;
   if (isLatinAmericaProp(p.k)) return <LatinAmericaProp p={p} f={f} seed={seed} />;
+  if (isNetherlandsProp(p.k)) return <NetherlandsProp p={p} f={f} seed={seed} />;
   const c = p.c;
   switch (p.k) {
     case 'house': {
@@ -1442,7 +1444,20 @@ export const Weather: React.FC<{k: WeatherKind | WeatherKind[]; seed?: string}> 
 export type BgKind = 'desert' | 'grass' | 'sea' | 'street' | 'interior' | 'steppe' | 'snow' | 'mountains' | 'forest' | 'battlefield' | 'harbor' | 'castle' | 'palace' | 'nile' | 'pyramids' | 'temple' | 'tomb' | 'cathedral' | 'workshop' | 'salon' | 'jerusalem' | 'judean' | 'coast' | 'hall' | 'yellowriver' | 'karst' | 'plain' | 'parchment' | 'town' | 'stadium' | 'wallnight' | 'office' | 'ruins' | 'bunker' | 'palace_kr' | 'dmz' | 'shipyard_kr' | 'seoulnight' | 'pyongyang' | 'market_kr' | 'darkhome' | 'persepolis' | 'isfahan' | 'plateau' | 'fire_temple' | 'bazaar_ir' | 'caravanserai' | 'tehran_modern' | 'ricefield_jp' | 'edo_jp' | 'castle_jp' | 'shrine_jp' | 'tokyo_ruin' | 'tokyo_jp' | 'hindukush' | 'kabul_old' | 'kandahar' | 'bamiyan_valley' | 'khyber' | 'bazaar_af' | 'kabul_modern' | 'field_dawn' | 'river_reach' | 'cotton_port' | 'senate' | 'telegraph_office' | 'hospital' | 'ruined_city' | 'courthouse' | 'theatre_night' | 'tagus' | 'sagres' | 'douro' | 'hills_pt' | 'pines_pt';
 export type Tod = 'day' | 'dusk' | 'night' | 'fire';
 export type TextT = {t: string; x: number; y: number; at?: number; size?: number; color?: string};
-export type StageT = {shake?: {at: number; amp?: number}; flash?: {at: number; c?: string}; bars?: boolean; focus?: FocusT | FocusT[]; spot?: {x: number; y: number; r?: number}; bg: BgKind; plate?: string; drift?: boolean; blurbg?: boolean; host?: {side?: 'l' | 'r'; pose?: PoseName; at?: number; pointer?: boolean}; cor?: PoseName | boolean; tod?: Tod; props?: PropT[]; actors?: ActorT[]; texts?: TextT[]; fx?: WeatherKind | WeatherKind[]; cam?: {x?: [number, number]; z?: [number, number]; at?: [number, number]}; shots?: ShotT[]; labels?: LabelT[]};
+// CAMERA & LIFE (Bruce, 2026-11-26): a push-in pulse on the element the narration is naming at `at`
+// (scene fraction): the camera centres on (x, y), pushes to z (default 1.15) over pin seconds, holds
+// for hold seconds (default 1), then returns over pout seconds. NOT the bust()/pushIn() helpers below
+// (1.6-2.4x / 2.3x — far too strong for this). Rendered inside StageOne — see the pulse block there.
+export type PulseT = {at: number; x: number; y: number; z?: number; pin?: number; hold?: number; pout?: number};
+// INTRODUCTION AURA (Bruce, 2026-11-26): at the FIRST introduction of a major figure — a king, ruler
+// or vital person of the topic — a soft radial glow blooms BEHIND him: gold (c:'gold', the default)
+// for kings, rulers, sovereigns and heads of state; blue (c:'blue') for vital non-royal figures
+// (founders, commanders, statesmen, thinkers). It blooms in over `in` seconds (default 0.8), lingers
+// for `hold` seconds (default 2.2), then fades over `out` seconds (default 1.2). Minor figures get
+// none. Additive and defaulted off: scenes without `aura` render frame-identically to before.
+// Rendered inside StageOne, inside the camera group behind the items — see the aura block there.
+export type AuraT = {at: number; x: number; y: number; c?: 'gold' | 'blue'; r?: number; in?: number; hold?: number; out?: number};
+export type StageT = {shake?: {at: number; amp?: number}; flash?: {at: number; c?: string}; bars?: boolean; focus?: FocusT | FocusT[]; spot?: {x: number; y: number; r?: number}; bg: BgKind; plate?: string; drift?: boolean; blurbg?: boolean; host?: {side?: 'l' | 'r'; pose?: PoseName; at?: number; pointer?: boolean}; cor?: PoseName | boolean; tod?: Tod; props?: PropT[]; actors?: ActorT[]; texts?: TextT[]; fx?: WeatherKind | WeatherKind[]; cam?: {x?: [number, number]; z?: [number, number]; at?: [number, number]}; shots?: ShotT[]; pulse?: PulseT | PulseT[]; aura?: AuraT | AuraT[]; labels?: LabelT[]};
 // Screen-space labels that follow the camera: name (anchored to an actor), faction pill, place, date chip, fact-check badge
 export type LabelT = {k: 'name' | 'faction' | 'place' | 'date' | 'fact'; t: string; fac?: string; sub?: string; actor?: number; x?: number; y?: number; c?: string; at?: number; until?: number; below?: boolean};
 // camera helpers: `cam: bust(actor)` frames head and shoulders of that actor, `cam: pushIn(actor)` a slow push toward the face
@@ -1456,7 +1471,7 @@ export const shotSpans = (st: StageT): {st: StageT; a0: number; a1: number}[] =>
   return st.shots.map((sh, i) => { const a1 = i === st.shots!.length - 1 ? 1 : Math.min(1, Math.max(a0, sh.until)); const o = {st: {...st, ...sh.st, shots: undefined} as StageT, a0, a1}; a0 = a1; return o; });
 };
 const SKY: Record<Tod, [string, string]> = {day: ['#69bff0', '#e8f7ff'], dusk: ['#323c7c', '#f7ab6c'], night: ['#050919', '#1c2a58'], fire: ['#2a0a0a', '#ff8a3a']};
-const GROUND: Record<BgKind, string> = {parchment: '#e2d0a4', desert: '#dcae72', grass: '#86bb5f', sea: '#2f86c4', street: '#9096a0', interior: '#a06f44', steppe: '#cdb26a', snow: '#eef3f8', mountains: '#8a9a6a', forest: '#4f7f3f', battlefield: '#7a6244', harbor: '#9a7b52', castle: '#8f8a7a', palace: '#d9d2c1', nile: '#9fb35a', pyramids: '#e0c48a', temple: '#cdbf9a', tomb: '#6b5440', cathedral: '#8c8578', workshop: '#8a6a44', salon: '#c9b690', jerusalem: '#d6c19b', judean: '#d3bd92', coast: '#ecd9a8', hall: '#6b3a24', yellowriver: '#c9a15a', karst: '#7fa56a', ...GERMANY_GROUND, ...KOREA_GROUND, ...IRAN_GROUND, ...JAPAN_GROUND, ...AFGHANISTAN_GROUND, ...CIVILWAR_GROUND, ...PORTUGAL_GROUND, ...MONGOL_GROUND, ...SPAIN_GROUND, ...FRANCE_GROUND, ...WILDWEST_GROUND, ...VIKINGS_GROUND, ...LATINAMERICA_GROUND};
+const GROUND: Record<BgKind, string> = {parchment: '#e2d0a4', desert: '#dcae72', grass: '#86bb5f', sea: '#2f86c4', street: '#9096a0', interior: '#a06f44', steppe: '#cdb26a', snow: '#eef3f8', mountains: '#8a9a6a', forest: '#4f7f3f', battlefield: '#7a6244', harbor: '#9a7b52', castle: '#8f8a7a', palace: '#d9d2c1', nile: '#9fb35a', pyramids: '#e0c48a', temple: '#cdbf9a', tomb: '#6b5440', cathedral: '#8c8578', workshop: '#8a6a44', salon: '#c9b690', jerusalem: '#d6c19b', judean: '#d3bd92', coast: '#ecd9a8', hall: '#6b3a24', yellowriver: '#c9a15a', karst: '#7fa56a', ...GERMANY_GROUND, ...KOREA_GROUND, ...IRAN_GROUND, ...JAPAN_GROUND, ...AFGHANISTAN_GROUND, ...CIVILWAR_GROUND, ...PORTUGAL_GROUND, ...MONGOL_GROUND, ...SPAIN_GROUND, ...FRANCE_GROUND, ...WILDWEST_GROUND, ...VIKINGS_GROUND, ...LATINAMERICA_GROUND, ...NETHERLANDS_GROUND};
 const HZ = 700;
 
 const Hills: React.FC<{seed: string; base: number; amp: number; col: string; dx: number}> = ({seed, base, amp, col, dx}) => {
@@ -1601,6 +1616,7 @@ const Backdrop: React.FC<{bg: BgKind; tod: Tod; f: number; cx: number; seed: str
   if (isWildWestBg(bg)) return <WildWestBg bg={bg as any} f={f} cx={cx} seed={seed} />;
   if (isVikingsBg(bg)) return <VikingsBg bg={bg as any} f={f} cx={cx} seed={seed} />;
   if (isLatinAmericaBg(bg)) return <LatinAmericaBg bg={bg as any} f={f} cx={cx} seed={seed} />;
+  if (isNetherlandsBg(bg)) return <NetherlandsBg bg={bg as any} f={f} cx={cx} seed={seed} />;
   if (bg === 'parchment') {
     // 6.i.2 parchment wash: procedural, deterministic (seeded) — soft blotches, fibre flecks, a darker foot band and a vignette. Boards/photos mount on it; flat 'plain' stays available.
     return (
@@ -1802,6 +1818,20 @@ const StageOne: React.FC<{st: StageT; words?: WordT[]; seed: string; avoid?: Rec
   const driftOff = st.drift === false; // 6.i.5 slow drift: default gentle push-in (z 1 -> 1.06) + a 22px pan; drift:false = locked-off camera (explicit cam still wins)
   const cx = interpolate(f, [0, d], st.cam?.x ?? (driftOff ? [0, 0] : [0, 22]), {...C, easing: Easing.inOut(Easing.quad)});
   const z = interpolate(f, [0, d], st.cam?.z ?? (driftOff ? [1, 1] : [1, 1.06]), {...C, easing: Easing.inOut(Easing.quad)});
+  // CAMERA & LIFE (2026-11-26): the push-in pulse, computed as an effective camera (centre cEff, screen
+  // anchor aEff, zoom zEff) layered over the base cam/drift. It lives inside StageOne on purpose:
+  // shots[] re-renders StageOne per span, which would reinterpret every at-timed entrance and every
+  // word-timed lip-sync against the shot's span — the pulse must not disturb either. At envelope 0 the
+  // effective camera is EXACTLY the base camera, so unpulsed scenes render frame-identically to before.
+  let zEff = z, cEff: [number, number] = st.cam?.at ? [st.cam.at[0], st.cam.at[1]] : [960, 700], aEff = st.cam?.at ? 540 : 700;
+  if (st.pulse) {
+    for (const pu of Array.isArray(st.pulse) ? st.pulse : [st.pulse]) {
+      const t0 = pu.at * d, t1 = t0 + (pu.pin ?? 0.6) * fps, t2 = t1 + (pu.hold ?? 1) * fps, t3 = t2 + (pu.pout ?? 0.7) * fps;
+      let env = 0;
+      if (f >= t0 && f < t1) env = (f - t0) / Math.max(1, t1 - t0); else if (f >= t1 && f < t2) env = 1; else if (f >= t2 && f < t3) env = 1 - (f - t2) / Math.max(1, t3 - t2);
+      if (env > 0) { const e = env * env * (3 - 2 * env), pk = pu.z ?? 1.15; zEff = z * (1 + (pk - 1) * e); cEff = [cEff[0] + (pu.x - cEff[0]) * e, cEff[1] + (pu.y - cEff[1]) * e]; aEff = aEff + (540 - aEff) * e; }
+    }
+  }
   const sk = st.shake ? Math.max(0, 1 - (f - st.shake.at * d) / 16) * (f >= st.shake.at * d ? 1 : 0) * (st.shake.amp ?? 14) : 0;
   const shx = Math.sin(f * 2.9) * sk, shy = Math.cos(f * 3.7) * sk;
   const fl = st.flash ? Math.max(0, 1 - (f - st.flash.at * d) / 9) * (f >= st.flash.at * d ? 1 : 0) : 0;
@@ -1830,8 +1860,19 @@ const StageOne: React.FC<{st: StageT; words?: WordT[]; seed: string; avoid?: Rec
   return (
     <svg viewBox="0 0 1920 1080" width={1920} height={1080} style={{position: 'absolute', inset: 0}}>
       <defs><radialGradient id={`vg${seed}`}><stop offset="0.55" stopColor="#000" stopOpacity={0} /><stop offset="1" stopColor="#000" stopOpacity={0.45} /></radialGradient>{useBlur && <filter id={`bl${seed}`} x="-8%" y="-8%" width="116%" height="116%"><feGaussianBlur stdDeviation="6.5" /></filter>}</defs>
-      <g transform={`translate(${shx} ${shy}) ${st.cam?.at ? `translate(960 540) scale(${z}) translate(${-st.cam.at[0]} ${-st.cam.at[1]})` : `translate(960 700) scale(${z}) translate(-960 -700)`}`}>
+      <g transform={`translate(${shx} ${shy}) translate(960 ${aEff}) scale(${zEff}) translate(${-cEff[0]} ${-cEff[1]})`}>
         {useBlur ? (<g filter={`url(#bl${seed})`}><g transform="translate(960 540) scale(1.05) translate(-960 -540)"><Backdrop bg={st.bg} tod={tod} f={f} cx={cx} seed={seed} plate={st.plate} plateDrift={st.drift !== false} /></g></g>) : (<Backdrop bg={st.bg} tod={tod} f={f} cx={cx} seed={seed} plate={st.plate} plateDrift={st.drift !== false} />)}
+        {(st.aura ? (Array.isArray(st.aura) ? st.aura : [st.aura]) : []).map((au, i) => {
+          // INTRODUCTION AURA (2026-11-26): bloom in over `in` s, linger `hold` s, fade over `out` s.
+          // Drawn inside the camera group, behind the items (the actor included), wrapped in the same
+          // -cx shift the actor layer uses, so the glow stays centred on its figure and rides the pulse.
+          const t0 = au.at * d, t1 = t0 + (au.in ?? 0.8) * fps, t2 = t1 + (au.hold ?? 2.2) * fps, t3 = t2 + (au.out ?? 1.2) * fps;
+          let env = 0;
+          if (f >= t0 && f < t1) env = (f - t0) / Math.max(1, t1 - t0); else if (f >= t1 && f < t2) env = 1; else if (f >= t2 && f < t3) env = 1 - (f - t2) / Math.max(1, t3 - t2);
+          if (env <= 0) return null;
+          const e = env * env * (3 - 2 * env), r = (au.r ?? 300) * (0.82 + 0.18 * e), col = au.c === 'blue' ? '#5ea8ff' : '#ffc93c', gid = `au${seed}${i}`;
+          return (<g key={`au${i}`} transform={`translate(${-cx} 0)`}><defs><radialGradient id={gid} gradientUnits="userSpaceOnUse" cx={au.x} cy={au.y} r={r}><stop offset="0" stopColor={col} stopOpacity={0.5 * e} /><stop offset="0.55" stopColor={col} stopOpacity={0.26 * e} /><stop offset="1" stopColor={col} stopOpacity={0} /></radialGradient></defs><circle cx={au.x} cy={au.y} r={r} fill={`url(#${gid})`} /></g>);
+        })}
         {items.map((q) => q.el)}
         <rect width={1920} height={1080} fill={tint} />
       </g>
@@ -1846,7 +1887,7 @@ const StageOne: React.FC<{st: StageT; words?: WordT[]; seed: string; avoid?: Rec
       {barH > 0 && <g><rect width={1920} height={barH} fill="#000" /><rect y={1080 - barH} width={1920} height={barH} fill="#000" /></g>}
       {(() => {
         // actor labels use the same camera maths as the world group, so they stay at a readable size in close-ups
-        const zz = z, ctx = st.cam?.at ? [960 - st.cam.at[0] * zz, 540 - st.cam.at[1] * zz] : [960 - 960 * zz, 700 - 700 * zz];
+        const zz = zEff, ctx = [960 - cEff[0] * zz, aEff - cEff[1] * zz];
         const toS = (wx: number, wy: number): [number, number] => [ctx[0] + (wx - cx) * zz, ctx[1] + wy * zz];
         const frank = (st.actors ?? []).some((q) => (q.look ?? q.who) === 'frank');
         const labs: LabelT[] = [...(st.labels ?? []), ...(frank && !(st.labels ?? []).some((q) => q.k === 'fact') ? [{k: 'fact', t: 'FACT CHECK'} as LabelT] : [])];

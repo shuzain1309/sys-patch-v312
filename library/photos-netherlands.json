@@ -1,0 +1,69 @@
+{
+ "_doc": "Netherlands production photo pins (2026-11-26). Public-domain / CC only; every pin carries a drawn fallback in alt.",
+ "photos": [
+  {
+   "id": "voc_ship",
+   "q": "Dutch East Indiaman ship painting seventeenth century harbour",
+   "must": [],
+   "alt": "A Dutch East Indiaman under sail - fallback: the drawn guilder_nl fleet scenes"
+  },
+  {
+   "id": "amsterdam_exchange",
+   "q": "Amsterdam stock exchange courtyard painting Emanuel de Witte",
+   "must": [
+    "amsterdam"
+   ],
+   "alt": "The courtyard of the Amsterdam exchange - fallback: the drawn amsterdam_nl exchange scenes"
+  },
+  {
+   "id": "new_amsterdam_view",
+   "q": "New Amsterdam 1660 view Dutch New York",
+   "must": [
+    "amsterdam"
+   ],
+   "alt": "New Amsterdam as the Dutch built it - fallback: the drawn amsterdam_nl canal scenes"
+  },
+  {
+   "id": "de_ruyter_portrait",
+   "q": "Michiel de Ruyter portrait painting",
+   "must": [
+    "ruyter"
+   ],
+   "alt": "Michiel de Ruyter, the admiral of the Medway raid - fallback: the drawn de_ruyter stage scenes"
+  },
+  {
+   "id": "medway_raid",
+   "q": "Raid on the Medway 1667 painting Chatham",
+   "must": [
+    "medway"
+   ],
+   "alt": "The Dutch fleet in the Medway, June 1667 - fallback: the drawn Medway map and stage scenes"
+  },
+  {
+   "id": "coen_portrait",
+   "q": "Jan Pieterszoon Coen portrait",
+   "must": [
+    "coen"
+   ],
+   "alt": "Jan Pieterszoon Coen, governor-general of the East Indies - fallback: the drawn coen stage scene"
+  },
+  {
+   "id": "john_adams_portrait",
+   "q": "John Adams portrait painting Trumbull",
+   "must": [
+    "adams",
+    "portrait"
+   ],
+   "alt": "John Adams, who raised America's first foreign loan in Amsterdam - fallback: the drawn adams stage scenes"
+  },
+  {
+   "id": "hamilton_portrait",
+   "q": "Alexander Hamilton portrait painting Trumbull",
+   "must": [
+    "hamilton",
+    "portrait"
+   ],
+   "alt": "Alexander Hamilton, first secretary of the United States Treasury - fallback: the drawn hamilton stage scenes"
+  }
+ ]
+}

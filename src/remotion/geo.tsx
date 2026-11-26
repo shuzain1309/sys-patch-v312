@@ -43,6 +43,7 @@ export type GeoT = Omit<GeoStrict, 'from' | 'to' | 'pins' | 'labels' | 'regions'
   hiPulse?: string[]; // country names whose hi fill flashes a glow pulse as it lands (expects a matching hiAt entry)
   focus?: FocusT | FocusT[]; // grey scrim with a circular void on the year badge (default) or at x,y,r; `at`/`to` = fractions of the scene
   clash?: {lon?: number; lat?: number; place?: string; a?: string; b?: string; at?: number; s?: number}[]; // army clash art (small armies, swords, fire) at map points; a/b = the two sides' colours; at = fraction of the scene
+  labelScale?: number; // 2026-11-26 (Bruce): multiplies EVERY map font on the scene (country/region/pin/script/route labels, collision boxes included); read from the raw scene object like texture/presenter so resolveGeo cannot strip it. Default 1; Zeus labelled scenes use 0.7 — smaller labels that no longer overlap neighbouring regions (SKILL.md MAP FRAMING, LABEL SCALE AND PRESENTER rule 2)
   texture?: boolean; // K2 (2026-11-18): deterministic relief texture under the territory fills + a gentle sea grain; DEFAULT ON — texture:false restores the flat look
   approx?: boolean; // 6.i.7: draw the tiny "Borders approximate" disclaimer, bottom-right — set on scenes showing modern (post-1900) borders
   twobeat?: boolean; // 6.i.4: two-beat reveal — fills land first, labels/pins second; DEFAULT ON when the scene has fills, twobeat:false restores legacy timing
@@ -179,6 +180,7 @@ export const GeoMap: React.FC<{g: GeoT; seed: string}> = ({g: gRaw, seed}) => {
   const hiNames = Object.keys(g.hi ?? {});
   const twoBeat = (gRaw as any).twobeat !== false && (hiNames.length > 0 || (g.regions ?? []).length > 0); // 6.i.4 two-beat reveal: fills first, names second
   const dAt = (v: number | undefined) => (twoBeat ? Math.min(0.9, (v ?? 0) + 0.18) : v);
+  const labelScale = ((gRaw as any).labelScale ?? 1) as number; // 2026-11-26: raw-read like hiAt (resolveGeo strips unknown fields); 1 = legacy sizes
   const hiAt = ((gRaw as any).hiAt ?? {}) as Record<string, number>; // timed hi fills: raw-read like texture/presenter so resolveGeo cannot strip them
   const hiPulse = ((gRaw as any).hiPulse ?? []) as string[];
   const pulseP = (landAt: number) => { const pp = (f - landAt * d) / Math.max(1, 0.8 * fps); return pp >= 0 && pp <= 1 ? pp : -1; }; // landing pulse: progress 0..1 over ~0.8 s from the landing moment, -1 = inactive; frame-based, deterministic
@@ -210,16 +212,16 @@ export const GeoMap: React.FC<{g: GeoT; seed: string}> = ({g: gRaw, seed}) => {
         const pt = geo.proj(ll);
         if (!pt || !geo.visible(ll)) return;
         const bb = pp.bounds(target), wid = (bb[1][0] - bb[0][0]) * mEnd, isHi = !!g.hi?.[nm];
-        const fs = Math.max(30, Math.min(84, wid / Math.max(3, nm.length * 0.62)));
+        const fs = Math.max(20, Math.max(30, Math.min(84, wid / Math.max(3, nm.length * 0.62))) * labelScale);
         if (!isHi && wid < 70) return;
         items.push({id: `n:${nm}`, kind: 'name', t: nm, pt, fs, must: isHi, prio: isHi ? 20 : 10, dx: 0, dy: 0, dropped: false});
       });
       (g.regions ?? []).forEach((r, i) => {
         const ring = closeRing(r.pts), ll = geoCentroid({type: 'Polygon', coordinates: [ring]} as any) as [number, number], pt = geo.proj(ll);
-        if (pt) items.push({id: `r:${i}`, kind: 'region', t: r.name, sub: r.sub, pt, fs: 60, at: r.at, must: true, prio: 30, dx: 0, dy: 0, dropped: false});
+        if (pt) items.push({id: `r:${i}`, kind: 'region', t: r.name, sub: r.sub, pt, fs: 60 * labelScale, at: r.at, must: true, prio: 30, dx: 0, dy: 0, dropped: false});
       });
-      (g.pins ?? []).forEach((pn, i) => { const pt = geo.proj([pn.lon, pn.lat]); if (pt) items.push({id: `p:${i}`, kind: 'pin', t: pn.name, pt, fs: 46, must: true, prio: 100, dx: 0, dy: 0, dropped: false}); });
-      (g.labels ?? []).forEach((lb, i) => { const pt = geo.proj([lb.lon, lb.lat]); if (pt) items.push({id: `l:${i}`, kind: 'label', t: lb.t, sub: lb.sub, pt, fs: lb.size ?? (lb.kind === 'sea' ? 56 : lb.kind ? 42 : 72), style: lb.kind, at: lb.at, must: true, prio: 50, dx: 0, dy: 0, dropped: false}); });
+      (g.pins ?? []).forEach((pn, i) => { const pt = geo.proj([pn.lon, pn.lat]); if (pt) items.push({id: `p:${i}`, kind: 'pin', t: pn.name, pt, fs: 46 * labelScale, must: true, prio: 100, dx: 0, dy: 0, dropped: false}); });
+      (g.labels ?? []).forEach((lb, i) => { const pt = geo.proj([lb.lon, lb.lat]); if (pt) items.push({id: `l:${i}`, kind: 'label', t: lb.t, sub: lb.sub, pt, fs: (lb.size ?? (lb.kind === 'sea' ? 56 : lb.kind ? 42 : 72)) * labelScale, style: lb.kind, at: lb.at, must: true, prio: 50, dx: 0, dy: 0, dropped: false}); });
       const end = (pt: number[]) => [960 + mEnd * (pt[0] - 960), 540 + mEnd * (pt[1] - 540)];
       const placed = placeLabels(items.map((it) => { const e = end(it.pt), b = textBox(it.t, it.fs, it.sub); return {id: it.id, x: e[0], y: e[1] + (it.kind === 'pin' ? 8 : 0), w: b.w, h: b.h + (it.kind === 'pin' ? 60 : 0), prio: it.prio, must: it.must}; }));
       placed.forEach((p: any, i) => { if (p.dropped) items[i].dropped = true; else { items[i].dx = p.dx; items[i].dy = p.dy; } });
@@ -334,7 +336,7 @@ export const GeoMap: React.FC<{g: GeoT; seed: string}> = ({g: gRaw, seed}) => {
           const mp = geo.proj(midLL);
           if (!mp || !geo.visible(midLL)) return null;
           const mq = sc(mp);
-          return <text key="rl" x={mq[0]} y={mq[1]} textAnchor="middle" dominantBaseline="middle" fontFamily={HAND} fontSize={48} fill="#fff" stroke={INK} strokeWidth={8} paintOrder="stroke" opacity={lo}>{t}</text>;
+          return <text key="rl" x={mq[0]} y={mq[1]} textAnchor="middle" dominantBaseline="middle" fontFamily={HAND} fontSize={48 * labelScale} fill="#fff" stroke={INK} strokeWidth={8} paintOrder="stroke" opacity={lo}>{t}</text>;
         })();
         if (!head && !lbl) return null;
         return <g key={`h${i}`}>{head}{lbl}</g>;
@@ -359,7 +361,7 @@ export const GeoMap: React.FC<{g: GeoT; seed: string}> = ({g: gRaw, seed}) => {
               <path d="M0 0 C-22 -26 -22 -58 0 -58 C22 -58 22 -26 0 0Z" fill="#ffd24a" stroke={INK} strokeWidth={3} />
               <circle cy={-40} r={7} fill={INK} />
             </g>
-            <text y={38} textAnchor="middle" fontFamily={HAND} fontSize={46} fill="#fff" stroke={INK} strokeWidth={8} paintOrder="stroke">{pn.name}</text>
+            <text y={38} textAnchor="middle" fontFamily={HAND} fontSize={46 * labelScale} fill="#fff" stroke={INK} strokeWidth={8} paintOrder="stroke">{pn.name}</text>
           </g>
         );
       })}
@@ -371,7 +373,7 @@ export const GeoMap: React.FC<{g: GeoT; seed: string}> = ({g: gRaw, seed}) => {
         const typed = (from: number, len: number, per: number) => (len <= 0 ? 0 : Math.round(interpolate(f, [from, from + len * per], [0, len], C)));
         const n = typed(a0, lb.t.length, 2.2);
         const n2 = typed(a0 + lb.t.length * 2.2 + 6, lb.sub?.length ?? 0, 2);
-        const fs = lb.size ?? (lb.kind === 'sea' ? 56 : lb.kind ? 42 : 72), kind = lb.kind;
+        const fs = (lb.size ?? (lb.kind === 'sea' ? 56 : lb.kind ? 42 : 72)) * labelScale, kind = lb.kind;
         const txt = lb.t.slice(0, n);
         return (
           <g key={i}>
