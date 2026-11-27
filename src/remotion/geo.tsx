@@ -163,7 +163,9 @@ export const GeoMap: React.FC<{g: GeoT; seed: string}> = ({g: gRaw, seed}) => {
     };
   }, [seed]);
 
-  const p = interpolate(f, [0, d], [0, 1], {...C, easing: Easing.inOut(Easing.cubic)});
+  // MAP CHOREOGRAPHY (2026-11-27, Bruce): optional raw-object `zoomDur` (seconds) — the opening world->region zoom completes within zoomDur, then the camera LOCKS static for the rest of the scene (colouring -> labels -> arrows are authored on the settled frame). Absent = legacy full-scene interpolation; from==to scripts are unaffected either way.
+  const zoomFrames = Math.max(1, Math.min(d, Math.round(((((gRaw as any).zoomDur as number | undefined) ?? d / fps)) * fps)));
+  const p = interpolate(f, [0, zoomFrames], [0, 1], {...C, easing: Easing.inOut(Easing.cubic)});
   const k = Math.exp(Math.log(from.k) + (Math.log(to.k) - Math.log(from.k)) * p);
   const m = k / kmax;
   const cx = geo.fromPt[0] + (960 - geo.fromPt[0]) * p, cy = geo.fromPt[1] + (540 - geo.fromPt[1]) * p;

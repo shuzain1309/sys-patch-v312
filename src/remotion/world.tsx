@@ -22,6 +22,7 @@ import {VikingsProp, isVikingsProp, VikingsBg, isVikingsBg, VIKINGS_GROUND} from
 import {LatinAmericaProp, isLatinAmericaProp, LatinAmericaBg, isLatinAmericaBg, LATINAMERICA_GROUND} from './latinamerica_pack';
 import {NetherlandsProp, isNetherlandsProp, NetherlandsBg, isNetherlandsBg, NETHERLANDS_GROUND} from './netherlands_pack';
 import {AlexanderProp, isAlexanderProp, AlexanderBg, isAlexanderBg, ALEXANDER_GROUND} from './alexander_pack';
+import {HundredYearsProp, isHundredYearsProp, HundredYearsBg, isHundredYearsBg, HUNDREDYEARS_GROUND} from './hundredyears_pack';
 
 export const HAND = typeof window === 'undefined' ? 'sans-serif' : loadHand('normal', {weights: ['400'], subsets: ['latin']}).fontFamily;
 export const INK = '#241c17';
@@ -158,7 +159,15 @@ export const FACTIONS: Record<string, Faction> = {};
 export const registerFactions = (o: Record<string, Faction> | undefined) => { if (o) Object.assign(FACTIONS, o); };
 
 export type Held = 'sword' | 'spear' | 'torch' | 'scroll' | 'dagger' | 'goblet' | 'standard' | 'lyre' | 'coin' | 'magnifier' | 'khopesh' | 'ankh' | 'bow' | 'crook' | 'musket' | 'saber' | 'lance' | 'eagle' | 'baton' | 'spyglass' | 'pointer';
-export type ActorT = {who?: string; x: number | [number, number]; y?: number; s?: number; pose?: PoseName; face?: Face; flip?: boolean; say?: string; at?: number; talk?: boolean; look?: string | Look; raw?: boolean; held?: Held; shield?: boolean; fa?: number; hide?: number; ghost?: number; ns?: boolean; z?: number; move?: {x: number; y?: number; dur?: number}};
+export type ActorT = {who?: string; x: number | [number, number]; y?: number; s?: number; pose?: PoseName; face?: Face; flip?: boolean; say?: string; at?: number; talk?: boolean; look?: string | Look; raw?: boolean; held?: Held; shield?: boolean; fa?: number; hide?: number; ghost?: number; ns?: boolean; z?: number; kid?: boolean; move?: {x: number; y?: number; dur?: number}};
+// KID RIG (additive, 2026-11-27, Hundred Years' War production — a reusable
+// library asset): set kid:true on any actor to render him with CHILD
+// proportions — shorter legs and torso, a larger head (HR 67 vs 58, total
+// height ~313 vs ~398 units at the same s) — while reusing the full
+// pose/face/look/held system untouched and with only legal values, so the
+// validators read it cleanly. First casting: Henry VI, the child king
+// crowned in Paris in 1431. dy (sit/kneel drop) stays adult-calibrated;
+// children are staged standing/walking.
 
 const Hat: React.FC<{k: Look['hat']; top: number; skin: string; col?: string}> = ({k, top, skin, col}) => {
   switch (k) {
@@ -337,18 +346,18 @@ export const Actor: React.FC<{a: ActorT; words?: WordT[]; seed?: string}> = ({a,
   const bob = pose === 'walk' || pose === 'run' ? -Math.abs(Math.sin(w)) * (pose === 'run' ? 12 : 7) : pose === 'cheer' ? -Math.abs(Math.sin(f / 4)) * 14 : Math.sin(f / 14 + ph) * 1.6;
   const dy = pose === 'sit' ? 74 : pose === 'kneel' ? 64 : 0; // body drops; legs fold
   const lean = LEAN[pose] ?? 0;
-  const hipY = -150 + dy, shY = -268 + dy, headY = -340 + dy + bob * 0.4, HR = 58;
+  const hipY = (a.kid ? -106 : -150) + dy, shY = (a.kid ? -192 : -268) + dy, headY = (a.kid ? -246 : -340) + dy + bob * 0.4, HR = a.kid ? 67 : 58;
   const SHX = 26; // half shoulder width
   const shL: [number, number] = [-SHX + 2, shY + 10 + bob * 0.5], shR: [number, number] = [SHX - 2, shY + 10 + bob * 0.5];
   const arm = (sh: [number, number], ang: Ang) => {
-    const el = P(sh[0], sh[1], 62, ang[0]);
-    const hd = P(el[0], el[1], 62, ang[1]);
+    const el = P(sh[0], sh[1], a.kid ? 47 : 62, ang[0]);
+    const hd = P(el[0], el[1], a.kid ? 47 : 62, ang[1]);
     return {el, hd};
   };
   const aL = arm(shL, L), aR = arm(shR, R);
   const leg = (hx: number, ang: Ang) => {
-    const kn = P(hx, hipY + 4, 75, ang[0]);
-    const ft = P(kn[0], kn[1], 75, ang[1]);
+    const kn = P(hx, hipY + 4, a.kid ? 53 : 75, ang[0]);
+    const ft = P(kn[0], kn[1], a.kid ? 53 : 75, ang[1]);
     return {kn, ft};
   };
   const lL = leg(-11, LL), lR = leg(11, RL);
@@ -927,6 +936,7 @@ const PropArt: React.FC<{p: PropT; f: number; seed: string}> = ({p, f, seed}) =>
   if (isLatinAmericaProp(p.k)) return <LatinAmericaProp p={p} f={f} seed={seed} />;
   if (isNetherlandsProp(p.k)) return <NetherlandsProp p={p} f={f} seed={seed} />;
   if (isAlexanderProp(p.k)) return <AlexanderProp p={p} f={f} seed={seed} />;
+  if (isHundredYearsProp(p.k)) return <HundredYearsProp p={p} f={f} seed={seed} />;
   const c = p.c;
   switch (p.k) {
     case 'house': {
@@ -1473,7 +1483,7 @@ export const shotSpans = (st: StageT): {st: StageT; a0: number; a1: number}[] =>
   return st.shots.map((sh, i) => { const a1 = i === st.shots!.length - 1 ? 1 : Math.min(1, Math.max(a0, sh.until)); const o = {st: {...st, ...sh.st, shots: undefined} as StageT, a0, a1}; a0 = a1; return o; });
 };
 const SKY: Record<Tod, [string, string]> = {day: ['#69bff0', '#e8f7ff'], dusk: ['#323c7c', '#f7ab6c'], night: ['#050919', '#1c2a58'], fire: ['#2a0a0a', '#ff8a3a']};
-const GROUND: Record<BgKind, string> = {parchment: '#e2d0a4', desert: '#dcae72', grass: '#86bb5f', sea: '#2f86c4', street: '#9096a0', interior: '#a06f44', steppe: '#cdb26a', snow: '#eef3f8', mountains: '#8a9a6a', forest: '#4f7f3f', battlefield: '#7a6244', harbor: '#9a7b52', castle: '#8f8a7a', palace: '#d9d2c1', nile: '#9fb35a', pyramids: '#e0c48a', temple: '#cdbf9a', tomb: '#6b5440', cathedral: '#8c8578', workshop: '#8a6a44', salon: '#c9b690', jerusalem: '#d6c19b', judean: '#d3bd92', coast: '#ecd9a8', hall: '#6b3a24', yellowriver: '#c9a15a', karst: '#7fa56a', ...GERMANY_GROUND, ...KOREA_GROUND, ...IRAN_GROUND, ...JAPAN_GROUND, ...AFGHANISTAN_GROUND, ...CIVILWAR_GROUND, ...PORTUGAL_GROUND, ...MONGOL_GROUND, ...SPAIN_GROUND, ...FRANCE_GROUND, ...WILDWEST_GROUND, ...VIKINGS_GROUND, ...LATINAMERICA_GROUND, ...NETHERLANDS_GROUND, ...ALEXANDER_GROUND};
+const GROUND: Record<BgKind, string> = {parchment: '#e2d0a4', desert: '#dcae72', grass: '#86bb5f', sea: '#2f86c4', street: '#9096a0', interior: '#a06f44', steppe: '#cdb26a', snow: '#eef3f8', mountains: '#8a9a6a', forest: '#4f7f3f', battlefield: '#7a6244', harbor: '#9a7b52', castle: '#8f8a7a', palace: '#d9d2c1', nile: '#9fb35a', pyramids: '#e0c48a', temple: '#cdbf9a', tomb: '#6b5440', cathedral: '#8c8578', workshop: '#8a6a44', salon: '#c9b690', jerusalem: '#d6c19b', judean: '#d3bd92', coast: '#ecd9a8', hall: '#6b3a24', yellowriver: '#c9a15a', karst: '#7fa56a', ...GERMANY_GROUND, ...KOREA_GROUND, ...IRAN_GROUND, ...JAPAN_GROUND, ...AFGHANISTAN_GROUND, ...CIVILWAR_GROUND, ...PORTUGAL_GROUND, ...MONGOL_GROUND, ...SPAIN_GROUND, ...FRANCE_GROUND, ...WILDWEST_GROUND, ...VIKINGS_GROUND, ...LATINAMERICA_GROUND, ...NETHERLANDS_GROUND, ...ALEXANDER_GROUND, ...HUNDREDYEARS_GROUND};
 const HZ = 700;
 
 const Hills: React.FC<{seed: string; base: number; amp: number; col: string; dx: number}> = ({seed, base, amp, col, dx}) => {
@@ -1620,6 +1630,7 @@ const Backdrop: React.FC<{bg: BgKind; tod: Tod; f: number; cx: number; seed: str
   if (isLatinAmericaBg(bg)) return <LatinAmericaBg bg={bg as any} f={f} cx={cx} seed={seed} />;
   if (isNetherlandsBg(bg)) return <NetherlandsBg bg={bg as any} f={f} cx={cx} seed={seed} />;
   if (isAlexanderBg(bg)) return <AlexanderBg bg={bg as any} f={f} cx={cx} seed={seed} />;
+  if (isHundredYearsBg(bg)) return <HundredYearsBg bg={bg as any} f={f} cx={cx} seed={seed} />;
   if (bg === 'parchment') {
     // 6.i.2 parchment wash: procedural, deterministic (seeded) — soft blotches, fibre flecks, a darker foot band and a vignette. Boards/photos mount on it; flat 'plain' stays available.
     return (
