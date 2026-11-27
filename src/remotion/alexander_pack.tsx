@@ -5,9 +5,10 @@ import type {PropT} from './world';
 // ── ALEXANDER PACK (2026-11-27) ─────────────────────────────────────────────
 // For "How Alexander the Great Conquered the World in 20 Minutes".
 // Signature device: THE MAP THAT GREW — a parchment conquest map
-// (conquest_map_ax) whose gold extent grows state by state on the chapter
-// cards (macedon → greece → anatolia → egypt → persia → east → indus) and
-// ends fractured in three successor colours. Refrain (exactly 3x in the
+// (conquest_map_ax) whose gold extent grows state by state on the device
+// beats (macedon → greece → anatolia → egypt → persia → east → indus) and
+// ends fractured in three successor colours. Chapter cards carry board +
+// backdrop only — no staged props or characters. Refrain (exactly 3x in the
 // script, at the master-map returns): "And the map grew."
 // Bespoke hero kit: Bucephalus (black horse, white star, gold tack), the
 // Macedonian phalanx with sarissas, the Companion cavalry wedge, a war
@@ -22,28 +23,49 @@ const GOLD = '#d9a83c', GOLD_D = '#b8892f', GOLD_L = '#f0cd72';
 const MACEDON_RED = '#8c2f26', PERSIA = '#33506e', STONE = '#9a8a70';
 
 // ── PROPS ────────────────────────────────────────────────────────────────────
-const HorseBody: React.FC<{coat: string; mane: string; cloth?: boolean; star?: boolean}> = ({coat, mane, cloth, star}) => (
+// The horse, redrawn 2026-11-27 (fix pass): one silhouette for barrel,
+// arched neck and elongated head — muzzle narrower than the jaw, pricked
+// ears, eye and nostril placed on the face plane; mane stroked along the
+// neck crest; tail flowing from the rump; legs JOINTED (thicker upper,
+// knee/hock, thinner cannon, hoof block), far pair drawn behind the body,
+// near pair in front. Feet stay at y=0 so every delivered placement and
+// waterline still holds. `rim` draws a light stroke along the back and
+// crest so a dark coat (Bucephalus) separates from dark grounds.
+const HorseBody: React.FC<{coat: string; mane: string; cloth?: boolean; star?: boolean; rim?: string}> = ({coat, mane, cloth, star, rim}) => {
+  const Leg: React.FC<{hip: number; knee: number; foot: number; upper: number}> = ({hip, knee, foot, upper}) => (
+    <g>
+      <path d={`M${hip} -118 L${knee} -56`} stroke={INK} strokeWidth={upper + 4} strokeLinecap="round"/>
+      <path d={`M${hip} -118 L${knee} -56`} stroke={coat} strokeWidth={upper} strokeLinecap="round"/>
+      <path d={`M${knee} -56 L${foot} -10`} stroke={INK} strokeWidth={13.5} strokeLinecap="round"/>
+      <path d={`M${knee} -56 L${foot} -10`} stroke={coat} strokeWidth={9.5} strokeLinecap="round"/>
+      <rect x={foot - 12} y={-9} width={25} height={9} fill="#241f1a" stroke={INK} strokeWidth={1.6}/>
+    </g>
+  );
+  return (
   <g>
-    <path d="M-150 -168 Q-158 -236 -96 -252 L62 -262 Q128 -264 148 -214 L196 -238 Q214 -246 210 -224 L204 -186 Q202 -168 182 -164 L120 -156 Q132 -96 96 -84 L-84 -80 Q-138 -84 -150 -168 Z" fill={coat} stroke={INK} strokeWidth={3.6}/>
-    <path d="M196 -238 Q226 -262 236 -238 Q242 -218 222 -202 L196 -192" fill={coat} stroke={INK} strokeWidth={3.4}/>
-    {star && <path d="M214 -226 l5 10 11 1 -8 8 2 11 -10 -5 -10 5 2 -11 -8 -8 11 -1 Z" fill="#f2ead8" stroke={INK} strokeWidth={1.6}/>}
-    <path d="M-96 -252 Q-128 -282 -104 -306 Q-84 -282 -70 -258" fill={mane} stroke={INK} strokeWidth={3}/>
-    <path d="M-148 -196 Q-196 -176 -188 -118 Q-184 -84 -158 -70" fill="none" stroke={mane} strokeWidth={13} strokeLinecap="round"/>
-    {[-104, -58, 74, 116].map((x, i) => (
-      <g key={i}>
-        <path d={`M${x} -84 L${x + (i % 2 ? 7 : -4)} -6`} stroke={INK} strokeWidth={11} strokeLinecap="round"/>
-        <path d={`M${x} -84 L${x + (i % 2 ? 7 : -4)} -6`} stroke={coat} strokeWidth={7} strokeLinecap="round"/>
-      </g>
-    ))}
+    <path d="M-146 -192 Q-180 -148 -173 -82 Q-170 -46 -155 -28" fill="none" stroke={mane} strokeWidth={13} strokeLinecap="round"/>
+    <Leg hip={-80} knee={-73} foot={-69} upper={14}/>
+    <Leg hip={70} knee={75} foot={79} upper={14}/>
+    <path d="M-148 -198 Q-156 -148 -126 -126 Q-70 -104 -6 -108 Q66 -102 106 -126 Q132 -138 130 -170 Q148 -208 178 -254 Q184 -246 198 -240 L240 -216 Q252 -224 248 -238 L178 -294 Q168 -302 158 -296 Q128 -258 98 -230 Q30 -216 -60 -214 Q-120 -212 -148 -198 Z" fill={coat} stroke={INK} strokeWidth={3.6}/>
+    <path d="M160 -296 L155 -323 L175 -305 Z" fill={coat} stroke={INK} strokeWidth={2.8}/>
+    <path d="M177 -301 L182 -327 L193 -300 Z" fill={coat} stroke={INK} strokeWidth={2.8}/>
+    <path d="M161 -301 Q170 -316 183 -303 Q172 -295 161 -301 Z" fill={mane}/>
+    <path d="M158 -292 Q116 -252 88 -220" fill="none" stroke={mane} strokeWidth={11} strokeLinecap="round"/>
+    {rim && <path d="M-140 -201 Q-60 -217 96 -231 Q128 -259 166 -295" fill="none" stroke={rim} strokeWidth={4} opacity={0.85}/>}
+    <Leg hip={-112} knee={-103} foot={-99} upper={15}/>
+    <Leg hip={97} knee={101} foot={103} upper={15}/>
+    {star && <path d="M216 -266 l5 10 11 1 -8 8 2 11 -10 -5 -10 5 2 -11 -8 -8 11 -1 Z" fill="#f2ead8" stroke={INK} strokeWidth={1.6}/>}
     {cloth && <g>
-      <path d="M-38 -258 L66 -260 L58 -178 L-30 -176 Z" fill={MACEDON_RED} stroke={INK} strokeWidth={3}/>
-      <circle cx={14} cy={-218} r={17} fill={GOLD} stroke={INK} strokeWidth={2.4}/>
-      {Array.from({length: 8}, (_, i) => { const a = (i / 8) * Math.PI * 2; return <line key={i} x1={14 + Math.cos(a) * 20} y1={-218 + Math.sin(a) * 20} x2={14 + Math.cos(a) * 27} y2={-218 + Math.sin(a) * 27} stroke={GOLD_D} strokeWidth={3}/>; })}
+      <path d="M-40 -222 L64 -224 L56 -150 L-32 -148 Z" fill={MACEDON_RED} stroke={INK} strokeWidth={3}/>
+      <circle cx={12} cy={-186} r={16} fill={GOLD} stroke={INK} strokeWidth={2.4}/>
+      {Array.from({length: 8}, (_, i) => { const a = (i / 8) * Math.PI * 2; return <line key={i} x1={12 + Math.cos(a) * 19} y1={-186 + Math.sin(a) * 19} x2={12 + Math.cos(a) * 26} y2={-186 + Math.sin(a) * 26} stroke={GOLD_D} strokeWidth={3}/>; })}
     </g>}
-    <path d="M188 -214 Q150 -196 128 -204" fill="none" stroke={GOLD_D} strokeWidth={5}/>
-    <circle cx={216} cy={-218} r={4.6} fill={INK}/>
+    <path d="M196 -252 Q216 -264 238 -238" fill="none" stroke={GOLD_D} strokeWidth={4.5}/>
+    <circle cx={207} cy={-263} r={4.6} fill={INK}/>
+    <ellipse cx={240} cy={-226} rx={3.6} ry={2.6} fill={INK} transform="rotate(-32 240 -226)"/>
   </g>
-);
+  );
+};
 
 export const AlexanderProp: React.FC<{p: PropT; f: number; d?: number; seed: string}> = ({p}) => {
   const state = p.t ?? 'macedon';
@@ -52,7 +74,7 @@ export const AlexanderProp: React.FC<{p: PropT; f: number; d?: number; seed: str
     // red saddle cloth carrying the Macedonian sun.
     return <g>
       <ellipse cx={0} cy={4} rx={210} ry={13} fill="#000" opacity={0.16}/>
-      <HorseBody coat="#26221f" mane="#17140f" cloth star/>
+      <HorseBody coat="#26221f" mane="#17140f" cloth star rim="#8a7d68"/>
     </g>;
   }
   if (p.k === 'phalanx_ax') {
@@ -85,15 +107,26 @@ export const AlexanderProp: React.FC<{p: PropT; f: number; d?: number; seed: str
   if (p.k === 'companions_ax') {
     // The Companion cavalry: a wedge of three riders, lances couched,
     // cloaks flying — the hammer that follows the phalanx anvil.
+    // Rider redrawn 2026-11-27 (fix pass): seated AT the saddle point of
+    // the 0.82-scaled horse (back line ≈ -176), legs draped down the
+    // barrel — thigh to a forward knee, shin to a boot beside the belly —
+    // torso, head and helmet at full height above the back, arm forward
+    // to the couched lance. (The first cut floated a head + spear over
+    // the horse with the torso hanging in air.)
     const Rider: React.FC<{x: number; y: number; s: number; coat: string; cloak: string}> = ({x, y, s, coat, cloak}) => (
       <g transform={`translate(${x},${y}) scale(${s})`}>
         <g transform="scale(0.82)"><HorseBody coat={coat} mane="#3a2c1c"/></g>
-        <path d="M-6 -252 L-52 -300 Q-70 -262 -44 -238 Z" fill={cloak} stroke={INK} strokeWidth={2.6}/>
-        <circle cx={-2} cy={-318} r={17} fill="#eec39a" stroke={INK} strokeWidth={2.4}/>
-        <path d="M-19 -326 Q-2 -348 15 -326 L15 -318 Q-2 -330 -19 -318 Z" fill="#8a8f96" stroke={INK} strokeWidth={2.4}/>
-        <path d="M-14 -300 L10 -300 L14 -252 L-10 -252 Z" fill="#7a4a2e" stroke={INK} strokeWidth={2.6}/>
-        <line x1={16} y1={-268} x2={196} y2={-238} stroke="#6e5136" strokeWidth={5} strokeLinecap="round"/>
-        <path d="M196 -238 l20 4 l-16 9 Z" fill="#c8ccd2" stroke={INK} strokeWidth={1.6}/>
+        <path d="M-2 -246 Q-46 -234 -54 -176 Q-32 -194 -12 -202 Z" fill={cloak} stroke={INK} strokeWidth={2.6}/>
+        <path d="M6 -176 L34 -138 L30 -92" fill="none" stroke={INK} strokeWidth={13} strokeLinecap="round"/>
+        <path d="M6 -176 L34 -138 L30 -92" fill="none" stroke="#54423a" strokeWidth={9} strokeLinecap="round"/>
+        <path d="M-12 -252 L14 -252 L18 -176 L-8 -174 Z" fill="#7a4a2e" stroke={INK} strokeWidth={2.6}/>
+        <path d="M10 -174 L42 -134 L38 -88" fill="none" stroke={INK} strokeWidth={13} strokeLinecap="round"/>
+        <path d="M10 -174 L42 -134 L38 -88" fill="none" stroke="#54423a" strokeWidth={9} strokeLinecap="round"/>
+        <circle cx={2} cy={-272} r={16} fill="#eec39a" stroke={INK} strokeWidth={2.4}/>
+        <path d="M-14 -278 Q2 -300 18 -278 L18 -270 Q2 -282 -14 -270 Z" fill="#8a8f96" stroke={INK} strokeWidth={2.4}/>
+        <path d="M12 -242 L48 -208" stroke="#7a4a2e" strokeWidth={9} strokeLinecap="round"/>
+        <line x1={34} y1={-200} x2={214} y2={-172} stroke="#6e5136" strokeWidth={5} strokeLinecap="round"/>
+        <path d="M214 -172 l20 4 l-16 9 Z" fill="#c8ccd2" stroke={INK} strokeWidth={1.6}/>
       </g>
     );
     return <g>
@@ -197,6 +230,34 @@ export const AlexanderProp: React.FC<{p: PropT; f: number; d?: number; seed: str
       <path d="M64 -330 L118 -306 L70 -282 Z" fill={MACEDON_RED} stroke={INK} strokeWidth={2.2}/>
     </g>;
   }
+  if (p.k === 'chariot_ax') {
+    // Darius's chariot, drawn for this pack 2026-11-27 (fix pass): the
+    // kit 'chariot' prop's horse was a blob and its reins floated free of
+    // the driver. Here the redrawn horse is joined to the cab by two
+    // shaft poles landing on its barrel, and twin reins run in sagging
+    // curves from the driver's hands to the bit. The driver stands IN
+    // the cab — legs behind the Persian-blue front panel, torso and
+    // tiara above it. Feet (horse hooves, wheel) at y=0.
+    return <g>
+      <ellipse cx={130} cy={6} rx={330} ry={13} fill="#000" opacity={0.15}/>
+      <g transform="translate(350,0) scale(0.78)"><HorseBody coat="#6e5136" mane="#3a2c1c"/></g>
+      <line x1={96} y1={-96} x2={302} y2={-128} stroke="#6e5136" strokeWidth={7} strokeLinecap="round"/>
+      <line x1={96} y1={-78} x2={300} y2={-102} stroke="#6e5136" strokeWidth={7} strokeLinecap="round"/>
+      <path d="M64 -206 Q300 -240 514 -194" fill="none" stroke="#3a2c1c" strokeWidth={3.5}/>
+      <path d="M64 -197 Q300 -226 512 -186" fill="none" stroke="#3a2c1c" strokeWidth={3}/>
+      <circle cx={-6} cy={-64} r={62} fill="none" stroke={INK} strokeWidth={9}/>
+      <circle cx={-6} cy={-64} r={62} fill="none" stroke="#7a6248" strokeWidth={5}/>
+      <circle cx={-6} cy={-64} r={12} fill="#5d4630" stroke={INK} strokeWidth={3}/>
+      {[0, 60, 120].map(a => <line key={a} x1={-6 - Math.cos(a * Math.PI / 180) * 56} y1={-64 - Math.sin(a * Math.PI / 180) * 56} x2={-6 + Math.cos(a * Math.PI / 180) * 56} y2={-64 + Math.sin(a * Math.PI / 180) * 56} stroke="#7a6248" strokeWidth={5}/>)}
+      <rect x={-84} y={-100} width={172} height={12} fill="#8a6c46" stroke={INK} strokeWidth={3}/>
+      <path d="M88 -88 L88 -196 Q40 -214 -20 -200 L-84 -176 L-84 -88 Z" fill={PERSIA} stroke={INK} strokeWidth={3.2}/>
+      <path d="M84 -188 Q40 -204 -16 -192" fill="none" stroke={GOLD} strokeWidth={4}/>
+      <path d="M-14 -252 L22 -252 L24 -176 L-12 -174 Z" fill="#8c5a2e" stroke={INK} strokeWidth={2.6}/>
+      <circle cx={4} cy={-272} r={15.5} fill="#c98d5f" stroke={INK} strokeWidth={2.4}/>
+      <rect x={-12} y={-289} width={32} height={11} fill={GOLD} stroke={INK} strokeWidth={2}/>
+      <path d="M18 -240 L58 -210" stroke="#8c5a2e" strokeWidth={9} strokeLinecap="round"/>
+    </g>;
+  }
   // conquest_map_ax (default) — THE MAP THAT GREW on its parchment board.
   const zones: Record<string, React.ReactNode> = {
     greece: <path d="M-318 -356 Q-272 -392 -238 -356 Q-214 -322 -246 -288 Q-282 -262 -312 -292 Q-334 -326 -318 -356 Z" fill={GOLD} stroke={GOLD_D} strokeWidth={3}/>,
@@ -234,7 +295,7 @@ export const AlexanderProp: React.FC<{p: PropT; f: number; d?: number; seed: str
     </g>
   </g>;
 };
-export const ALEXANDER_PROPS = ['bucephalus_ax', 'phalanx_ax', 'companions_ax', 'elephant_ax', 'siege_ax', 'knot_ax', 'spear_ax', 'conquest_map_ax'];
+export const ALEXANDER_PROPS = ['bucephalus_ax', 'phalanx_ax', 'companions_ax', 'elephant_ax', 'siege_ax', 'knot_ax', 'spear_ax', 'conquest_map_ax', 'chariot_ax'];
 export const isAlexanderProp = (k: string) => ALEXANDER_PROPS.includes(k);
 
 // ── BACKDROPS ────────────────────────────────────────────────────────────────
@@ -245,7 +306,32 @@ const Palm: React.FC<{x: number; y: number; s: number}> = ({x, y, s}) => (
     {[-70, -38, -6, 26, 58].map((a, i) => <path key={i} d={`M-6 -168 Q${a} ${-216 - Math.abs(a) * 0.4} ${a * 1.9} -178`} fill="none" stroke="#4c7a4f" strokeWidth={8} strokeLinecap="round"/>)}
   </g>
 );
-export const AlexanderBg: React.FC<{bg: AlexanderBgKind; f: number; cx: number; seed: string}> = ({bg: kind}) => {
+// FULL-FRAME BASE (fix pass 2026-11-27): world.tsx's Backdrop returns a
+// pack backdrop component DIRECTLY — no sky/ground base is painted by the
+// engine on the pack branch, and the computed GROUND colour goes unused
+// there. The first cut of this pack painted scenery only (art spanning
+// roughly y 100-700), so the sky above the art and the whole floor below
+// y700 showed the theme's near-black #16130e — Bruce's render read as
+// "most scenes black". Following the house pack convention (the Mongol
+// pack paints its own full frame), this wrapper paints the base FIRST —
+// a day-sky gradient over y 0-700 and the backdrop's ALEXANDER_GROUND
+// colour over y 700-1080 — then the scenery art on top. StageOne's tod
+// tint (night 0.42 / dusk 0.14) still applies over the whole scene, so
+// night scenes stay night — but lit by a sky, not a void.
+export const AlexanderBg: React.FC<{bg: AlexanderBgKind; f: number; cx: number; seed: string}> = (props) => (
+  <g>
+    <defs>
+      <linearGradient id="ax-sky" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stopColor="#79a6d2"/>
+        <stop offset="100%" stopColor="#e6d9b8"/>
+      </linearGradient>
+    </defs>
+    <rect x={-40} y={0} width={2000} height={700} fill="url(#ax-sky)"/>
+    <rect x={-40} y={700} width={2000} height={380} fill={ALEXANDER_GROUND[props.bg] ?? '#9a855e'}/>
+    <AlexanderArt {...props}/>
+  </g>
+);
+const AlexanderArt: React.FC<{bg: AlexanderBgKind; f: number; cx: number; seed: string}> = ({bg: kind}) => {
   if (kind === 'pella_ax') {
     return <g>
       <path d="M-40 470 L300 190 L470 300 L640 160 L900 430 L1150 240 L1420 420 L1960 260 L1960 700 L-40 700 Z" fill="#7d8a68"/>
@@ -323,7 +409,7 @@ export const AlexanderBg: React.FC<{bg: AlexanderBgKind; f: number; cx: number; 
       <rect x={-40} y={540} width={2000} height={160} fill="#c2a468"/>
       <path d="M-40 596 Q700 578 1960 600 L1960 700 L-40 700 Z" fill="#b89a5e" opacity={0.8}/>
       {[300, 760, 1240, 1680].map(x => <path key={x} d={`M${x} 640 q14 -16 30 -4 M${x + 44} 656 q12 -13 26 -3`} stroke="#8a744a" strokeWidth={4} fill="none"/>)}
-      <g opacity={0.75}><path d="M120 520 L170 470 L220 520 Z" fill="#7a6248"/><path d="M240 524 L282 480 L324 524 Z" fill="#8a6c46"/></g>
+      <g opacity={0.75}><path d="M104 524 Q170 478 236 524 Z" fill="#7a6248"/><path d="M228 526 Q282 488 336 526 Z" fill="#8a6c46"/></g>
       <path d="M-40 560 Q960 540 1960 562" stroke="#e8d9ae" strokeWidth={10} opacity={0.35} fill="none"/>
     </g>;
   }
