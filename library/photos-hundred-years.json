@@ -1,0 +1,34 @@
+[
+ {
+  "id": "edward_iii_effigy",
+  "q": "Edward III tomb effigy Westminster Abbey",
+  "must": [
+   "edward"
+  ],
+  "alt": "The tomb effigy of Edward III at Westminster Abbey - fallback: the drawn westminster_hyw court scenes"
+ },
+ {
+  "id": "henry_v_portrait",
+  "q": "Henry V portrait National Portrait Gallery",
+  "must": [
+   "henry"
+  ],
+  "alt": "The panel portrait of Henry V - fallback: the drawn Henry V stage scenes"
+ },
+ {
+  "id": "agincourt_miniature",
+  "q": "Battle of Agincourt miniature Vigiles de Charles VII",
+  "must": [
+   "agincourt"
+  ],
+  "alt": "The Agincourt miniature from the Vigiles de Charles VII - fallback: the drawn agincourt_hyw field scenes"
+ },
+ {
+  "id": "joan_portrait",
+  "q": "Joan of Arc miniature portrait medieval manuscript",
+  "must": [
+   "joan"
+  ],
+  "alt": "Joan of Arc in a fifteenth-century miniature - fallback: the drawn Joan stage scenes"
+ }
+]
