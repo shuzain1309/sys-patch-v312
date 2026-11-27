@@ -1,0 +1,34 @@
+[
+ {
+  "alt": "The marble Alexander: a Roman-era copy of the Lysippos portrait - fallback: the drawn alexander stage scenes",
+  "id": "alexander_bust",
+  "must": [
+   "alexander"
+  ],
+  "q": "Alexander the Great marble bust herm Lysippos Azara Louvre"
+ },
+ {
+  "alt": "The Alexander Mosaic from Pompeii: Alexander charges Darius at Issus - fallback: the drawn Issus map and stage scenes",
+  "id": "alexander_mosaic",
+  "must": [
+   "mosaic"
+  ],
+  "q": "Alexander Mosaic Battle of Issus Pompeii Naples museum"
+ },
+ {
+  "alt": "The ruins of Persepolis, the ceremonial capital Alexander burned - fallback: the drawn persepolis_ax scenes",
+  "id": "persepolis_ruins",
+  "must": [
+   "persepolis"
+  ],
+  "q": "Persepolis ruins Apadana columns Iran"
+ },
+ {
+  "alt": "The Ishtar Gate of Babylon, rebuilt from its blue glazed bricks - fallback: the drawn babylon_ax scenes",
+  "id": "babylon_gate",
+  "must": [
+   "ishtar"
+  ],
+  "q": "Ishtar Gate Babylon blue glazed bricks"
+ }
+]
