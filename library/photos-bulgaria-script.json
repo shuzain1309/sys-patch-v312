@@ -1,0 +1,82 @@
+[
+ {
+  "id": "madara_horseman",
+  "q": "Madara Rider rock relief Bulgaria",
+  "must": [
+   "madara"
+  ],
+  "alt": "The Madara Horseman carved in the cliff near Shumen - fallback: the drawn madara_bg relief prop"
+ },
+ {
+  "id": "pliska_basilica",
+  "q": "Great Basilica of Pliska ruins aerial",
+  "must": [
+   "pliska"
+  ],
+  "alt": "The ruins of the Great Basilica at Pliska - fallback: the drawn pliska_bg capital scenes"
+ },
+ {
+  "id": "varna_gold",
+  "q": "Varna gold treasure oldest gold in the world museum",
+  "must": [
+   "varna"
+  ],
+  "alt": "The Varna gold, the oldest worked gold yet found - fallback: the drawn varna_bg shore scenes"
+ },
+ {
+  "id": "preslav_round_church",
+  "q": "Round Church Preslav golden church ruins",
+  "must": [
+   "preslav"
+  ],
+  "alt": "The Round Church of Preslav - fallback: the drawn preslav_bg capital scenes"
+ },
+ {
+  "id": "tsarevets",
+  "q": "Tsarevets fortress Veliko Tarnovo",
+  "must": [
+   "tsarevets"
+  ],
+  "alt": "Tsarevets hill and the Patriarchal church above the Yantra - fallback: the drawn tsarevets_bg scenes"
+ },
+ {
+  "id": "rila_monastery",
+  "q": "Rila Monastery Bulgaria courtyard",
+  "must": [
+   "rila"
+  ],
+  "alt": "The striped arcades of Rila Monastery - fallback: the drawn rila_bg scenes"
+ },
+ {
+  "id": "nevsky_cathedral",
+  "q": "Alexander Nevsky Cathedral Sofia",
+  "must": [
+   "nevsky"
+  ],
+  "alt": "The gold domes of the Alexander Nevsky Cathedral - fallback: the drawn sofia_bg scenes"
+ },
+ {
+  "id": "kazanlak_tomb",
+  "q": "Kazanlak Thracian tomb fresco",
+  "must": [
+   "kazanlak"
+  ],
+  "alt": "The frescoes of the Thracian tomb at Kazanlak - fallback: the drawn varna_bg and preslav_bg scenes"
+ },
+ {
+  "id": "levski_portrait",
+  "q": "Vasil Levski portrait",
+  "must": [
+   "levski"
+  ],
+  "alt": "Vasil Levski, the Apostle of Freedom - fallback: the drawn Levski stage scenes"
+ },
+ {
+  "id": "botev_portrait",
+  "q": "Hristo Botev portrait",
+  "must": [
+   "botev"
+  ],
+  "alt": "Hristo Botev, poet and revolutionary - fallback: the drawn Botev stage scenes"
+ }
+]
