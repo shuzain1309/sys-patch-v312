@@ -1,0 +1,26 @@
+{
+ "_doc": "Bulgaria PRODUCTION-stage lexicon supplement (2026-11-28): names the full script's narration uses that the asset-pass additions do not cover and an English voice would plausibly misread. Lowercase values. Bulgarian/Greek phonetics where no clean published respelling exists (flagged for the lexicon listen, same class as the asset pass's five flags); Achelous per the standard pronunciation guides.",
+ "entries": {
+  "Achelous": "ak-uh-loh-us",
+  "Batak": "bah-tak",
+  "Devshirme": "dev-sheer-meh",
+  "Euthymius": "yoo-thim-ee-us",
+  "Exarchate": "ek-sar-kayt",
+  "Kubrat": "koo-brat",
+  "Kyustendil": "kyoo-sten-deel",
+  "Nikephoros": "ni-kef-uh-rus",
+  "Omurtag": "oh-mur-tahg",
+  "Ongal": "on-gahl",
+  "Peshev": "peh-shef",
+  "Pirot": "pee-rot",
+  "Skylitzes": "sky-lit-seez",
+  "Slivnitsa": "sleev-neet-suh",
+  "Sviatoslav": "svee-at-uh-slahv",
+  "Theophanes": "thee-of-uh-neez",
+  "Thracians": "thray-shuns",
+  "Treblinka": "treb-leen-kuh",
+  "Tzimiskes": "tsim-iss-keez",
+  "Varbitsa": "var-beet-suh",
+  "Vidin": "vee-deen"
+ }
+}

@@ -23,6 +23,7 @@ import {LatinAmericaProp, isLatinAmericaProp, LatinAmericaBg, isLatinAmericaBg, 
 import {NetherlandsProp, isNetherlandsProp, NetherlandsBg, isNetherlandsBg, NETHERLANDS_GROUND} from './netherlands_pack';
 import {AlexanderProp, isAlexanderProp, AlexanderBg, isAlexanderBg, ALEXANDER_GROUND} from './alexander_pack';
 import {HundredYearsProp, isHundredYearsProp, HundredYearsBg, isHundredYearsBg, HUNDREDYEARS_GROUND} from './hundredyears_pack';
+import {BulgariaProp, isBulgariaProp, BulgariaBg, isBulgariaBg, BULGARIA_GROUND} from './bulgaria_pack';
 
 export const HAND = typeof window === 'undefined' ? 'sans-serif' : loadHand('normal', {weights: ['400'], subsets: ['latin']}).fontFamily;
 export const INK = '#241c17';
@@ -937,6 +938,7 @@ const PropArt: React.FC<{p: PropT; f: number; seed: string}> = ({p, f, seed}) =>
   if (isNetherlandsProp(p.k)) return <NetherlandsProp p={p} f={f} seed={seed} />;
   if (isAlexanderProp(p.k)) return <AlexanderProp p={p} f={f} seed={seed} />;
   if (isHundredYearsProp(p.k)) return <HundredYearsProp p={p} f={f} seed={seed} />;
+  if (isBulgariaProp(p.k)) return <BulgariaProp p={p} f={f} seed={seed} />;
   const c = p.c;
   switch (p.k) {
     case 'house': {
@@ -1483,7 +1485,7 @@ export const shotSpans = (st: StageT): {st: StageT; a0: number; a1: number}[] =>
   return st.shots.map((sh, i) => { const a1 = i === st.shots!.length - 1 ? 1 : Math.min(1, Math.max(a0, sh.until)); const o = {st: {...st, ...sh.st, shots: undefined} as StageT, a0, a1}; a0 = a1; return o; });
 };
 const SKY: Record<Tod, [string, string]> = {day: ['#69bff0', '#e8f7ff'], dusk: ['#323c7c', '#f7ab6c'], night: ['#050919', '#1c2a58'], fire: ['#2a0a0a', '#ff8a3a']};
-const GROUND: Record<BgKind, string> = {parchment: '#e2d0a4', desert: '#dcae72', grass: '#86bb5f', sea: '#2f86c4', street: '#9096a0', interior: '#a06f44', steppe: '#cdb26a', snow: '#eef3f8', mountains: '#8a9a6a', forest: '#4f7f3f', battlefield: '#7a6244', harbor: '#9a7b52', castle: '#8f8a7a', palace: '#d9d2c1', nile: '#9fb35a', pyramids: '#e0c48a', temple: '#cdbf9a', tomb: '#6b5440', cathedral: '#8c8578', workshop: '#8a6a44', salon: '#c9b690', jerusalem: '#d6c19b', judean: '#d3bd92', coast: '#ecd9a8', hall: '#6b3a24', yellowriver: '#c9a15a', karst: '#7fa56a', ...GERMANY_GROUND, ...KOREA_GROUND, ...IRAN_GROUND, ...JAPAN_GROUND, ...AFGHANISTAN_GROUND, ...CIVILWAR_GROUND, ...PORTUGAL_GROUND, ...MONGOL_GROUND, ...SPAIN_GROUND, ...FRANCE_GROUND, ...WILDWEST_GROUND, ...VIKINGS_GROUND, ...LATINAMERICA_GROUND, ...NETHERLANDS_GROUND, ...ALEXANDER_GROUND, ...HUNDREDYEARS_GROUND};
+const GROUND: Record<BgKind, string> = {parchment: '#e2d0a4', desert: '#dcae72', grass: '#86bb5f', sea: '#2f86c4', street: '#9096a0', interior: '#a06f44', steppe: '#cdb26a', snow: '#eef3f8', mountains: '#8a9a6a', forest: '#4f7f3f', battlefield: '#7a6244', harbor: '#9a7b52', castle: '#8f8a7a', palace: '#d9d2c1', nile: '#9fb35a', pyramids: '#e0c48a', temple: '#cdbf9a', tomb: '#6b5440', cathedral: '#8c8578', workshop: '#8a6a44', salon: '#c9b690', jerusalem: '#d6c19b', judean: '#d3bd92', coast: '#ecd9a8', hall: '#6b3a24', yellowriver: '#c9a15a', karst: '#7fa56a', ...GERMANY_GROUND, ...KOREA_GROUND, ...IRAN_GROUND, ...JAPAN_GROUND, ...AFGHANISTAN_GROUND, ...CIVILWAR_GROUND, ...PORTUGAL_GROUND, ...MONGOL_GROUND, ...SPAIN_GROUND, ...FRANCE_GROUND, ...WILDWEST_GROUND, ...VIKINGS_GROUND, ...LATINAMERICA_GROUND, ...NETHERLANDS_GROUND, ...ALEXANDER_GROUND, ...HUNDREDYEARS_GROUND, ...BULGARIA_GROUND};
 const HZ = 700;
 
 const Hills: React.FC<{seed: string; base: number; amp: number; col: string; dx: number}> = ({seed, base, amp, col, dx}) => {
@@ -1631,6 +1633,7 @@ const Backdrop: React.FC<{bg: BgKind; tod: Tod; f: number; cx: number; seed: str
   if (isNetherlandsBg(bg)) return <NetherlandsBg bg={bg as any} f={f} cx={cx} seed={seed} />;
   if (isAlexanderBg(bg)) return <AlexanderBg bg={bg as any} f={f} cx={cx} seed={seed} />;
   if (isHundredYearsBg(bg)) return <HundredYearsBg bg={bg as any} f={f} cx={cx} seed={seed} />;
+  if (isBulgariaBg(bg)) return <BulgariaBg bg={bg as any} f={f} cx={cx} seed={seed} />;
   if (bg === 'parchment') {
     // 6.i.2 parchment wash: procedural, deterministic (seeded) — soft blotches, fibre flecks, a darker foot band and a vignette. Boards/photos mount on it; flat 'plain' stays available.
     return (
